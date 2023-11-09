@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 
-const legislativeMember = new mongoose.Schema({});
+const legislativeMember = new mongoose.Schema({
+  profile,
+});
 
 const LegislativeMember = mongoose.model(
   "LegislativeMember",
