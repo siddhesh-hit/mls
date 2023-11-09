@@ -8,6 +8,7 @@ const userModel = new mongoose.Schema(
     email: {
       type: String,
       unique: true,
+      sparse: true,
     },
     password: {
       type: String,
@@ -15,6 +16,7 @@ const userModel = new mongoose.Schema(
     phone_number: {
       type: String,
       unique: true,
+      sparse: true,
     },
     user_role: {
       type: String,

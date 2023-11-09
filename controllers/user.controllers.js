@@ -83,7 +83,7 @@ const verifyUserPhone = asyncHandler(async (req, res) => {
 // @desc    Register a new user using email ==> /api/users/registerEmail
 const registerUserEmail = asyncHandler(async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, phone_number } = req.body;
     const { error } = registerEmailValidate(req.body);
     if (error) {
       res.status(400);
@@ -105,7 +105,7 @@ const registerUserEmail = asyncHandler(async (req, res) => {
         email,
         password,
         email_otp: otp,
-        phone_number: "",
+        phone_number,
       }));
     if (!newUser) {
       res.status(400);
