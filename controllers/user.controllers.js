@@ -100,7 +100,13 @@ const registerUserEmail = asyncHandler(async (req, res) => {
     const info = await otpEmailGenerator(email, otp);
 
     const newUser =
-      info && (await User.create({ email, password, email_otp: otp }));
+      info &&
+      (await User.create({
+        email,
+        password,
+        email_otp: otp,
+        phone_number: "",
+      }));
     if (!newUser) {
       res.status(400);
       throw new Error("Invalid user data");
