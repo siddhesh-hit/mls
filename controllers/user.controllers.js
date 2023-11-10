@@ -91,9 +91,13 @@ const registerUserEmail = asyncHandler(async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-    if (user) {
+    if (user.user_verfied) {
       res.status(400);
       throw new Error("User already exists");
+    } else {
+      await user.deleteOne({
+        _id: user._id,
+      });
     }
     const otp = otpGenerator();
 
