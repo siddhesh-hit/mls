@@ -16,10 +16,7 @@ const {
 
 const {
   authMiddleware,
-  superAdmin,
-  isAdmin,
-  isManager,
-  isUser,
+  checkRoleMiddleware,
 } = require("../middlewares/authMiddleware");
 
 // routes
@@ -30,9 +27,24 @@ router.post("/verifyEmail", verifyUserEmail);
 router.post("/loginPhone", loginUserPhone);
 router.post("/loginEmail", loginUserEmail);
 router.post("/logout", logoutUser);
-router.get("/", authMiddleware, superAdmin, getUsers);
-router.get("/:id", authMiddleware, isUser, getUserById);
-router.put("/:id", authMiddleware, isUser, updateUser);
-router.delete("/:id", authMiddleware, isUser, deleteUser);
+router.get(
+  "/",
+  authMiddleware,
+  checkRoleMiddleware(["Super Admin", "User"]),
+  getUsers
+);
+router.get("/:id", authMiddleware, checkRoleMiddleware(["User"]), getUserById);
+router.put(
+  "/:id",
+  authMiddleware,
+  checkRoleMiddleware(["Manager"]),
+  updateUser
+);
+router.delete(
+  "/:id",
+  authMiddleware,
+  checkRoleMiddleware(["User"]),
+  deleteUser
+);
 
 module.exports = router;

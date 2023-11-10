@@ -91,40 +91,71 @@ const registerUserEmail = asyncHandler(async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-    if (user.user_verfied) {
-      res.status(400);
-      throw new Error("User already exists");
+    if (user !== null) {
+      if (user !== null && user.user_verfied) {
+        res.status(400);
+        throw new Error("User already exists");
+      } else {
+        await user.deleteOne({
+          _id: user._id,
+        });
+
+        const otp = otpGenerator();
+
+        const info = await otpEmailGenerator(email, otp);
+
+        const newUser =
+          info &&
+          (await User.create({
+            email,
+            password,
+            email_otp: otp,
+            phone_number,
+          }));
+        if (!newUser) {
+          res.status(400);
+          throw new Error("Invalid user data");
+        }
+
+        if (newUser) {
+          res.status(201).json({
+            success: true,
+            message: "User registered successfully",
+            user: newUser,
+          });
+        } else {
+          res.status(400);
+          throw new Error("Invalid user data");
+        }
+      }
     } else {
-      await user.deleteOne({
-        _id: user._id,
-      });
-    }
-    const otp = otpGenerator();
+      const otp = otpGenerator();
 
-    const info = await otpEmailGenerator(email, otp);
+      const info = await otpEmailGenerator(email, otp);
 
-    const newUser =
-      info &&
-      (await User.create({
-        email,
-        password,
-        email_otp: otp,
-        phone_number,
-      }));
-    if (!newUser) {
-      res.status(400);
-      throw new Error("Invalid user data");
-    }
+      const newUser =
+        info &&
+        (await User.create({
+          email,
+          password,
+          email_otp: otp,
+          phone_number,
+        }));
+      if (!newUser) {
+        res.status(400);
+        throw new Error("Invalid user data");
+      }
 
-    if (newUser) {
-      res.status(201).json({
-        success: true,
-        message: "User registered successfully",
-        user: newUser,
-      });
-    } else {
-      res.status(400);
-      throw new Error("Invalid user data");
+      if (newUser) {
+        res.status(201).json({
+          success: true,
+          message: "User registered successfully",
+          user: newUser,
+        });
+      } else {
+        res.status(400);
+        throw new Error("Invalid user data");
+      }
     }
   } catch (error) {
     // res.status(501).json({
