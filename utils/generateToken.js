@@ -32,11 +32,14 @@ const refreshToken = async (user) => {
   );
 
   const userToken = await RefreshToken.findOne({ userId: user._id });
-  if (userToken) await userToken.remove();
+  if (userToken)
+    await userToken.deleteOne({
+      userId: user._id,
+    });
 
   await RefreshToken.create({
     userId: user._id,
-    refreshToken: refreshToken,
+    refreshToken: token,
   });
 
   return token;

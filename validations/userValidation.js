@@ -3,7 +3,8 @@ const joi = require("joi");
 // validate user register using phone
 const registerPhoneValidate = (data) => {
   const schema = joi.object({
-    phone_number: joi.string().min(10).required(),
+    // phone_number: joi.number().min(10).required(),
+    phone_number: joi.string(),
   });
   return schema.validate(data);
 };
@@ -21,7 +22,6 @@ const registerEmailValidate = (data) => {
 const loginPhoneValidate = (data) => {
   const schema = joi.object({
     phone_number: joi.string().min(10).required(),
-    password: joi.string().min(6).required(),
   });
   return schema.validate(data);
 };

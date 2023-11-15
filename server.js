@@ -7,6 +7,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db.config");
 const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
 const userRoutes = require("./routes/user.routes");
+const sabhaRoutes = require("./routes/sabha.routes");
 
 // defining modules
 const app = express();
@@ -34,6 +35,7 @@ app.get("/back", (req, res) => {
 
 // defining the routes
 app.use("/api/user", userRoutes);
+app.use("/api/sabha", sabhaRoutes);
 
 // static files
 app.use(express.static("public"));

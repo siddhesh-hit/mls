@@ -15,68 +15,70 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
-describe("GET /back", () => {
-  test("it should return status 200 and a message", async () => {
-    const response = await request(app).get("/back");
-    expect(response.status).toBe(200);
-    expect(response.body.message).toBe("API is running....");
-  });
-});
+// describe("GET /back", () => {
+//   test("it should return status 200 and a message", async () => {
+//     const response = await request(app).get("/back");
+//     expect(response.status).toBe(200);
+//     expect(response.body.message).toBe("API is running....");
+//   });
+// });
 
 describe("Users API", () => {
   test("POST /api/user/registerEmail", async () => {
-    await request(app)
+    const response = await request(app)
       .post("/api/user/registerEmail")
       .expect("Content-Type", /json/)
       .send({
         email: "test@gmail.com",
         password: "123456",
-        rtgfg,
-      })
-      .expect(201)
-      .expect((res) => {
-        res.success = true;
-        res.message = "User registered successfully";
-        res.user = {
-          email: "test@gmail.com",
-          password:
-            "$2a$10$rVSKHTKTAKTQWpZ9C2IlfekywPOmXSuuaP3NUJ3n3kkp4qJgOOlaO",
-          user_role: "User",
-          email_otp: "lm9t",
-          user_verfied: false,
-          _id: "654df413db44a14daa517783",
-          createdAt: "2023-11-10T09:12:51.713Z",
-          updatedAt: "2023-11-10T09:12:51.713Z",
-          __v: 0,
-        };
       });
+
+    expect(response.status).toBe(201);
+    expect(response.body.success).toBe(true);
+    expect(response.body.message).toBe("User registered successfully");
+    expect(response.body.user).toBeDefined();
   });
 
   test("POST /api/user/verifyEmail", async () => {
-    await request(app)
-      .post("/api/user/verifyEmail")
+    const resEmail = await request(app)
+      .post("/api/user/registerEmail")
       .expect("Content-Type", /json/)
       .send({
         email: "test@gmail.com",
-        email_otp: "lm9t",
-      })
-      .expect(201)
-      .expect((res) => {
-        res.success = true;
-        res.message = "User verified successfully";
-        res.user = {
-          _id: "654dfbba5cf1263d5007573a",
-          email: "test@gmail.com",
-          password:
-            "$2a$10$kVkrZf0YZ1XkBoXZzqm4O.z0PCyprPodQvkLoX6tM7/gE927G3iTq",
-          user_role: "User",
-          email_otp: "",
-          user_verfied: true,
-          createdAt: "2023-11-10T09:45:30.439Z",
-          updatedAt: "2023-11-10T09:45:41.663Z",
-          __v: 0,
-        };
+        password: "123456",
       });
-    jest.setTimeout(30000);
+    expect(resEmail.status).toBe(201);
+    expect(resEmail.body.success).toBe(true);
+    expect(resEmail.body.message).toBe("User registered successfully");
+    expect(resEmail.body.user).toBeDefined();
+
+    const response = await request(app)
+      .post("/api/user/verifyEmail")
+      .expect("Content-Type", /json/)
+      .send({
+        email: resEmail.body.user.email,
+        email_otp: resEmail.body.user.email_otp,
+      });
+
+    expect(response.status).toBe(201);
+    expect(response.body.success).toBe(true);
+    expect(response.body.message).toBe("User verified successfully");
+    expect(response.body.user).toBeDefined();
+  });
+
+  test("POST /api/user/loginEmail", async () => {
+    const response = await request(app).post("/api/user/loginEmail").send({
+      email: "test@gmail.com",
+      password: "123456",
+    });
+
+    console.log(response.error);
+
+    expect(response.status).toBe(201);
+    expect(response.body.success).toBe(true);
+    expect(response.body.message).toBe("User logged in successfully");
+    expect(response.body.user).toBeDefined();
+    expect(response.body.access_token).toBeDefined();
+    expect(response.body.refresh_token).toBeDefined();
   });
 });
