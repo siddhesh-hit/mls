@@ -1,19 +1,31 @@
 const request = require("supertest");
+const { MongoMemoryServer } = require("mongodb-memory-server");
 const mongoose = require("mongoose");
 
 const app = require("../server");
-const connectDB = require("../config/db.config");
+const { connectDB, closeDB } = require("../config/test.config");
 
 // Jest hooks to handle setup and teardown
+let mongod;
+
 beforeAll(async () => {
-  // Connect to the database before running tests
-  await connectDB();
+  mongod = await MongoMemoryServer.create();
+  const uri = mongod.getUri();
+  console.log(uri);
+  await mongoose.createConnection(uri);
 });
 
 afterAll(async () => {
-  // Close the database connection after running tests
-  await mongoose.connection.close();
+  await mongoose.disconnect();
+  if (mongod) {
+    await mongod.stop();
+  }
 });
+
+// beforeEach(async () => {
+//   // Reset the database before each test
+//   await mongoose.connection.dropDatabase();
+// });
 
 // describe("GET /back", () => {
 //   test("it should return status 200 and a message", async () => {
