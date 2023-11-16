@@ -2,12 +2,12 @@ const router = require("express").Router();
 const multer = require("multer");
 
 const {
-  getVidhanSabhas,
-  getVidhanSabhaById,
-  createVidhanSabha,
-  updateVidhanSabha,
-  deleteVidhanSabha,
-} = require("../controllers/sabha.controllers");
+  getVidhanMandals,
+  getVidhanMandalById,
+  createVidhanMandal,
+  updateVidhanMandal,
+  deleteVidhanMandal,
+} = require("../controllers/mandal.controllers");
 
 const {
   authMiddleware,
@@ -17,10 +17,10 @@ const {
 // multer config
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "images/sabha");
+    cb(null, "images/mandal");
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}-sabha`);
+    cb(null, `${Date.now()}-${file.originalname}-mandal`);
   },
 });
 
@@ -29,41 +29,41 @@ const upload = multer({ storage: storage });
 // routes
 router
   .route("/")
-  .get(getVidhanSabhas)
+  .get(getVidhanMandals)
   .post(
     authMiddleware,
     checkRoleMiddleware(["Admin"]),
     upload.fields([
       {
-        name: "banner_image",
+        name: "marathi.about_us",
         maxCount: 1,
       },
       {
-        name: "banner_image",
+        name: "marathi.about_us.*.image",
         maxCount: 1,
       },
     ]),
-    createVidhanSabha
+    createVidhanMandal
   );
 
 router
   .route("/:id")
-  .get(getVidhanSabhaById)
+  .get(getVidhanMandalById)
   .put(
     authMiddleware,
     checkRoleMiddleware(["Admin"]),
     upload.fields([
       {
-        name: "banner_image",
+        name: "marathi.about_us",
         maxCount: 1,
       },
       {
-        name: "banner_image",
+        name: "marathi.about_us.*.image",
         maxCount: 1,
       },
     ]),
-    updateVidhanSabha
+    updateVidhanMandal
   )
-  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteVidhanSabha);
+  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteVidhanMandal);
 
 module.exports = router;

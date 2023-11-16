@@ -6,10 +6,12 @@ const RefreshToken = require("../models/refreshToken");
 
 // generateToken function
 const accessToken = (user) => {
+  console.log(user);
   const token = jwt.sign(
     {
       id: user._id,
       email: user.email,
+      role: user.user_role,
     },
     process.env.JWT_ACCESS_SECRET,
     {
@@ -20,10 +22,12 @@ const accessToken = (user) => {
 };
 
 const refreshToken = async (user) => {
+  console.log(user);
   const token = jwt.sign(
     {
       id: user._id,
       email: user.email,
+      role: user.user_role,
     },
     process.env.JWT_REFRESH_SECRET,
     {
@@ -41,8 +45,6 @@ const refreshToken = async (user) => {
     userId: user._id,
     refreshToken: token,
   });
-
-  console.log(token);
 
   if (data) {
     return token;

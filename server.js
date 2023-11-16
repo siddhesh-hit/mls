@@ -8,14 +8,13 @@ const connectDB = require("./config/db.config");
 const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
 const userRoutes = require("./routes/user.routes");
 const sabhaRoutes = require("./routes/sabha.routes");
+const parishadRoutes = require("./routes/parishad.routes");
+const mandalRoutes = require("./routes/mandal.routes");
+const galleryRoutes = require("./routes/gallery.routes");
 
 // defining modules
 const app = express();
 dotenv.config();
-
-// parse the data
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
 // defining cors format
 const corsConfig = {
@@ -25,6 +24,14 @@ const corsConfig = {
 };
 app.use(cors(corsConfig));
 app.options("*", cors(corsConfig));
+
+// parse the data
+app.use(express.json());
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
 
 // test get
 app.get("/back", (req, res) => {
@@ -36,9 +43,12 @@ app.get("/back", (req, res) => {
 // defining the routes
 app.use("/api/user", userRoutes);
 app.use("/api/sabha", sabhaRoutes);
+app.use("/api/parishad", parishadRoutes);
+app.use("/api/mandal", mandalRoutes);
+app.use("/api/gallery", galleryRoutes);
 
 // static files
-app.use(express.static("./images"));
+app.use("/images", express.static("./images"));
 
 // error handler
 app.use(notFound);
@@ -54,4 +64,4 @@ connectDB().then(() => {
 });
 
 // export the app
-module.exports = app;
+// module.exports = app;

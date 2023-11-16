@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const ImageSchema = require("./imageSchema");
+
 const vidhanSabhaSchema = new mongoose.Schema(
   {
     marathi: {
@@ -7,10 +9,7 @@ const vidhanSabhaSchema = new mongoose.Schema(
         type: String,
         required: true,
       },
-      banner_image: {
-        type: String,
-        required: true,
-      },
+      banner_image: ImageSchema,
       description: {
         type: String,
         required: true,
@@ -44,10 +43,7 @@ const vidhanSabhaSchema = new mongoose.Schema(
       ],
       legislative_council: [
         {
-          council_profile: {
-            type: String,
-            required: true,
-          },
+          council_profile: ImageSchema,
           council_name: {
             type: String,
             required: true,
@@ -64,10 +60,8 @@ const vidhanSabhaSchema = new mongoose.Schema(
         type: String,
         required: true,
       },
-      banner_image: {
-        type: String,
-        required: true,
-      },
+      banner_image: ImageSchema,
+
       description: {
         type: String,
         required: true,
@@ -101,10 +95,7 @@ const vidhanSabhaSchema = new mongoose.Schema(
       ],
       legislative_council: [
         {
-          council_profile: {
-            type: String,
-            required: true,
-          },
+          council_profile: ImageSchema,
           council_name: {
             type: String,
             required: true,
