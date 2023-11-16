@@ -102,20 +102,14 @@ const registerUserEmail = asyncHandler(async (req, res) => {
 
         const otp = otpGenerator();
 
-        const info = await otpEmailGenerator(email, otp);
+        await otpEmailGenerator(email, otp);
 
-        const newUser =
-          info &&
-          (await User.create({
-            email,
-            password,
-            email_otp: otp,
-            phone_number,
-          }));
-        if (!newUser) {
-          res.status(400);
-          throw new Error("Invalid user data");
-        }
+        const newUser = await User.create({
+          email,
+          password,
+          email_otp: otp,
+          phone_number,
+        });
 
         if (newUser) {
           res.status(201).json({
@@ -131,20 +125,14 @@ const registerUserEmail = asyncHandler(async (req, res) => {
     } else {
       const otp = otpGenerator();
 
-      const info = await otpEmailGenerator(email, otp);
+      await otpEmailGenerator(email, otp);
 
-      const newUser =
-        info &&
-        (await User.create({
-          email,
-          password,
-          email_otp: otp,
-          phone_number,
-        }));
-      if (!newUser) {
-        res.status(400);
-        throw new Error("Invalid user data");
-      }
+      const newUser = await User.create({
+        email,
+        password,
+        email_otp: otp,
+        phone_number,
+      });
 
       if (newUser) {
         res.status(201).json({
@@ -225,8 +213,8 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       throw new Error("Invalid credentials");
     }
 
-    const access_token = accessToken(user._id);
-    const refresh_token = refreshToken(user._id);
+    const access_token = await accessToken(user);
+    const refresh_token = await refreshToken(user);
 
     res.cookie("accessToken", access_token, {
       httpOnly: false, // set true if the client does not need to read it via JavaScript
