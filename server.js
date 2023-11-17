@@ -58,12 +58,16 @@ app.use(errorHandler);
 
 // server configuration
 const PORT = process.env.PORT || 8484;
-connectDB().then(() => {
-  console.log(`MongoDB is connected at MLS.`);
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+connectDB()
+  .then(() => {
+    console.log(`MongoDB is connected at MLS.`);
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Error connecting to MongoDB:", err);
   });
-});
 
 // export the app
-// module.exports = app;
+module.exports = app;

@@ -1,24 +1,16 @@
 const request = require("supertest");
-const { MongoMemoryServer } = require("mongodb-memory-server");
-const mongoose = require("mongoose");
 
+const { connectDB, quitDB } = require("../config/test.config");
 const app = require("../server");
 
 // Jest hooks to handle setup and teardown
-let mongod;
 
 beforeAll(async () => {
-  mongod = await MongoMemoryServer.create();
-  const uri = mongod.getUri();
-  console.log(uri);
-  await mongoose.createConnection(uri);
+  await connectDB();
 });
 
 afterAll(async () => {
-  await mongoose.disconnect();
-  if (mongod) {
-    await mongod.stop();
-  }
+  await quitDB();
 });
 
 // beforeEach(async () => {
@@ -44,6 +36,8 @@ describe("Users API", () => {
         password: "123456",
       });
 
+    console.log(response.error);
+
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
     expect(response.body.message).toBe("User registered successfully");
@@ -58,6 +52,7 @@ describe("Users API", () => {
         email: "test1@gmail.com",
         password: "123456",
       });
+
     expect(resEmail.status).toBe(201);
     expect(resEmail.body.success).toBe(true);
     expect(resEmail.body.message).toBe("User registered successfully");
@@ -82,8 +77,6 @@ describe("Users API", () => {
       email: "test1@gmail.com",
       password: "123456",
     });
-
-    console.log(response.error);
 
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);

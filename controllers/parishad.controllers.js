@@ -36,8 +36,6 @@ const createVidhanParishad = asyncHandler(async (req, res) => {
       message: "VidhanParishad created successfully.",
       data: vidhanParishad,
     });
-
-    console.log(data);
   } catch (error) {
     res.status(500);
     throw new Error(error.message, error);
@@ -130,8 +128,6 @@ const updateVidhanParishad = asyncHandler(async (req, res) => {
       message: "VidhanParishad updated successfully.",
       data: vidhanParishad,
     });
-
-    console.log(data);
   } catch (error) {
     res.status(500);
     throw new Error(error.message, error);

@@ -88,7 +88,6 @@ const verifyUserPhone = asyncHandler(async (req, res) => {
 const registerUserEmail = asyncHandler(async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(email, password);
     const { error } = registerEmailValidate(req.body);
     if (error) {
       res.status(400);

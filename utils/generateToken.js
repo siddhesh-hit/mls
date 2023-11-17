@@ -6,7 +6,6 @@ const RefreshToken = require("../models/refreshToken");
 
 // generateToken function
 const accessToken = (user) => {
-  console.log(user);
   const token = jwt.sign(
     {
       id: user._id,
@@ -22,7 +21,6 @@ const accessToken = (user) => {
 };
 
 const refreshToken = async (user) => {
-  console.log(user);
   const token = jwt.sign(
     {
       id: user._id,

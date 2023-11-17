@@ -10,10 +10,10 @@ const {
 const createVidhanSabha = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
-    // const { banner_image_en, banner_image_mr } = req.files;
+    let { banner_image_en, banner_image_mr } = req.files;
 
-    // data.marathi.banner_image = banner_image_mr;
-    // data.english.banner_image = banner_image_en;
+    data.marathi.banner_image = banner_image_mr;
+    data.english.banner_image = banner_image_en;
 
     // validate data & files
     const { error } = createVidhanSabhaValidation(data);
@@ -34,8 +34,6 @@ const createVidhanSabha = asyncHandler(async (req, res) => {
       message: "VidhanSabha created successfully.",
       data: vidhanSabha,
     });
-
-    console.log(data);
   } catch (error) {
     res.status(500);
     throw new Error(error.message, error);
@@ -86,10 +84,10 @@ const getVidhanSabhaById = asyncHandler(async (req, res) => {
 const updateVidhanSabha = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
-    // const { banner_image_en, banner_image_mr } = req.files;
+    let { banner_image_en, banner_image_mr } = req.files;
 
-    // data.marathi.banner_image = banner_image_mr;
-    // data.english.banner_image = banner_image_en;
+    data.marathi.banner_image = banner_image_mr;
+    data.english.banner_image = banner_image_en;
 
     // validate data & files
     const { error } = updateVidhanSabhaValidation(data);
@@ -124,8 +122,6 @@ const updateVidhanSabha = asyncHandler(async (req, res) => {
       message: "VidhanSabha updated successfully.",
       data: vidhanSabha,
     });
-
-    console.log(data);
   } catch (error) {
     res.status(500);
     throw new Error(error.message, error);

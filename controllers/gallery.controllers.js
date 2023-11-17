@@ -15,8 +15,6 @@ const createMandalGallery = asyncHandler(async (req, res) => {
       throw new Error("Please upload a file");
     }
 
-    console.log(file);
-
     // check validation
     const imageValidate = (data) => {
       const schema = joi.object({
