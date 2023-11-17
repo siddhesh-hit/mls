@@ -11,6 +11,7 @@ const sabhaRoutes = require("./routes/sabha.routes");
 const parishadRoutes = require("./routes/parishad.routes");
 const mandalRoutes = require("./routes/mandal.routes");
 const galleryRoutes = require("./routes/gallery.routes");
+const graphRoutes = require("./routes/graph.routes");
 
 // defining modules
 const app = express();
@@ -46,6 +47,7 @@ app.use("/api/sabha", sabhaRoutes);
 app.use("/api/parishad", parishadRoutes);
 app.use("/api/mandal", mandalRoutes);
 app.use("/api/gallery", galleryRoutes);
+app.use("/api/graph", graphRoutes);
 
 // static files
 app.use("/images", express.static("./images"));

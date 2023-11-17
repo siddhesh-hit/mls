@@ -15,11 +15,7 @@ const createMandalGallery = asyncHandler(async (req, res) => {
       throw new Error("Please upload a file");
     }
 
-    // check if file is image
-    if (!file.mimetype.startsWith("image")) {
-      res.status(400);
-      throw new Error("Please upload an image file");
-    }
+    console.log(file);
 
     // check validation
     const imageValidate = (data) => {
@@ -36,7 +32,7 @@ const createMandalGallery = asyncHandler(async (req, res) => {
       return schema.validate(data);
     };
 
-    const { error } = imageValidate(req.body);
+    const { error } = imageValidate(req.file);
 
     if (error) {
       res.status(400);
@@ -112,12 +108,6 @@ const updateMandalGallery = asyncHandler(async (req, res) => {
       throw new Error("Please upload a file");
     }
 
-    // check if file is image
-    if (!file.mimetype.startsWith("image")) {
-      res.status(400);
-      throw new Error("Please upload an image file");
-    }
-
     // check validation
     const imageValidate = (data) => {
       const schema = joi.object({
@@ -133,7 +123,7 @@ const updateMandalGallery = asyncHandler(async (req, res) => {
       return schema.validate(data);
     };
 
-    const { error } = imageValidate(req.body);
+    const { error } = imageValidate(req.file);
 
     if (error) {
       res.status(400);
