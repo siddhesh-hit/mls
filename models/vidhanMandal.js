@@ -1,21 +1,39 @@
 const mongoose = require("mongoose");
 
+const ImageSchema = require("./imageSchema");
+
 const vidhanMandal = new mongoose.Schema({
-  mandal_images: {
-    type: String,
-    required: true,
+  marathi: {
+    about_us: [
+      {
+        image: ImageSchema,
+        title: {
+          type: String,
+          required: true,
+        },
+        description: {
+          type: String,
+          required: true,
+        },
+        documents: ImageSchema,
+      },
+    ],
   },
-  title: {
-    type: String,
-    required: true,
-  },
-  detail: {
-    type: String,
-    required: true,
-  },
-  structure: {
-    type: String,
-    required: true,
+  english: {
+    about_us: [
+      {
+        image: ImageSchema,
+        title: {
+          type: String,
+          required: true,
+        },
+        description: {
+          type: String,
+          required: true,
+        },
+        documents: ImageSchema,
+      },
+    ],
   },
 });
 

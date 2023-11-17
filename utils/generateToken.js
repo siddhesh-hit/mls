@@ -10,6 +10,7 @@ const accessToken = (user) => {
     {
       id: user._id,
       email: user.email,
+      role: user.user_role,
     },
     process.env.JWT_ACCESS_SECRET,
     {
@@ -24,6 +25,7 @@ const refreshToken = async (user) => {
     {
       id: user._id,
       email: user.email,
+      role: user.user_role,
     },
     process.env.JWT_REFRESH_SECRET,
     {
@@ -32,14 +34,19 @@ const refreshToken = async (user) => {
   );
 
   const userToken = await RefreshToken.findOne({ userId: user._id });
-  if (userToken) await userToken.remove();
+  if (userToken)
+    await userToken.deleteOne({
+      userId: user._id,
+    });
 
-  await RefreshToken.create({
+  const data = await RefreshToken.create({
     userId: user._id,
-    refreshToken: refreshToken,
+    refreshToken: token,
   });
 
-  return token;
+  if (data) {
+    return token;
+  }
 };
 
 module.exports = {

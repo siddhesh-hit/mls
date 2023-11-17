@@ -15,7 +15,7 @@ const otpGenerator = require("../utils/otpGenerator");
 const registerUserPhone = asyncHandler(async (req, res) => {
   try {
     const { phone_number } = req.body;
-    const { error } = registerPhoneValidate(phone_number);
+    const { error } = registerPhoneValidate(req.body);
     if (error) {
       res.status(400);
       throw new Error(error.details[0].message);
@@ -24,8 +24,12 @@ const registerUserPhone = asyncHandler(async (req, res) => {
 
     const user = await User.findOne({ phone_number });
     if (user) {
-      res.status(400);
-      throw new Error("User already exists");
+      if (user.user_verfied) {
+        res.status(400);
+        throw new Error("User already exists");
+      } else {
+        await user.deleteOne({ _id: user._id });
+      }
     }
 
     const newUser = await User.create({ phone_number, phone_otp });
@@ -40,10 +44,10 @@ const registerUserPhone = asyncHandler(async (req, res) => {
       user: newUser,
     });
   } catch (error) {
-    res.status(501).json({
-      success: false,
-    });
     throw new Error(error);
+    // res.status(501).json({
+    //   success: false,
+    // });
   }
 });
 
@@ -90,42 +94,38 @@ const registerUserEmail = asyncHandler(async (req, res) => {
       throw new Error(error.details[0].message);
     }
 
-    const user = await User.findOne({ email });
+    let user = await User.findOne({ email });
+
     if (user) {
-      res.status(400);
-      throw new Error("User already exists");
+      if (user.user_verfied) {
+        res.status(400);
+        throw new Error("User already exists");
+      } else {
+        await user.deleteOne({ _id: user._id });
+      }
     }
+
     const otp = otpGenerator();
+    otpEmailGenerator(email, otp);
 
-    const info = await otpEmailGenerator(email, otp);
+    const newUser = await User.create({
+      email,
+      password,
+      email_otp: otp,
+    });
 
-    const newUser =
-      info &&
-      (await User.create({
-        email,
-        password,
-        email_otp: otp,
-        phone_number,
-      }));
     if (!newUser) {
       res.status(400);
       throw new Error("Invalid user data");
     }
 
-    if (newUser) {
-      res.status(201).json({
-        success: true,
-        message: "User registered successfully",
-        user: newUser,
-      });
-    } else {
-      res.status(400);
-      throw new Error("Invalid user data");
-    }
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+      user: newUser,
+    });
   } catch (error) {
-    // res.status(501).json({
-    //   success: false,
-    // });
+    res.status(500);
     throw new Error(error);
   }
 });
@@ -183,6 +183,11 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       throw new Error("User does not exists");
     }
 
+    if (!user.user_verfied) {
+      res.status(400);
+      throw new Error("User not verified");
+    }
+
     const isMatch = await user.matchPassword(password);
 
     if (!isMatch) {
@@ -190,8 +195,8 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       throw new Error("Invalid credentials");
     }
 
-    const access_token = accessToken(user._id);
-    const refresh_token = refreshToken(user._id);
+    const access_token = accessToken(user);
+    const refresh_token = await refreshToken(user);
 
     res.cookie("accessToken", access_token, {
       httpOnly: false, // set true if the client does not need to read it via JavaScript
@@ -205,7 +210,7 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       sameSite: "Lax",
     });
 
-    res.status(200).json({
+    res.status(201).json({
       success: true,
       message: "User logged in successfully",
       user,
@@ -213,9 +218,9 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       refresh_token,
     });
   } catch (error) {
-    res.status(501).json({
-      success: false,
-    });
+    // res.status(501).json({
+    //   success: false,
+    // });
     throw new Error(error);
   }
 });
