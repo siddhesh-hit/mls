@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const multer = require("multer");
 
 const {
   registerUserPhone,
@@ -19,10 +20,22 @@ const {
   checkRoleMiddleware,
 } = require("../middlewares/authMiddleware");
 
+// multer config
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images/users");
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-users-${file.originalname}`);
+  },
+});
+
+const upload = multer({ storage: storage });
+
 // routes
 router.post("/registerPhone", registerUserPhone);
 router.post("/verifyPhone", verifyUserPhone);
-router.post("/registerEmail", registerUserEmail);
+router.post("/registerEmail", upload.single("user_image"), registerUserEmail);
 router.post("/verifyEmail", verifyUserEmail);
 router.post("/loginPhone", loginUserPhone);
 router.post("/loginEmail", loginUserEmail);

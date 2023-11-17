@@ -87,15 +87,31 @@ const verifyUserPhone = asyncHandler(async (req, res) => {
 // @desc    Register a new user using email ==> /api/users/registerEmail
 const registerUserEmail = asyncHandler(async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const { error } = registerEmailValidate(req.body);
+    let data = req.body;
+    let file = req.file;
+
+    let email = data.email;
+
+    console.log(data);
+
+    // check if file exists
+    if (!file) {
+      res.status(400);
+      throw new Error("Please upload image");
+    }
+
+    // add image to data
+    data.user_image = file;
+
+    // check if email already exists
+    const { error } = registerEmailValidate(data);
     if (error) {
       res.status(400);
       throw new Error(error.details[0].message);
     }
 
+    // check if email already exists
     let user = await User.findOne({ email });
-
     if (user) {
       if (user.user_verfied) {
         res.status(400);
@@ -105,15 +121,15 @@ const registerUserEmail = asyncHandler(async (req, res) => {
       }
     }
 
+    // generate otp and send email
     const otp = otpGenerator();
     otpEmailGenerator(email, otp);
 
+    // create new user
     const newUser = await User.create({
-      email,
-      password,
+      ...data,
       email_otp: otp,
     });
-
     if (!newUser) {
       res.status(400);
       throw new Error("Invalid user data");
@@ -126,7 +142,7 @@ const registerUserEmail = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error(error);
+    throw new Error("Server error" + error);
   }
 });
 

@@ -2,9 +2,14 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
+const imageSchema = require("./imageSchema");
+
 // schema design
 const userModel = new mongoose.Schema(
   {
+    full_name: {
+      type: String,
+    },
     email: {
       type: String,
       unique: true,
@@ -18,6 +23,16 @@ const userModel = new mongoose.Schema(
       unique: true,
       sparse: true,
     },
+    gender: {
+      type: String,
+    },
+    date_of_birth: {
+      type: Date,
+    },
+    user_type: {
+      type: String,
+    },
+    user_image: imageSchema,
     user_role: {
       type: String,
       required: true,

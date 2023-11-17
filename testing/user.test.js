@@ -78,6 +78,8 @@ describe("Users API", () => {
       password: "123456",
     });
 
+    console.log(response.body);
+
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
     expect(response.body.message).toBe("User logged in successfully");
