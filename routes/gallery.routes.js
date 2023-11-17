@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
     cb(null, "images/mandal");
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}-mandal`);
+    cb(null, `${Date.now()}-mandal-${file.originalname}`);
   },
 });
 
@@ -33,16 +33,7 @@ router
   .post(
     authMiddleware,
     checkRoleMiddleware(["Admin"]),
-    upload.fields([
-      {
-        name: "banner_image_en",
-        maxCount: 1,
-      },
-      {
-        name: "banner_image_mr",
-        maxCount: 1,
-      },
-    ]),
+    upload.single("gallery_image"),
     createMandalGallery
   );
 
@@ -52,16 +43,7 @@ router
   .put(
     authMiddleware,
     checkRoleMiddleware(["Admin"]),
-    upload.fields([
-      {
-        name: "banner_image_en",
-        maxCount: 1,
-      },
-      {
-        name: "banner_image_mr",
-        maxCount: 1,
-      },
-    ]),
+    upload.single("gallery_image"),
     updateMandalGallery
   )
   .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteMandalGallery);

@@ -10,7 +10,7 @@ const {
 const createVidhanParishad = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
-    // const { banner_image_en, banner_image_mr } = req.files;
+    // let { banner_image_en, banner_image_mr } = req.files;
 
     // data.marathi.banner_image = banner_image_mr;
     // data.english.banner_image = banner_image_en;
@@ -90,7 +90,7 @@ const getVidhanParishadById = asyncHandler(async (req, res) => {
 const updateVidhanParishad = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
-    // const { banner_image_en, banner_image_mr } = req.files;
+    // let { banner_image_en, banner_image_mr } = req.files;
 
     // data.marathi.banner_image = banner_image_mr;
     // data.english.banner_image = banner_image_en;
