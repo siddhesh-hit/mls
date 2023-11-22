@@ -33,7 +33,7 @@ router
   .post(
     authMiddleware,
     checkRoleMiddleware(["Admin"]),
-    upload.single("gallery_image"),
+    upload.fields([{ name: "gallery_image", maxCount: 10 }]),
     createMandalGallery
   );
 
@@ -43,7 +43,7 @@ router
   .put(
     authMiddleware,
     checkRoleMiddleware(["Admin"]),
-    upload.single("gallery_image"),
+    upload.fields([{ name: "gallery_image", maxCount: 10 }]),
     updateMandalGallery
   )
   .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteMandalGallery);

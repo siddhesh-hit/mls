@@ -4,7 +4,6 @@ const { connectDB, quitDB } = require("../config/test.config");
 const app = require("../server");
 
 // Jest hooks to handle setup and teardown
-
 beforeAll(async () => {
   await connectDB();
 });
@@ -13,6 +12,7 @@ afterAll(async () => {
   await quitDB();
 });
 
+// test cases
 describe("Sabha API", () => {
   test("POST /api/sabha/", async () => {
     const response = await request(app)

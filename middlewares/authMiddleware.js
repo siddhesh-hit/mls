@@ -7,9 +7,23 @@ const User = require("../models/userModel");
 
 const authMiddleware = asyncHandler(async (req, res, next) => {
   try {
-    const refresh_token = req.headers.cookie.split(" ")[1].split("=")[1];
+    console.log(req.headers.cookie["refreshToken"]);
 
-    const access_token = req.headers.cookie.split(" ")[0].split("=")[1];
+    const refresh_token = req.headers.cookie
+      .split(" ")
+      .find((el) => {
+        return el.includes("refreshToken");
+      })
+      .split("=")[1]
+      .slice(0, -1);
+
+    const access_token = req.headers.cookie
+      .split(" ")
+      .find((el) => {
+        return el.includes("accessToken");
+      })
+      .split("=")[1]
+      .slice(0, -1);
 
     if (!refresh_token) {
       res.status(401);

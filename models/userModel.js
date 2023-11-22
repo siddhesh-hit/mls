@@ -10,6 +10,18 @@ const userModel = new mongoose.Schema(
     full_name: {
       type: String,
     },
+    houses: {
+      type: String,
+      default: "Public User",
+    },
+    department: {
+      type: String,
+      default: "Public User",
+    },
+    designation: {
+      type: String,
+      default: "Public User",
+    },
     email: {
       type: String,
       unique: true,
@@ -28,9 +40,6 @@ const userModel = new mongoose.Schema(
     },
     date_of_birth: {
       type: Date,
-    },
-    user_type: {
-      type: String,
     },
     user_image: imageSchema,
     user_role: {

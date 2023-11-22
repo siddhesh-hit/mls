@@ -25,11 +25,13 @@ const registerEmailValidate = (data) => {
   const schema = joi.object({
     full_name: joi.string().min(6).required(),
     email: joi.string().min(6).required().email(),
+    houses: joi.string().required(),
+    department: joi.string().required(),
     password: joi.string().min(6).required(),
     phone_number: joi.string().required(),
     gender: joi.string().required(),
     date_of_birth: joi.date().required(),
-    user_type: joi.string().required(),
+    designation: joi.string().required(),
     user_image: imageValidation.required(),
   });
   return schema.validate(data);
@@ -53,9 +55,26 @@ const loginEmailValidate = (data) => {
   return schema.validate(data);
 };
 
+// update user validation
+const updateUserValidate = (data) => {
+  const schema = joi.object({
+    full_name: joi.string().min(6).required(),
+    email: joi.string().min(6).required().email(),
+    password: joi.string().min(6).required(),
+    phone_number: joi.string().required(),
+    gender: joi.string().required(),
+    date_of_birth: joi.date().required(),
+    user_type: joi.string().required(),
+    user_image: imageValidation.required(),
+  });
+
+  return schema.validate(data);
+};
+
 module.exports = {
   registerPhoneValidate,
   registerEmailValidate,
   loginPhoneValidate,
   loginEmailValidate,
+  updateUserValidate,
 };

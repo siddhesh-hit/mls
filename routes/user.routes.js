@@ -8,11 +8,15 @@ const {
   verifyUserEmail,
   loginUserPhone,
   loginUserEmail,
-  logoutUser,
+  inviteUser,
+  forgotUser,
+  resetUser,
   getUsers,
   getUserById,
   updateUser,
   deleteUser,
+  regenerateAccessToken,
+  regenerateRefreshToken,
 } = require("../controllers/user.controllers");
 
 const {
@@ -39,25 +43,31 @@ router.post("/registerEmail", upload.single("user_image"), registerUserEmail);
 router.post("/verifyEmail", verifyUserEmail);
 router.post("/loginPhone", loginUserPhone);
 router.post("/loginEmail", loginUserEmail);
-router.post("/logout", logoutUser);
+router.post("/forgot", forgotUser);
+router.post("/reset", resetUser);
+router.post(
+  "/invite",
+  // authMiddleware,
+  // checkRoleMiddleware("Admin"),
+  upload.single("user_image"),
+  inviteUser
+);
 router.get(
   "/",
   authMiddleware,
-  checkRoleMiddleware(["Super Admin", "User"]),
+  checkRoleMiddleware("Super Admin", "User"),
   getUsers
 );
-router.get("/:id", authMiddleware, checkRoleMiddleware(["User"]), getUserById);
+router.get("/:id", authMiddleware, checkRoleMiddleware("User"), getUserById);
 router.put(
   "/:id",
   authMiddleware,
-  checkRoleMiddleware(["Manager"]),
+  checkRoleMiddleware("Manager"),
+  upload.single("user_image"),
   updateUser
 );
-router.delete(
-  "/:id",
-  authMiddleware,
-  checkRoleMiddleware(["User"]),
-  deleteUser
-);
+router.delete("/:id", authMiddleware, checkRoleMiddleware("User"), deleteUser);
+router.post("/accessToken", authMiddleware, regenerateAccessToken);
+router.post("/refreshToken", authMiddleware, regenerateRefreshToken);
 
 module.exports = router;

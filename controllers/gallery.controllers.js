@@ -1,53 +1,64 @@
 const asyncHandler = require("express-async-handler");
-const mongoose = require("mongoose");
 const joi = require("joi");
 
 const MandalGallery = require("../models/mandalGallery");
 
+const imageValidate = (data) => {
+  const schema = joi.object({
+    gallery_image: joi
+      .array()
+      .items(
+        joi.object({
+          fieldname: joi.string().required(),
+          originalname: joi.string().required(),
+          encoding: joi.string().required(),
+          mimetype: joi.string().required(),
+          destination: joi.string().required(),
+          filename: joi.string().required(),
+          path: joi.string().required(),
+          size: joi.number().required(),
+        })
+      )
+      .required(),
+  });
+  return schema.validate(data);
+};
+
 // @desc    Create a mandal gallery ==> /api/gallery/
 const createMandalGallery = asyncHandler(async (req, res) => {
   try {
-    let file = req.file;
+    let files = req.files;
+
+    console.log(files);
 
     // check if file is present
-    if (!file) {
+    if (!files) {
       res.status(400);
       throw new Error("Please upload a file");
     }
 
     // check validation
-    const imageValidate = (data) => {
-      const schema = joi.object({
-        fieldname: joi.string().required(),
-        originalname: joi.string().required(),
-        encoding: joi.string().required(),
-        mimetype: joi.string().required(),
-        destination: joi.string().required(),
-        filename: joi.string().required(),
-        path: joi.string().required(),
-        size: joi.number().required(),
-      });
-      return schema.validate(data);
-    };
-
-    const { error } = imageValidate(req.file);
-
+    const { error } = imageValidate(files);
     if (error) {
       res.status(400);
       throw new Error(error.details[0].message);
     }
 
     // create mandal gallery
-    const gallery = await MandalGallery.create(file);
+    let galleries = [];
 
-    if (!gallery) {
-      res.status(400);
-      throw new Error("Failed to create Vidhan Mandal gallery");
+    for (let i = 0; i < files.gallery_image.length; i++) {
+      const gallery = await MandalGallery.create(files.gallery_image[i]);
+      if (!gallery) {
+        res.status(400);
+        throw new Error("Failed to create Vidhan Mandal gallery");
+      }
+      galleries.push(gallery);
     }
 
     res.status(201).json({
       message: "Vidhan Mandal gallery created successfully.",
-      data: gallery,
+      data: galleries,
     });
   } catch (error) {
     res.status(500);
@@ -107,22 +118,7 @@ const updateMandalGallery = asyncHandler(async (req, res) => {
     }
 
     // check validation
-    const imageValidate = (data) => {
-      const schema = joi.object({
-        fieldname: joi.string().required(),
-        originalname: joi.string().required(),
-        encoding: joi.string().required(),
-        mimetype: joi.string().required(),
-        destination: joi.string().required(),
-        filename: joi.string().required(),
-        path: joi.string().required(),
-        size: joi.number().required(),
-      });
-      return schema.validate(data);
-    };
-
     const { error } = imageValidate(req.file);
-
     if (error) {
       res.status(400);
       throw new Error(error.details[0].message);

@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-
+const _ = require("lodash");
 const VidhanMandal = require("../models/vidhanMandal");
 
 const {
@@ -11,163 +11,10 @@ const {
 const createVidhanMandal = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
-    let files = req.files;
+    data.marathi = JSON.parse(data.marathi);
+    data.english = JSON.parse(data.english);
 
-    // dummy for practice
-    // let data = {
-    //   marathi: {
-    //     about_us: [
-    //       {
-    //         image: {
-    //           fieldname: "marathi.about_us.0.image",
-    //           originalname: "Screenshot (1).png",
-    //           encoding: "7bit",
-    //           mimetype: "image/png",
-    //           destination: "images/mandal",
-    //           filename: "1623872681894-Screenshot (1).png-mandal",
-    //           path: "images\\mandal\\1623872681894-Screenshot (1).png-mandal",
-    //           size: 133767,
-    //         },
-    //         title: "title",
-    //         description: "description",
-    //         documents: {
-    //           fieldname: "marathi.about_us.0.documents",
-    //           originalname: "Screenshot (1).png",
-    //           encoding: "7bit",
-    //           mimetype: "image/png",
-    //           destination: "images/mandal",
-    //           filename: "1623872681894-Screenshot (1).png-mandal",
-    //           path: "images\\mandal\\1623872681894-Screenshot (1).png-mandal",
-    //           size: 133767,
-    //         },
-    //       },
-    //       {
-    //         image: {
-    //           fieldname: "marathi.about_us.1.image",
-    //           originalname: "Screenshot (1).png",
-    //           encoding: "7bit",
-    //           mimetype: "image/png",
-    //           destination: "images/mandal",
-    //           filename: "1623872681894-Screenshot (1).png-mandal",
-    //           path: "images\\mandal\\1623872681894-Screenshot (1).png-mandal",
-    //           size: 133767,
-    //         },
-    //         title: "title",
-    //         description: "description",
-    //         documents: {
-    //           fieldname: "marathi.about_us.1.documents",
-    //           originalname: "Screenshot (1).png",
-    //           encoding: "7bit",
-    //           mimetype: "image/png",
-    //           destination: "images/mandal",
-    //           filename: "1623872681894-Screenshot (1).png-mandal",
-    //           path: "images\\mandal\\1623872681894-Screenshot (1).png-mandal",
-    //           size: 133767,
-    //         },
-    //       },
-    //       {
-    //         image: {
-    //           fieldname: "marathi.about_us.2.image",
-    //           originalname: "Screenshot (1).png",
-    //           encoding: "7bit",
-    //           mimetype: "image/png",
-    //           destination: "images/mandal",
-    //           filename: "1623872681894-Screenshot (1).png-mandal",
-    //           path: "images\\mandal\\1623872681894-Screenshot (1).png-mandal",
-    //           size: 133767,
-    //         },
-    //         title: "title",
-    //         description: "description",
-    //         documents: {
-    //           fieldname: "marathi.about_us.2.documents",
-    //           originalname: "Screenshot (1).png",
-    //           encoding: "7bit",
-    //           mimetype: "image/png",
-    //           destination: "images/mandal",
-    //           filename: "1623872681894-Screenshot (1).png-mandal",
-    //           path: "images\\mandal\\1623872681894-Screenshot (1).png-mandal",
-    //           size: 133767,
-    //         },
-    //       },
-    //     ],
-    //   },
-    //   english: {
-    //     about_us: [
-    //       {
-    //         image: {
-    //           fieldname: "english.about_us.0.image",
-    //           originalname: "Screenshot (1).png",
-    //           encoding: "7bit",
-    //           mimetype: "image/png",
-    //           destination: "images/mandal",
-    //           filename: "1623872681894-Screenshot (1).png-mandal",
-    //           path: "images\\mandal\\1623872681894-Screenshot (1).png-mandal",
-    //           size: 133767,
-    //         },
-    //         title: "title",
-    //         description: "description",
-    //         documents: {
-    //           fieldname: "english.about_us.0.documents",
-    //           originalname: "Screenshot (1).png",
-    //           encoding: "7bit",
-    //           mimetype: "image/png",
-    //           destination: "images/mandal",
-    //           filename: "1623872681894-Screenshot (1).png-mandal",
-    //           path: "images\\mandal\\1623872681894-Screenshot (1).png-mandal",
-    //           size: 133767,
-    //         },
-    //       },
-    //       {
-    //         image: {
-    //           fieldname: "english.about_us.1.image",
-    //           originalname: "Screenshot (1).png",
-    //           encoding: "7bit",
-    //           mimetype: "image/png",
-    //           destination: "images/mandal",
-    //           filename: "1623872681894-Screenshot (1).png-mandal",
-    //           path: "images\\mandal\\1623872681894-Screenshot (1).png-mandal",
-    //           size: 133767,
-    //         },
-    //         title: "title",
-    //         description: "description",
-    //         documents: {
-    //           fieldname: "english.about_us.1.documents",
-    //           originalname: "Screenshot (1).png",
-    //           encoding: "7bit",
-    //           mimetype: "image/png",
-    //           destination: "images/mandal",
-    //           filename: "1623872681894-Screenshot (1).png-mandal",
-    //           path: "images\\mandal\\1623872681894-Screenshot (1).png-mandal",
-    //           size: 133767,
-    //         },
-    //       },
-    //       {
-    //         image: {
-    //           fieldname: "english.about_us.2.image",
-    //           originalname: "Screenshot (1).png",
-    //           encoding: "7bit",
-    //           mimetype: "image/png",
-    //           destination: "images/mandal",
-    //           filename: "1623872681894-Screenshot (1).png-mandal",
-    //           path: "images\\mandal\\1623872681894-Screenshot (1).png-mandal",
-    //           size: 133767,
-    //         },
-    //         title: "title",
-    //         description: "description",
-    //         documents: {
-    //           fieldname: "english.about_us.2.documents",
-    //           originalname: "Screenshot (1).png",
-    //           encoding: "7bit",
-    //           mimetype: "image/png",
-    //           destination: "images/mandal",
-    //           filename: "1623872681894-Screenshot (1).png-mandal",
-    //           path: "images\\mandal\\1623872681894-Screenshot (1).png-mandal",
-    //           size: 133767,
-    //         },
-    //       },
-    //     ],
-    //   },
-    // };
+    let files = req.files;
 
     // check if files are empty
     if (!files) {
@@ -190,7 +37,7 @@ const createVidhanMandal = asyncHandler(async (req, res) => {
       throw new Error(error.details[0].message, error);
     }
 
-    // // create vidhan mandal
+    // create vidhan mandal
     const vidhanMandal = await VidhanMandal.create(data);
 
     if (!vidhanMandal) {
@@ -252,6 +99,9 @@ const getVidhanMandalById = asyncHandler(async (req, res) => {
 const updateVidhanMandal = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
+    data.marathi = JSON.parse(data.marathi);
+    data.english = JSON.parse(data.english);
+
     let files = req.files;
 
     // check if files are empty

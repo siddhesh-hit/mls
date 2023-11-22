@@ -10,10 +10,25 @@ const {
 const createVidhanParishad = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
-    // let { banner_image_en, banner_image_mr } = req.files;
 
-    // data.marathi.banner_image = banner_image_mr;
-    // data.english.banner_image = banner_image_en;
+    data.marathi = JSON.parse(data.marathi);
+    data.english = JSON.parse(data.english);
+
+    let { banner_image, legislative_profile } = req.files;
+
+    data.banner_image = banner_image[0];
+
+    // add all legislative profiles in req.body.legislative_council
+    let legislative_council = [];
+    for (let i = 0; i < legislative_profile.length; i++) {
+      legislative_council.push({
+        council_profile: legislative_profile[i],
+      });
+    }
+
+    data.legislative_council = legislative_council;
+
+    console.log(data);
 
     // validate data & files
     const { error } = createVidhanParishadValidation(data);
@@ -21,6 +36,8 @@ const createVidhanParishad = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error(error.details[0].message, error);
     }
+
+    console.log("working");
 
     // create vidhanParishad
     const vidhanParishad = await VidhanParishad.create(data);
@@ -88,11 +105,17 @@ const getVidhanParishadById = asyncHandler(async (req, res) => {
 const updateVidhanParishad = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
-    // let { banner_image_en, banner_image_mr } = req.files;
+    data.marathi = JSON.parse(data.marathi);
+    data.english = JSON.parse(data.english);
 
-    // data.marathi.banner_image = banner_image_mr;
-    // data.english.banner_image = banner_image_en;
+    let { banner_image, legislative_profile } = req.files;
 
+    data.banner_image = banner_image;
+
+    // add all legislative profiles in req.body.legislative_council
+    for (let i = 0; i < legislative_profile.length; i++) {
+      data.legislative_council[i].council_profile = legislative_profile[i];
+    }
     // validate data & files
     const { error } = updateVidhanParishadValidation(data);
     if (error) {

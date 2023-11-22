@@ -1,17 +1,24 @@
 const asyncHandler = require("express-async-handler");
 
 const User = require("../models/userModel");
+const RefreshToken = require("../models/refreshToken");
 const {
   loginEmailValidate,
   loginPhoneValidate,
   registerEmailValidate,
   registerPhoneValidate,
+  updateUserValidate,
 } = require("../validations/userValidation");
-const { accessToken, refreshToken } = require("../utils/generateToken");
-const otpEmailGenerator = require("../services/otpEmailGenerator");
-const otpGenerator = require("../utils/otpGenerator");
 
-// @desc    Register a new user using phone ==> /api/users/registerPhone
+const { accessToken, refreshToken } = require("../utils/generateToken");
+const otpGenerator = require("../utils/otpGenerator");
+const generatePassword = require("../utils/passwordGenerator");
+
+const emailInviteUser = require("../services/emailInviteUser");
+const otpEmailGenerator = require("../services/otpEmailGenerator");
+const emailReset = require("../services/emailReset");
+
+// @desc    Register a new user using phone ==> /api/user/registerPhone
 const registerUserPhone = asyncHandler(async (req, res) => {
   try {
     const { phone_number } = req.body;
@@ -51,7 +58,7 @@ const registerUserPhone = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Verifying OTP using phone ==> /api/users/verifyPhone
+// @desc    Verifying OTP using phone ==> /api/user/verifyPhone
 const verifyUserPhone = asyncHandler(async (req, res) => {
   try {
     const { phone_number, phone_otp } = req.body;
@@ -84,7 +91,7 @@ const verifyUserPhone = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Register a new user using email ==> /api/users/registerEmail
+// @desc    Register a new user using email ==> /api/user/registerEmail
 const registerUserEmail = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
@@ -146,7 +153,7 @@ const registerUserEmail = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Verifying OTP using email ==> /api/users/verifyEmail
+// @desc    Verifying OTP using email ==> /api/user/verifyEmail
 const verifyUserEmail = asyncHandler(async (req, res) => {
   try {
     const { email, email_otp } = req.body;
@@ -179,31 +186,35 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Login user using phone ==> /api/users/loginPhone
+// @desc    Login user using phone ==> /api/user/loginPhone
 const loginUserPhone = asyncHandler(async (req, res) => {});
 
-// @desc    Login user using email ==> /api/users/loginEmail
+// @desc    Login user using email ==> /api/user/loginEmail
 const loginUserEmail = asyncHandler(async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // check validation
     const { error } = loginEmailValidate(req.body);
     if (error) {
       res.status(400);
       throw new Error(error.details[0].message);
     }
 
+    // check if user exists
     const user = await User.findOne({ email });
-
     if (!user) {
       res.status(400);
       throw new Error("User does not exists");
     }
 
+    // check if user is verified
     if (!user.user_verfied) {
       res.status(400);
       throw new Error("User not verified");
     }
 
+    // check if password is correct
     const isMatch = await user.matchPassword(password);
 
     if (!isMatch) {
@@ -211,15 +222,16 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       throw new Error("Invalid credentials");
     }
 
+    // generate access token and refresh token
     const access_token = accessToken(user);
     const refresh_token = await refreshToken(user);
 
+    // set cookies
     res.cookie("accessToken", access_token, {
-      httpOnly: false, // set true if the client does not need to read it via JavaScript
+      httpOnly: true, // set true if the client does not need to read it via JavaScript
       secure: true, // set to false if not using https
       sameSite: "Lax",
     });
-
     res.cookie("refreshToken", refresh_token, {
       httpOnly: true,
       secure: true,
@@ -230,8 +242,6 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       success: true,
       message: "User logged in successfully",
       user,
-      access_token,
-      refresh_token,
     });
   } catch (error) {
     // res.status(501).json({
@@ -241,20 +251,316 @@ const loginUserEmail = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Logout user ==> /api/users/logout
-const logoutUser = asyncHandler(async (req, res) => {});
+// @desc    Invite user ==> /api/user/invite
+const inviteUser = asyncHandler(async (req, res) => {
+  try {
+    let data = req.body;
+    let file = req.file;
 
-// @desc    Get all users ==> /api/users/
-const getUsers = asyncHandler(async (req, res) => {});
+    data = JSON.parse(data.data);
+    data.user_image = file;
 
-// @desc    Get user by id ==> /api/users/:id
-const getUserById = asyncHandler(async (req, res) => {});
+    // Generate a password of length 16 with uppercase letters, numbers, and symbols
+    const password = generatePassword(16, true, true, true);
+    data.password = password;
 
-// @desc    Update user ==> /api/users/:id
-const updateUser = asyncHandler(async (req, res) => {});
+    // check validation
+    const { error } = registerEmailValidate(data);
+    if (error) {
+      res.status(400);
+      throw new Error(error.details[0].message);
+    }
 
-// @desc    Delete user ==> /api/users/:id
-const deleteUser = asyncHandler(async (req, res) => {});
+    // check if user exists
+    const userCheck = await User.findOne({ email: data.email });
+    if (userCheck) {
+      res.status(400);
+      throw new Error("User already exists");
+    }
+
+    // send invitation email
+    emailInviteUser(data.email, password);
+
+    console.log(data.email);
+
+    // register user
+    const user = await User.create({ ...data, user_verfied: true });
+    if (!user) {
+      res.status(400);
+      throw new Error("User not registered");
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "User invited successfully",
+      data: user,
+    });
+  } catch (error) {
+    res.status(501);
+    throw new Error("Server error " + error);
+  }
+});
+
+// @desc    Forgot user ==> /api/user/forgot
+const forgotUser = asyncHandler(async (req, res) => {
+  try {
+    let { email } = req.body;
+
+    // check if user exists
+    const checkUser = await User.findOne({ email });
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("User does not exists");
+    }
+
+    // mail the reset password link
+    emailReset(email);
+
+    res.status(201).json({
+      success: true,
+      message: "Reset password link sent successfully",
+    });
+  } catch (error) {
+    res.status(501);
+    throw new Error("Server error " + error);
+  }
+});
+
+// @desc    Reset user password ==> /api/user/reset
+const resetUser = asyncHandler(async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // check if user exists
+    const checkUser = await User.findOne({ email });
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("User does not exists");
+    }
+
+    // update password
+    checkUser.password = password;
+    await checkUser.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    res.status(501);
+    throw new Error("Server error " + error);
+  }
+});
+
+// @desc    Get all users ==> /api/user/
+const getUsers = asyncHandler(async (req, res) => {
+  try {
+    const users = await User.find({});
+    if (!users) {
+      res.status(400);
+      throw new Error("No users found");
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Users fetched successfully",
+      users,
+    });
+  } catch (error) {
+    res.status(501);
+    throw new Error("Server error " + error);
+  }
+});
+
+// @desc    Get user by id ==> /api/user/:id
+const getUserById = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      res.status(400);
+      throw new Error("User not found");
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "User fetched successfully",
+      user,
+    });
+  } catch (error) {
+    res.status(501);
+    throw new Error("Server error " + error);
+  }
+});
+
+// @desc    Update user ==> /api/user/:id
+const updateUser = asyncHandler(async (req, res) => {
+  try {
+    let data = req.body;
+    let file = req.file;
+
+    let email = data.email;
+
+    // check if file exists
+    if (!file) {
+      res.status(400);
+      throw new Error("Please upload image");
+    }
+
+    // add image to data
+    data.user_image = file;
+
+    // check if email already exists
+    const { error } = updateUserValidate(data);
+    if (error) {
+      res.status(400);
+      throw new Error(error.details[0].message);
+    }
+
+    // check if email already exists
+    let user = await User.findOne({ email });
+    if (!user) {
+      res.status(400);
+      throw new Error("User does not exists");
+    }
+
+    // update user
+    const userUpdated = await User.findByIdAndUpdate(req.params.id, data, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!userUpdated) {
+      res.status(400);
+      throw new Error("User not updated");
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "User updated successfully",
+      data: userUpdated,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error" + error);
+  }
+});
+
+// @desc    Delete user ==> /api/user/:id
+const deleteUser = asyncHandler(async (req, res) => {
+  try {
+    // check if user exists
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      res.status(400);
+      throw new Error("User not found");
+    }
+
+    // delete
+    await user.deleteOne({ _id: user._id });
+
+    res.status(201).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    res.status(501);
+    throw new Error("Server error " + error);
+  }
+});
+
+// @desc    Regenerate the access token ==> /api/user/accessToken
+const regenerateAccessToken = asyncHandler(async (req, res) => {
+  try {
+    // check if access token exists
+    const accessOldToken = req.cookies.accessToken;
+    if (!accessOldToken) {
+      res.status(400);
+      throw new Error("Access token not found");
+    }
+
+    // check if access token is valid
+    const checkStoredToken = await RefreshToken.findOne({
+      userId: req.user._id,
+    });
+    if (!checkStoredToken) {
+      res.status(400);
+      throw new Error("Refresh token not found");
+    }
+
+    // check if user exists
+    const user = await User.findById(checkStoredToken.userId);
+    if (!user) {
+      res.status(400);
+      throw new Error("User not found");
+    }
+
+    // generate new access token save it
+    const access_token = accessToken(user);
+
+    // set new cookies
+    res.cookie("accessToken", access_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "Lax",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Access token generated successfully",
+    });
+  } catch (error) {
+    res.status(501);
+    throw new Error("Server error " + error);
+  }
+});
+
+// @desc    Regenerate the refresh token ==> /api/user/refreshToken
+const regenerateRefreshToken = asyncHandler(async (req, res) => {
+  try {
+    // check if refresh token exists
+    const refreshOldToken = req.cookies.refreshToken;
+    if (!refreshOldToken) {
+      res.status(400);
+      throw new Error("Refresh token not found");
+    }
+
+    // check if refresh token is valid
+    const checkStoredToken = await RefreshToken.findOne({
+      refreshToken: refreshOldToken,
+    });
+
+    // check if user exists
+    const user = await User.findById(checkStoredToken.userId);
+    if (!user) {
+      res.status(400);
+      throw new Error("User not found");
+    }
+
+    // generate new refresh token and access token save it
+    const access_token = accessToken(user);
+    const refresh_token = await refreshToken(user);
+
+    // set new cookies
+    res.cookie("accessToken", access_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "Lax",
+    });
+    res.cookie("refreshToken", refresh_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "Lax",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Refresh token & Access token generated successfully",
+    });
+  } catch (error) {
+    res.status(501);
+    throw new Error("Server error " + error);
+  }
+});
 
 module.exports = {
   registerUserPhone,
@@ -263,9 +569,13 @@ module.exports = {
   verifyUserEmail,
   loginUserPhone,
   loginUserEmail,
-  logoutUser,
+  inviteUser,
+  forgotUser,
+  resetUser,
   getUsers,
   getUserById,
   updateUser,
   deleteUser,
+  regenerateAccessToken,
+  regenerateRefreshToken,
 };

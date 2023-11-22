@@ -36,12 +36,12 @@ router
     checkRoleMiddleware(["Admin"]),
     upload.fields([
       {
-        name: "banner_image_en",
+        name: "banner_image",
         maxCount: 1,
       },
       {
-        name: "banner_image_mr",
-        maxCount: 1,
+        name: "legislative_profile",
+        maxCount: 10,
       },
     ]),
     createVidhanParishad
@@ -55,12 +55,12 @@ router
     checkRoleMiddleware(["Admin"]),
     upload.fields([
       {
-        name: "banner_image_en",
+        name: "banner_image",
         maxCount: 1,
       },
       {
-        name: "banner_image_mr",
-        maxCount: 1,
+        name: "legislative_profile",
+        maxCount: 10,
       },
     ]),
     updateVidhanParishad
