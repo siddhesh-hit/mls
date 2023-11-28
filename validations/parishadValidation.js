@@ -43,6 +43,7 @@ const updateVidhanParishadValidation = (data) => {
     marathi: joi.object({
       description: joi.string().required(),
       legislative_council: joi.array().items({
+        _id: joi.any().optional(),
         council_name: joi.string().required(),
         council_description: joi.string().required(),
       }),
@@ -50,12 +51,15 @@ const updateVidhanParishadValidation = (data) => {
     english: joi.object({
       description: joi.string().required(),
       legislative_council: joi.array().items({
+        _id: joi.any().optional(),
         council_name: joi.string().required(),
         council_description: joi.string().required(),
       }),
     }),
     banner_image: imageValidation.required(),
     legislative_council: joi.array().items({
+      _id: joi.any().optional(),
+
       council_profile: imageValidation.required(),
     }),
   });

@@ -6,7 +6,6 @@ const vidhanMandal = new mongoose.Schema({
   marathi: {
     about_us: [
       {
-        image: ImageSchema,
         title: {
           type: String,
           required: true,
@@ -15,14 +14,12 @@ const vidhanMandal = new mongoose.Schema({
           type: String,
           required: true,
         },
-        documents: ImageSchema,
       },
     ],
   },
   english: {
     about_us: [
       {
-        image: ImageSchema,
         title: {
           type: String,
           required: true,
@@ -31,10 +28,15 @@ const vidhanMandal = new mongoose.Schema({
           type: String,
           required: true,
         },
-        documents: ImageSchema,
       },
     ],
   },
+  mandal_image: [
+    {
+      image: ImageSchema,
+      documents: ImageSchema,
+    },
+  ],
 });
 
 const VidhanMandal = mongoose.model("VidhanMandal", vidhanMandal);

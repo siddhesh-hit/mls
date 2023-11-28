@@ -8,7 +8,7 @@ const inviteEmail = async (email, password) => {
       service: "gmail",
       secure: true,
       auth: {
-        user: process.env.EMAIL_USERNAME,
+        user: process.env.EMAIL_USERNAME || "",
         pass: process.env.EMAIL_PASSWORD,
       },
     });

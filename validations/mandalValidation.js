@@ -20,10 +20,8 @@ const createVidhanMandalValidation = (data) => {
         .array()
         .items(
           joi.object({
-            image: imageValidation.required(),
             title: joi.string().required(),
             description: joi.string().required(),
-            documents: imageValidation.required(),
           })
         )
         .required(),
@@ -33,14 +31,21 @@ const createVidhanMandalValidation = (data) => {
         .array()
         .items(
           joi.object({
-            image: imageValidation.required(),
             title: joi.string().required(),
             description: joi.string().required(),
-            documents: imageValidation.required(),
           })
         )
         .required(),
     }),
+    mandal_image: joi
+      .array()
+      .items(
+        joi.object({
+          image: imageValidation.required(),
+          documents: imageValidation.required(),
+        })
+      )
+      .required(),
   });
 
   return schema.validate(data);

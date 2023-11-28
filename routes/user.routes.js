@@ -47,26 +47,26 @@ router.post("/forgot", forgotUser);
 router.post("/reset", resetUser);
 router.post(
   "/invite",
-  // authMiddleware,
-  // checkRoleMiddleware("Admin"),
+  authMiddleware,
+  checkRoleMiddleware(["Admin"]),
   upload.single("user_image"),
   inviteUser
 );
-router.get(
-  "/",
-  authMiddleware,
-  checkRoleMiddleware("Super Admin", "User"),
-  getUsers
-);
-router.get("/:id", authMiddleware, checkRoleMiddleware("User"), getUserById);
+router.get("/", authMiddleware, checkRoleMiddleware(["Admin"]), getUsers);
+router.get("/:id", authMiddleware, checkRoleMiddleware(["Admin"]), getUserById);
 router.put(
   "/:id",
   authMiddleware,
-  checkRoleMiddleware("Manager"),
+  checkRoleMiddleware(["Admin"]),
   upload.single("user_image"),
   updateUser
 );
-router.delete("/:id", authMiddleware, checkRoleMiddleware("User"), deleteUser);
+router.delete(
+  "/:id",
+  authMiddleware,
+  checkRoleMiddleware(["User"]),
+  deleteUser
+);
 router.post("/accessToken", authMiddleware, regenerateAccessToken);
 router.post("/refreshToken", authMiddleware, regenerateRefreshToken);
 

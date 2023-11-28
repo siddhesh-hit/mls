@@ -39,8 +39,8 @@ router
         maxCount: 1,
       },
       {
-        name: "banner_image",
-        maxCount: 1,
+        name: "legislative_profile",
+        maxCount: 10,
       },
     ]),
     createVidhanSabha
@@ -58,8 +58,8 @@ router
         maxCount: 1,
       },
       {
-        name: "banner_image",
-        maxCount: 1,
+        name: "legislative_profile",
+        maxCount: 10,
       },
     ]),
     updateVidhanSabha

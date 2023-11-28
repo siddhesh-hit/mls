@@ -5,45 +5,12 @@ const ImageSchema = require("./imageSchema");
 const vidhanSabhaSchema = new mongoose.Schema(
   {
     marathi: {
-      title: {
-        type: String,
-        required: true,
-      },
-      banner_image: ImageSchema,
       description: {
         type: String,
         required: true,
       },
-      topics: [
-        {
-          topics_title: {
-            type: String,
-            required: true,
-          },
-          session: [
-            {
-              content: [
-                {
-                  content_name: {
-                    type: String,
-                    required: true,
-                  },
-                  content_document: {
-                    type: String,
-                    required: true,
-                  },
-                  content_createdAt: {
-                    type: Date,
-                  },
-                },
-              ],
-            },
-          ],
-        },
-      ],
       legislative_council: [
         {
-          council_profile: ImageSchema,
           council_name: {
             type: String,
             required: true,
@@ -56,46 +23,12 @@ const vidhanSabhaSchema = new mongoose.Schema(
       ],
     },
     english: {
-      title: {
-        type: String,
-        required: true,
-      },
-      banner_image: ImageSchema,
-
       description: {
         type: String,
         required: true,
       },
-      topics: [
-        {
-          topics_title: {
-            type: String,
-            required: true,
-          },
-          session: [
-            {
-              content: [
-                {
-                  content_name: {
-                    type: String,
-                    required: true,
-                  },
-                  content_document: {
-                    type: String,
-                    required: true,
-                  },
-                  content_createdAt: {
-                    type: Date,
-                  },
-                },
-              ],
-            },
-          ],
-        },
-      ],
       legislative_council: [
         {
-          council_profile: ImageSchema,
           council_name: {
             type: String,
             required: true,
@@ -106,6 +39,20 @@ const vidhanSabhaSchema = new mongoose.Schema(
           },
         },
       ],
+    },
+    banner_image: ImageSchema,
+    legislative_council: [
+      {
+        council_profile: ImageSchema,
+      },
+    ],
+    isUpdated: {
+      type: Boolean,
+      default: false,
+    },
+    isAccepted: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

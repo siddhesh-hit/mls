@@ -7,7 +7,7 @@ const User = require("../models/userModel");
 
 const authMiddleware = asyncHandler(async (req, res, next) => {
   try {
-    console.log(req.headers.cookie["refreshToken"]);
+    // console.log(req.headers.cookie["refreshToken"]);
 
     const refresh_token = req.headers.cookie
       .split(" ")

@@ -230,12 +230,12 @@ const loginUserEmail = asyncHandler(async (req, res) => {
     res.cookie("accessToken", access_token, {
       httpOnly: true, // set true if the client does not need to read it via JavaScript
       secure: true, // set to false if not using https
-      sameSite: "Lax",
+      sameSite: "None",
     });
     res.cookie("refreshToken", refresh_token, {
       httpOnly: true,
       secure: true,
-      sameSite: "Lax",
+      sameSite: "None",
     });
 
     res.status(201).json({
@@ -279,8 +279,8 @@ const inviteUser = asyncHandler(async (req, res) => {
     }
 
     // send invitation email
-    emailInviteUser(data.email, password);
-
+    const resEmail = emailInviteUser(data.email, password);
+    console.log(resEmail);
     console.log(data.email);
 
     // register user
@@ -501,7 +501,7 @@ const regenerateAccessToken = asyncHandler(async (req, res) => {
     res.cookie("accessToken", access_token, {
       httpOnly: true,
       secure: true,
-      sameSite: "Lax",
+      sameSite: "None",
     });
 
     res.status(201).json({
@@ -544,12 +544,12 @@ const regenerateRefreshToken = asyncHandler(async (req, res) => {
     res.cookie("accessToken", access_token, {
       httpOnly: true,
       secure: true,
-      sameSite: "Lax",
+      sameSite: "None",
     });
     res.cookie("refreshToken", refresh_token, {
       httpOnly: true,
       secure: true,
-      sameSite: "Lax",
+      sameSite: "None",
     });
 
     res.status(201).json({

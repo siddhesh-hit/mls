@@ -10,17 +10,32 @@ const {
 const createVidhanSabha = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
-    let { banner_image_en, banner_image_mr } = req.files;
 
-    data.marathi.banner_image = banner_image_mr;
-    data.english.banner_image = banner_image_en;
+    data.marathi = JSON.parse(data.marathi);
+    data.english = JSON.parse(data.english);
+
+    let { banner_image, legislative_profile } = req.files;
+
+    data.banner_image = banner_image[0];
+
+    // add all legislative profiles in req.body.legislative_council
+    let legislative_council = [];
+    for (let i = 0; i < legislative_profile.length; i++) {
+      legislative_council.push({
+        council_profile: legislative_profile[i],
+      });
+    }
+
+    data.legislative_council = legislative_council;
+
+    console.log(data);
 
     // validate data & files
-    const { error } = createVidhanSabhaValidation(data);
-    if (error) {
-      res.status(400);
-      throw new Error(error.details[0].message, error);
-    }
+    // const { error } = createVidhanSabhaValidation(data);
+    // if (error) {
+    //   res.status(400);
+    //   throw new Error(error.details[0].message, error);
+    // }
 
     // create vidhanSabha
     const vidhanSabha = await VidhanSabha.create(data);
@@ -83,35 +98,60 @@ const getVidhanSabhaById = asyncHandler(async (req, res) => {
 // @desc    Update a vidhanSabha ==> /api/sabha/:id
 const updateVidhanSabha = asyncHandler(async (req, res) => {
   try {
+    let id = req.params.id;
     let data = req.body;
-    let { banner_image_en, banner_image_mr } = req.files;
-
-    data.marathi.banner_image = banner_image_mr;
-    data.english.banner_image = banner_image_en;
-
-    // validate data & files
-    const { error } = updateVidhanSabhaValidation(data);
-    if (error) {
-      res.status(400);
-      throw new Error(error.details[0].message, error);
-    }
 
     // check if vidhanSabha exists
-    const vidhanSabhaExists = await VidhanSabha.findById(req.params.id);
+    const vidhanSabhaExists = await VidhanSabha.findById(id);
     if (!vidhanSabhaExists) {
       res.status(400);
       throw new Error("VidhanSabha not found.");
     }
 
-    // update vidhanSabha
-    const vidhanSabha = await VidhanSabha.findByIdAndUpdate(
-      req.params.id,
-      data,
-      {
-        new: true,
-        runValidators: true,
+    data.marathi = JSON.parse(data.marathi);
+    data.english = JSON.parse(data.english);
+    data.files = JSON.parse(data.files);
+
+    let { banner_image, legislative_profile } = req.files;
+    console.log(req.files);
+
+    // if files available then update files
+    if (banner_image) {
+      data.banner_image = banner_image[0];
+    } else {
+      data.banner_image = vidhanSabhaExists.banner_image;
+    }
+
+    if (legislative_profile) {
+      // add all legislative profiles in req.body.legislative_council
+      let countImg = 0;
+      let legislative_council = [];
+      for (let i = 0; i < vidhanSabhaExists.legislative_council.length; i++) {
+        legislative_council.push({
+          council_profile:
+            data.files[i].council_profile &&
+            Object.keys(data.files[i].council_profile).length !== 0
+              ? data.files[i].council_profile
+              : legislative_profile[countImg++],
+        });
       }
-    );
+      data.legislative_council = legislative_council;
+    } else {
+      data.legislative_council = vidhanSabhaExists.legislative_council;
+    }
+
+    // // validate data & files
+    // const { error } = updateVidhanSabhaValidation(data);
+    // if (error) {
+    //   res.status(400);
+    //   throw new Error(error.details[0].message, error);
+    // }
+
+    // update vidhanSabha
+    const vidhanSabha = await VidhanSabha.findByIdAndUpdate(id, data, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!vidhanSabha) {
       res.status(400);

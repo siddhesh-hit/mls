@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const _ = require("lodash");
+
 const VidhanMandal = require("../models/vidhanMandal");
 
 const {
@@ -14,21 +14,32 @@ const createVidhanMandal = asyncHandler(async (req, res) => {
     data.marathi = JSON.parse(data.marathi);
     data.english = JSON.parse(data.english);
 
-    let files = req.files;
+    // console.log(data);
+
+    // console.log(req.files);
+
+    let { about_us_img, about_us_doc } = req.files;
 
     // check if files are empty
-    if (!files) {
+    if (
+      !about_us_img ||
+      !about_us_doc ||
+      about_us_img.length !== about_us_doc.length
+    ) {
       res.status(400);
-      throw new Error("No files found");
+      throw new Error("Invalid files provided");
     }
 
     // add files in data
-    for (let i = 0; i < files.marathi_about_us_img.length; i++) {
-      data.marathi.about_us[i].image = files.marathi_about_us_img[i];
-      data.marathi.about_us[i].documents = files.marathi_about_us_doc[i];
-      data.english.about_us[i].image = files.english_about_us_img[i];
-      data.english.about_us[i].documents = files.english_about_us_doc[i];
+    let object_image = [];
+    for (let i = 0; i < about_us_img.length; i++) {
+      object_image.push({
+        image: about_us_img[i],
+        documents: about_us_doc[i],
+      });
     }
+
+    data.mandal_image = object_image;
 
     // validate data & files
     const { error } = createVidhanMandalValidation(data);
@@ -101,29 +112,9 @@ const updateVidhanMandal = asyncHandler(async (req, res) => {
     let data = req.body;
     data.marathi = JSON.parse(data.marathi);
     data.english = JSON.parse(data.english);
+    data.files = JSON.parse(data.files);
 
-    let files = req.files;
-
-    // check if files are empty
-    if (!files) {
-      res.status(400);
-      throw new Error("No files found");
-    }
-
-    // add files in data
-    for (let i = 0; i < files.marathi_about_us_img.length; i++) {
-      data.marathi.about_us[i].image = files.marathi_about_us_img[i];
-      data.marathi.about_us[i].documents = files.marathi_about_us_doc[i];
-      data.english.about_us[i].image = files.english_about_us_img[i];
-      data.english.about_us[i].documents = files.english_about_us_doc[i];
-    }
-
-    // validate data & files
-    const { error } = updateVidhanMandalValidation(data);
-    if (error) {
-      res.status(400);
-      throw new Error(error.details[0].message, error);
-    }
+    console.log(data.files.length);
 
     // check if vidhan mandal exists
     const vidhanMandal = await VidhanMandal.findById(req.params.id);
@@ -131,6 +122,42 @@ const updateVidhanMandal = asyncHandler(async (req, res) => {
       res.status(404);
       throw new Error("No Vidhan Mandal found");
     }
+
+    let { about_us_img, about_us_doc } = req.files;
+
+    // console.log(req.files);
+
+    // add files in data
+    let countImg = 0;
+    let countDoc = 0;
+    let object_image = [];
+    for (let i = 0; i < data.files.length; i++) {
+      const fileData = data.files[i];
+
+      object_image.push({
+        image:
+          fileData.image !== undefined &&
+          Object.keys(fileData.image).length !== 0
+            ? fileData.image
+            : about_us_img[countImg++],
+        documents:
+          fileData.documents !== undefined &&
+          Object.keys(fileData.documents).length !== 0
+            ? fileData.documents
+            : about_us_doc[countDoc++],
+      });
+    }
+
+    // console.log(object_image);
+
+    data.mandal_image = object_image;
+
+    // // // validate data & files
+    // // // const { error } = updateVidhanMandalValidation(data);
+    // // // if (error) {
+    // // //   res.status(400);
+    // // //   throw new Error(error.details[0].message, error);
+    // // // }
 
     // update vidhan mandal
     const updatedVidhanMandal = await VidhanMandal.findByIdAndUpdate(

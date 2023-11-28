@@ -35,19 +35,11 @@ router
     checkRoleMiddleware(["Admin"]),
     upload.fields([
       {
-        name: "marathi_about_us_img",
+        name: "about_us_img",
         maxCount: 3,
       },
       {
-        name: "marathi_about_us_doc",
-        maxCount: 3,
-      },
-      {
-        name: "english_about_us_img",
-        maxCount: 3,
-      },
-      {
-        name: "english_about_us_doc",
+        name: "about_us_doc",
         maxCount: 3,
       },
     ]),
@@ -62,12 +54,12 @@ router
     checkRoleMiddleware(["Admin"]),
     upload.fields([
       {
-        name: "marathi.about_us",
-        maxCount: 1,
+        name: "about_us_img",
+        maxCount: 3,
       },
       {
-        name: "marathi.about_us.*.image",
-        maxCount: 1,
+        name: "about_us_doc",
+        maxCount: 3,
       },
     ]),
     updateVidhanMandal
