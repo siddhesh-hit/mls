@@ -34,7 +34,12 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 2000000, // 1000000 Bytes = 1 MB
+  },
+});
 
 // routes
 router.post("/registerPhone", registerUserPhone);

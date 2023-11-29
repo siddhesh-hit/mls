@@ -69,7 +69,7 @@ const createMandalGallery = asyncHandler(async (req, res) => {
 // @desc    Get all mandal galleries ==> /api/gallery/
 const getAllMandalGalleries = asyncHandler(async (req, res) => {
   try {
-    const gallery = await MandalGallery.find({});
+    const gallery = await MandalGallery.find();
 
     if (!gallery) {
       res.status(404);
@@ -109,7 +109,7 @@ const getMandalGalleryById = asyncHandler(async (req, res) => {
 // @desc    Update a mandal gallery by id ==> /api/gallery/:id
 const updateMandalGallery = asyncHandler(async (req, res) => {
   try {
-    let file = req.file;
+    let file = req.files;
 
     // check if file is present
     if (!file) {
@@ -117,18 +117,32 @@ const updateMandalGallery = asyncHandler(async (req, res) => {
       throw new Error("Please upload a file");
     }
 
-    // check validation
-    const { error } = imageValidate(req.file);
-    if (error) {
-      res.status(400);
-      throw new Error(error.details[0].message);
+    // check if gallery is present
+    const galleryExists = await MandalGallery.findById(req.params.id);
+    if (!galleryExists) {
+      res.status(404);
+      throw new Error("No Vidhan Mandal images found");
     }
 
+    console.log(galleryExists, "gall");
+
+    console.log(file);
+    // // check validation
+    // const { error } = imageValidate(req.file);
+    // if (error) {
+    //   res.status(400);
+    //   throw new Error(error.details[0].message);
+    // }
+
     // create mandal gallery
-    const gallery = await MandalGallery.findByIdAndUpdate(req.params.id, file, {
-      new: true,
-      runValidators: true,
-    });
+    const gallery = await MandalGallery.findByIdAndUpdate(
+      req.params.id,
+      file.gallery_image ? file.gallery_image[0] : file.gallery_image,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
     if (!gallery) {
       res.status(400);
