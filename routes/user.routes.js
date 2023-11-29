@@ -8,6 +8,7 @@ const {
   verifyUserEmail,
   loginUserPhone,
   loginUserEmail,
+  logoutUser,
   inviteUser,
   forgotUser,
   resetUser,
@@ -48,6 +49,7 @@ router.post("/registerEmail", upload.single("user_image"), registerUserEmail);
 router.post("/verifyEmail", verifyUserEmail);
 router.post("/loginPhone", loginUserPhone);
 router.post("/loginEmail", loginUserEmail);
+router.post("/logout", authMiddleware, logoutUser);
 router.post("/forgot", forgotUser);
 router.post("/reset", resetUser);
 router.post(

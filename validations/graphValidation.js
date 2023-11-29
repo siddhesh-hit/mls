@@ -65,54 +65,78 @@ const updateMemberGraphSchema = (data) => {
   const schema = joi.object({
     marathi: joi.object({
       partyRuling: joi.array().items(
-        joi.object({
-          partyName: joi.string().required(),
-          partyMember: joi.number().required(),
-        })
+        joi
+          .object({
+            partyName: joi.string().required(),
+            partyMember: joi.number().required(),
+            _id: joi.any().optional(),
+          })
+          .optional()
       ),
       partyOpposition: joi.array().items(
-        joi.object({
-          partyName: joi.string().required(),
-          partyMember: joi.number().required(),
-        })
+        joi
+          .object({
+            partyName: joi.string().required(),
+            partyMember: joi.number().required(),
+            _id: joi.any().optional(),
+          })
+          .optional()
       ),
       partyOther: joi.array().items(
-        joi.object({
-          partyName: joi.string().required(),
-          partyMember: joi.number().required(),
-        })
+        joi
+          .object({
+            partyName: joi.string().required(),
+            partyMember: joi.number().required(),
+            _id: joi.any().optional(),
+          })
+          .optional()
       ),
       partyVacant: joi.array().items(
-        joi.object({
-          partyName: joi.string().required(),
-          partyMember: joi.number().required(),
-        })
+        joi
+          .object({
+            partyName: joi.string().required(),
+            partyMember: joi.number().required(),
+            _id: joi.any().optional(),
+          })
+          .optional()
       ),
     }),
     english: joi.object({
       partyRuling: joi.array().items(
-        joi.object({
-          partyName: joi.string().required(),
-          partyMember: joi.number().required(),
-        })
+        joi
+          .object({
+            partyName: joi.string().required(),
+            partyMember: joi.number().required(),
+            _id: joi.any().optional(),
+          })
+          .optional()
       ),
       partyOpposition: joi.array().items(
-        joi.object({
-          partyName: joi.string().required(),
-          partyMember: joi.number().required(),
-        })
+        joi
+          .object({
+            partyName: joi.string().required(),
+            partyMember: joi.number().required(),
+            _id: joi.any().optional(),
+          })
+          .optional()
       ),
       partyOther: joi.array().items(
-        joi.object({
-          partyName: joi.string().required(),
-          partyMember: joi.number().required(),
-        })
+        joi
+          .object({
+            partyName: joi.string().required(),
+            partyMember: joi.number().required(),
+            _id: joi.any().optional(),
+          })
+          .optional()
       ),
       partyVacant: joi.array().items(
-        joi.object({
-          partyName: joi.string().required(),
-          partyMember: joi.number().required(),
-        })
+        joi
+          .object({
+            partyName: joi.string().required(),
+            partyMember: joi.number().required(),
+            _id: joi.any().optional(),
+          })
+          .optional()
       ),
     }),
   });

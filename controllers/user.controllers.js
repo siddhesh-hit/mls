@@ -1,4 +1,5 @@
 const asyncHandler = require("express-async-handler");
+const cookieParser = require("cookie-parser");
 
 const User = require("../models/userModel");
 const RefreshToken = require("../models/refreshToken");
@@ -17,6 +18,8 @@ const generatePassword = require("../utils/passwordGenerator");
 const emailInviteUser = require("../services/emailInviteUser");
 const otpEmailGenerator = require("../services/otpEmailGenerator");
 const emailReset = require("../services/emailReset");
+
+const cookieParserMiddleware = cookieParser();
 
 // @desc    Register a new user using phone ==> /api/user/registerPhone
 const registerUserPhone = asyncHandler(async (req, res) => {
@@ -248,6 +251,75 @@ const loginUserEmail = asyncHandler(async (req, res) => {
     //   success: false,
     // });
     throw new Error(error);
+  }
+});
+
+// @desc    Logout user ==> /api/user/logout
+const logoutUser = asyncHandler(async (req, res) => {
+  try {
+    // const refresh_token = req.headers.cookie
+    //   .split(" ")
+    //   .find((el) => {
+    //     return el.includes("refreshToken");
+    //   })
+    //   .split("=")[1]
+    //   .slice(0, -1);
+
+    // const access_token = req.headers.cookie
+    //   .split(" ")
+    //   .find((el) => {
+    //     return el.includes("accessToken");
+    //   })
+    //   .split("=")[1]
+    //   .slice(0, -1);
+
+    // Parse cookies using cookie-parser
+    cookieParserMiddleware(req, res, () => {});
+
+    const refresh_token = req.cookies.refreshToken;
+    const access_token = req.cookies.accessToken;
+
+    // check if refresh token exists
+    if (!refresh_token) {
+      res.status(400);
+      throw new Error("Refresh token not found");
+    }
+
+    console.log(refresh_token);
+
+    // check if refresh token is valid
+    const checkStoredToken = await RefreshToken.findOne({
+      refreshToken: refresh_token,
+    });
+
+    if (!checkStoredToken) {
+      res.status(400);
+      throw new Error("Refresh token not found");
+    }
+
+    console.log(checkStoredToken);
+
+    // check if user exists
+    const userExists = User.findById(checkStoredToken.userId);
+    if (!userExists) {
+      res.status(400);
+      throw new Error("User not found");
+    }
+
+    // delete refresh token
+    await RefreshToken.deleteOne({ refreshToken: refresh_token });
+
+    // delete cookies
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+
+    res.status(201).json({
+      success: true,
+      message: "User logged out successfully",
+    });
+  } catch (error) {
+    res.status(501);
+    throw new Error("Server error " + error);
   }
 });
 
@@ -569,6 +641,7 @@ module.exports = {
   verifyUserEmail,
   loginUserPhone,
   loginUserEmail,
+  logoutUser,
   inviteUser,
   forgotUser,
   resetUser,

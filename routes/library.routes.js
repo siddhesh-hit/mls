@@ -44,7 +44,7 @@ const upload = multer({
 // routes
 router
   .route("/")
-  .get(authMiddleware, checkRoleMiddleware(["Admin"]), getLibraries)
+  .get(getLibraries)
   .post(
     authMiddleware,
     checkRoleMiddleware(["Admin"]),
@@ -54,7 +54,7 @@ router
 
 router
   .route("/:id")
-  .get(authMiddleware, checkRoleMiddleware(["Admin"]), getLibrary)
+  .get(getLibrary)
   .put(
     authMiddleware,
     checkRoleMiddleware(["Admin"]),
