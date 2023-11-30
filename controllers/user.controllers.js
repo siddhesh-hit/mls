@@ -132,9 +132,9 @@ const registerUserEmail = asyncHandler(async (req, res) => {
     }
 
     // generate otp and send email
-    const otp = otpGenerator();
-    otpEmailGenerator(email, otp);
-
+    // const otp = otpGenerator();
+    // otpEmailGenerator(email, otp);
+    const otp = 1234;
     // create new user
     const newUser = await User.create({
       ...data,

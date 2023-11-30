@@ -56,6 +56,7 @@ const createMandalGallery = asyncHandler(async (req, res) => {
       galleries.push(gallery);
     }
 
+    // send response
     res.status(201).json({
       message: "Vidhan Mandal gallery created successfully.",
       data: galleries,
@@ -71,11 +72,13 @@ const getAllMandalGalleries = asyncHandler(async (req, res) => {
   try {
     const gallery = await MandalGallery.find();
 
+    // check if gallery is present
     if (!gallery) {
       res.status(404);
       throw new Error("No Vidhan Mandal images found");
     }
 
+    // send response
     res.status(200).json({
       message: "Vidhan Mandal gallery fetched successfully.",
       data: gallery,
@@ -91,11 +94,13 @@ const getMandalGalleryById = asyncHandler(async (req, res) => {
   try {
     const gallery = await MandalGallery.findById(req.params.id);
 
+    // check if gallery is present
     if (!gallery) {
       res.status(404);
       throw new Error("No Vidhan Mandal images found");
     }
 
+    // send response
     res.status(200).json({
       message: "Vidhan Mandal gallery fetched successfully.",
       data: gallery,
@@ -144,11 +149,13 @@ const updateMandalGallery = asyncHandler(async (req, res) => {
       }
     );
 
+    // check if gallery is present
     if (!gallery) {
       res.status(400);
       throw new Error("Failed to update Vidhan Mandal gallery");
     }
 
+    // send response
     res.status(201).json({
       message: "Vidhan Mandal gallery updated successfully.",
       data: gallery,
@@ -162,13 +169,16 @@ const updateMandalGallery = asyncHandler(async (req, res) => {
 // @desc    Delete a mandal gallery by id ==> /api/gallery/:id
 const deleteMandalGallery = asyncHandler(async (req, res) => {
   try {
+    // check if gallery is present
     const gallery = await MandalGallery.findByIdAndDelete(req.params.id);
 
+    // check if gallery is present
     if (!gallery) {
       res.status(404);
       throw new Error("No Vidhan Mandal images found");
     }
 
+    // send response
     res.status(200).json({
       message: "Vidhan Mandal gallery deleted successfully.",
       data: {},
