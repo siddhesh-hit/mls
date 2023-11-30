@@ -46,6 +46,14 @@ const vidhanParishadSchema = new mongoose.Schema(
         council_profile: ImageSchema,
       },
     ],
+    isUpdated: {
+      type: Boolean,
+      default: false,
+    },
+    isAccepted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

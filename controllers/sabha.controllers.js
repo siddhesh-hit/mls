@@ -31,11 +31,11 @@ const createVidhanSabha = asyncHandler(async (req, res) => {
     console.log(data);
 
     // validate data & files
-    // const { error } = createVidhanSabhaValidation(data);
-    // if (error) {
-    //   res.status(400);
-    //   throw new Error(error.details[0].message, error);
-    // }
+    const { error } = createVidhanSabhaValidation(data);
+    if (error) {
+      res.status(400);
+      throw new Error(error.details[0].message, error);
+    }
 
     // create vidhanSabha
     const vidhanSabha = await VidhanSabha.create(data);
@@ -140,12 +140,15 @@ const updateVidhanSabha = asyncHandler(async (req, res) => {
       data.legislative_council = vidhanSabhaExists.legislative_council;
     }
 
+    delete data.files;
+    delete data.legislative_profile;
+
     // // validate data & files
-    // const { error } = updateVidhanSabhaValidation(data);
-    // if (error) {
-    //   res.status(400);
-    //   throw new Error(error.details[0].message, error);
-    // }
+    const { error } = updateVidhanSabhaValidation(data);
+    if (error) {
+      res.status(400);
+      throw new Error(error.details[0].message, error);
+    }
 
     // update vidhanSabha
     const vidhanSabha = await VidhanSabha.findByIdAndUpdate(id, data, {

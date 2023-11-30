@@ -116,7 +116,7 @@ const updateVidhanParishad = asyncHandler(async (req, res) => {
 
     data.marathi = JSON.parse(data.marathi);
     data.english = JSON.parse(data.english);
-    data.files = JSON.parse(data.files);
+    data.files = data.files ? JSON.parse(data.files) : data.files;
 
     let { banner_image, legislative_profile } = req.files;
 
@@ -150,14 +150,15 @@ const updateVidhanParishad = asyncHandler(async (req, res) => {
     }
     // console.log(req.files);
     // console.log(data.legislative_council);
+    delete data.files;
+    delete data.legislative_profile;
 
     // validate data & files
-    // const { error } = updateVidhanParishadValidation(data);
-    // if (error) {
-    //   res.status(400);
-    //   console.log(error);
-    //   throw new Error(error.details[0].message, error);
-    // }
+    const { error } = updateVidhanParishadValidation(data);
+    if (error) {
+      res.status(400);
+      throw new Error(error.details[0].message, error);
+    }
 
     // update vidhanParishad
     const vidhanParishad = await VidhanParishad.findByIdAndUpdate(id, data, {
