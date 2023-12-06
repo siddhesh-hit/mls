@@ -6,7 +6,9 @@ const {
   updateFAQValidation,
 } = require("../validations/faqValidation");
 
-// @desc    Create a new FAQ ==> /api/faq/
+// @desc    Create a new FAQ
+// @route   POST /api/faq/
+// @access  Admin
 const createFAQ = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
@@ -47,11 +49,13 @@ const createFAQ = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(501);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Get all FAQs ==> /api/faq/
+// @desc    Get all FAQs
+// @route   GET /api/faq/
+// @access  Public
 const getAllFAQs = asyncHandler(async (req, res) => {
   try {
     const faq = await Faq.find();
@@ -69,11 +73,13 @@ const getAllFAQs = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Get a FAQ by ID ==> /api/faq/:id
+// @desc    Get a FAQ by ID
+// @route   GET /api/faq/:id
+// @access  Public
 const getFAQById = asyncHandler(async (req, res) => {
   try {
     const faq = await Faq.findById(req.params.id);
@@ -91,11 +97,13 @@ const getFAQById = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Update a FAQ by ID ==> /api/faq/:id
+// @desc    Update a FAQ by ID
+// @route   PUT /api/faq/:id
+// @access  Admin
 const updateFAQById = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
@@ -141,11 +149,13 @@ const updateFAQById = asyncHandler(async (req, res) => {
     }
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Delete a FAQ by ID ==> /api/faq/:id
+// @desc    Delete a FAQ by ID
+// @route   DELETE /api/faq/:id
+// @access  Admin
 const deleteFAQById = asyncHandler(async (req, res) => {
   try {
     // check if faq is present
@@ -170,7 +180,7 @@ const deleteFAQById = asyncHandler(async (req, res) => {
     }
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 

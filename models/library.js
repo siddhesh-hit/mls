@@ -16,6 +16,19 @@ const librarySchema = new mongoose.Schema({
     },
   },
   banner: imageSchema,
+  documents: [{ content: imageSchema }],
+  isUpdated: {
+    type: Boolean,
+    default: false,
+  },
+  isAccepted: {
+    type: Boolean,
+    default: false,
+  },
+  isActive: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Library = mongoose.model("Library", librarySchema);

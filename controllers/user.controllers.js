@@ -3,6 +3,7 @@ const cookieParser = require("cookie-parser");
 
 const User = require("../models/userModel");
 const RefreshToken = require("../models/refreshToken");
+
 const {
   loginEmailValidate,
   loginPhoneValidate,
@@ -21,7 +22,9 @@ const emailReset = require("../services/emailReset");
 
 const cookieParserMiddleware = cookieParser();
 
-// @desc    Register a new user using phone ==> /api/user/registerPhone
+// @desc    Register a new user using phone
+// @route   POST /api/user/registerPhone
+// @access  Public
 const registerUserPhone = asyncHandler(async (req, res) => {
   try {
     const { phone_number } = req.body;
@@ -54,14 +57,14 @@ const registerUserPhone = asyncHandler(async (req, res) => {
       user: newUser,
     });
   } catch (error) {
+    res.status(500);
     throw new Error(error);
-    // res.status(501).json({
-    //   success: false,
-    // });
   }
 });
 
-// @desc    Verifying OTP using phone ==> /api/user/verifyPhone
+// @desc    Verifying OTP using phone
+// @route   POST /api/user/verifyPhone
+// @access  Public
 const verifyUserPhone = asyncHandler(async (req, res) => {
   try {
     const { phone_number, phone_otp } = req.body;
@@ -94,7 +97,9 @@ const verifyUserPhone = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Register a new user using email ==> /api/user/registerEmail
+// @desc    Register a new user using email
+// @route   POST /api/user/registerEmail
+// @access  Public
 const registerUserEmail = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
@@ -104,14 +109,8 @@ const registerUserEmail = asyncHandler(async (req, res) => {
 
     console.log(data);
 
-    // check if file exists
-    if (!file) {
-      res.status(400);
-      throw new Error("Please upload image");
-    }
-
     // add image to data
-    data.user_image = file;
+    data.user_image = file ? file : {};
 
     // check if email already exists
     const { error } = registerEmailValidate(data);
@@ -152,11 +151,13 @@ const registerUserEmail = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Verifying OTP using email ==> /api/user/verifyEmail
+// @desc    Verifying OTP using email
+// @route   POST /api/user/verifyEmail
+// @access  Public
 const verifyUserEmail = asyncHandler(async (req, res) => {
   try {
     const { email, email_otp } = req.body;
@@ -182,17 +183,19 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
       user,
     });
   } catch (error) {
-    // res.status(501).json({
-    //   success: false,
-    // });
+    res.status(501);
     throw new Error(error);
   }
 });
 
-// @desc    Login user using phone ==> /api/user/loginPhone
+// @desc    Login user using phone
+// @route   POST /api/user/loginPhone
+// @access  Public
 const loginUserPhone = asyncHandler(async (req, res) => {});
 
-// @desc    Login user using email ==> /api/user/loginEmail
+// @desc    Login user using email
+// @route   POST /api/user/loginEmail
+// @access  Public
 const loginUserEmail = asyncHandler(async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -247,32 +250,16 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       user,
     });
   } catch (error) {
-    // res.status(501).json({
-    //   success: false,
-    // });
+    res.status(501);
     throw new Error(error);
   }
 });
 
-// @desc    Logout user ==> /api/user/logout
+// @desc    Logout user
+// @route   POST /api/user/logout
+// @access  Public
 const logoutUser = asyncHandler(async (req, res) => {
   try {
-    // const refresh_token = req.headers.cookie
-    //   .split(" ")
-    //   .find((el) => {
-    //     return el.includes("refreshToken");
-    //   })
-    //   .split("=")[1]
-    //   .slice(0, -1);
-
-    // const access_token = req.headers.cookie
-    //   .split(" ")
-    //   .find((el) => {
-    //     return el.includes("accessToken");
-    //   })
-    //   .split("=")[1]
-    //   .slice(0, -1);
-
     // Parse cookies using cookie-parser
     cookieParserMiddleware(req, res, () => {});
 
@@ -319,11 +306,13 @@ const logoutUser = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(501);
-    throw new Error("Server error " + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Invite user ==> /api/user/invite
+// @desc    Invite user
+// @route   POST /api/user/invite
+// @access  Public
 const inviteUser = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
@@ -369,11 +358,13 @@ const inviteUser = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(501);
-    throw new Error("Server error " + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Forgot user ==> /api/user/forgot
+// @desc    Forgot user
+// @route   POST /api/user/forgot
+// @access  Public
 const forgotUser = asyncHandler(async (req, res) => {
   try {
     let { email } = req.body;
@@ -394,11 +385,13 @@ const forgotUser = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(501);
-    throw new Error("Server error " + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Reset user password ==> /api/user/reset
+// @desc    Reset user password
+// @route   POST /api/user/reset
+// @access  Public
 const resetUser = asyncHandler(async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -420,11 +413,13 @@ const resetUser = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(501);
-    throw new Error("Server error " + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Get all users ==> /api/user/
+// @desc    Get all users
+// @route   GET /api/user
+// @access  Admin
 const getUsers = asyncHandler(async (req, res) => {
   try {
     const users = await User.find({});
@@ -440,11 +435,13 @@ const getUsers = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(501);
-    throw new Error("Server error " + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Get user by id ==> /api/user/:id
+// @desc    Get user by id
+// @route   GET /api/user/:id
+// @access  Public
 const getUserById = asyncHandler(async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -460,11 +457,13 @@ const getUserById = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(501);
-    throw new Error("Server error " + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Update user ==> /api/user/:id
+// @desc    Update user
+// @route   PUT /api/user/:id
+// @access  Public
 const updateUser = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
@@ -513,11 +512,13 @@ const updateUser = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Delete user ==> /api/user/:id
+// @desc    Delete user
+// @route   DELETE /api/user/:id
+// @access  Public
 const deleteUser = asyncHandler(async (req, res) => {
   try {
     // check if user exists
@@ -536,11 +537,13 @@ const deleteUser = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(501);
-    throw new Error("Server error " + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Regenerate the access token ==> /api/user/accessToken
+// @desc    Regenerate the access token
+// @route   POST /api/user/accessToken
+// @access  Public
 const regenerateAccessToken = asyncHandler(async (req, res) => {
   try {
     // check if access token exists
@@ -582,11 +585,13 @@ const regenerateAccessToken = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(501);
-    throw new Error("Server error " + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Regenerate the refresh token ==> /api/user/refreshToken
+// @desc    Regenerate the refresh token
+// @route   POST /api/user/refreshToken
+// @access  Public
 const regenerateRefreshToken = asyncHandler(async (req, res) => {
   try {
     // check if refresh token exists
@@ -630,7 +635,7 @@ const regenerateRefreshToken = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(501);
-    throw new Error("Server error " + error);
+    throw new Error(error);
   }
 });
 

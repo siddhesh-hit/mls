@@ -2,14 +2,14 @@ const joi = require("joi");
 
 // image validation
 const imageValidation = joi.object({
-  fieldname: joi.string().required(),
-  originalname: joi.string().required(),
-  encoding: joi.string().required(),
-  mimetype: joi.string().required(),
-  destination: joi.string().required(),
-  filename: joi.string().required(),
-  path: joi.string().required(),
-  size: joi.number().required(),
+  fieldname: joi.string(),
+  originalname: joi.string(),
+  encoding: joi.string(),
+  mimetype: joi.string(),
+  destination: joi.string(),
+  filename: joi.string(),
+  path: joi.string(),
+  size: joi.number(),
 });
 
 // validate user register using phone
@@ -25,14 +25,14 @@ const registerEmailValidate = (data) => {
   const schema = joi.object({
     full_name: joi.string().min(6).required(),
     email: joi.string().min(6).required().email(),
-    houses: joi.string().required(),
-    department: joi.string().required(),
+    houses: joi.string(),
+    department: joi.string(),
     password: joi.string().min(6).required(),
     phone_number: joi.string().required(),
     gender: joi.string().required(),
     date_of_birth: joi.date().required(),
-    designation: joi.string().required(),
-    user_image: imageValidation.required(),
+    designation: joi.string(),
+    user_image: imageValidation.optional(),
   });
   return schema.validate(data);
 };
@@ -60,12 +60,14 @@ const updateUserValidate = (data) => {
   const schema = joi.object({
     full_name: joi.string().min(6).required(),
     email: joi.string().min(6).required().email(),
+    houses: joi.string(),
+    department: joi.string(),
     password: joi.string().min(6).required(),
     phone_number: joi.string().required(),
     gender: joi.string().required(),
     date_of_birth: joi.date().required(),
-    user_type: joi.string().required(),
-    user_image: imageValidation.required(),
+    designation: joi.string(),
+    user_image: imageValidation.optional(),
   });
 
   return schema.validate(data);

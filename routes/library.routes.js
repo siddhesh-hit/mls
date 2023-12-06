@@ -48,7 +48,16 @@ router
   .post(
     authMiddleware,
     checkRoleMiddleware(["Admin"]),
-    upload.single("banner"),
+    upload.fields([
+      {
+        name: "banner",
+        maxCount: 4,
+      },
+      {
+        name: "document",
+        maxCount: 10,
+      },
+    ]),
     createLibrary
   );
 
@@ -58,7 +67,16 @@ router
   .put(
     authMiddleware,
     checkRoleMiddleware(["Admin"]),
-    upload.single("banner"),
+    upload.fields([
+      {
+        name: "banner",
+        maxCount: 4,
+      },
+      {
+        name: "document",
+        maxCount: 10,
+      },
+    ]),
     updateLibrary
   )
   .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteLibrary);

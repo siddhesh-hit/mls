@@ -6,7 +6,9 @@ const {
   updateVidhanParishadValidation,
 } = require("../validations/parishadValidation");
 
-// @desc    Create a vidhanParishad ==> /api/vidhanParishad/
+// @desc    Create a vidhanParishad
+// @route   POST /api/parishad
+// @access  Admin
 const createVidhanParishad = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
@@ -55,11 +57,13 @@ const createVidhanParishad = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error(error.message, error);
+    throw new Error(error);
   }
 });
 
-// @desc    Get all vidhanParishads ==> /api/vidhanParishad/
+// @desc    Get all vidhanParishads
+// @route   GET /api/parishad
+// @access  Public
 const getVidhanParishads = asyncHandler(async (req, res) => {
   try {
     const vidhanParishads = await VidhanParishad.find();
@@ -77,11 +81,13 @@ const getVidhanParishads = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error(error.message, error);
+    throw new Error(error);
   }
 });
 
-// @desc    Get vidhanParishad by id ==> /api/vidhanParishad/:id
+// @desc    Get vidhanParishad by id
+// @route   GET /api/parishad/:id
+// @access  Public
 const getVidhanParishadById = asyncHandler(async (req, res) => {
   try {
     const vidhanParishad = await VidhanParishad.findById(req.params.id);
@@ -97,11 +103,13 @@ const getVidhanParishadById = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error(error.message, error);
+    throw new Error(error);
   }
 });
 
-// @desc    Update a vidhanParishad ==> /api/vidhanParishad/:id
+// @desc    Update a vidhanParishad
+// @route   PUT /api/parishad/:id
+// @access  Admin
 const updateVidhanParishad = asyncHandler(async (req, res) => {
   try {
     let id = req.params.id;
@@ -179,11 +187,13 @@ const updateVidhanParishad = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error(error.message, error);
+    throw new Error(error);
   }
 });
 
-// @desc    Delete a vidhanParishad ==> /api/vidhanParishad/:id
+// @desc    Delete a vidhanParishad
+// @route   DELETE /api/parishad/:id
+// @access  Admin
 const deleteVidhanParishad = asyncHandler(async (req, res) => {
   try {
     const vidhanParishad = await VidhanParishad.findByIdAndDelete(
@@ -202,7 +212,7 @@ const deleteVidhanParishad = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error(error.message, error);
+    throw new Error(error);
   }
 });
 

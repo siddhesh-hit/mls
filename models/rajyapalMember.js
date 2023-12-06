@@ -1,28 +1,55 @@
 const mongoose = require("mongoose");
 
+const imageSchema = require("./imageSchema");
+
 const legislativeMember = new mongoose.Schema(
   {
-    profile: {
-      type: String,
-      required: true,
+    marathi: {
+      name: {
+        type: String,
+        required: true,
+      },
+      elected_date: {
+        type: String,
+        required: true,
+      },
+      gender: {
+        type: String,
+        required: true,
+      },
+      place_of_birth: {
+        type: String,
+        required: true,
+      },
+      political_career: {
+        type: String,
+        required: true,
+      },
     },
-    name: {
-      type: String,
-      required: true,
+    english: {
+      name: {
+        type: String,
+        required: true,
+      },
+      elected_date: {
+        type: String,
+        required: true,
+      },
+      gender: {
+        type: String,
+        required: true,
+      },
+      place_of_birth: {
+        type: String,
+        required: true,
+      },
+      political_career: {
+        type: String,
+        required: true,
+      },
     },
-    register_date: {
-      type: String,
-      required: true,
-    },
-    date_of_birth: {
-      type: Date,
-      required: true,
-    },
-    birth_place: {
-      type: String,
-      required: true,
-    },
-    political_journey: {
+    image: imageSchema,
+    url: {
       type: String,
       required: true,
     },
@@ -39,14 +66,23 @@ const legislativeMember = new mongoose.Schema(
               required: true,
               enum: ["marathi", "english", "hindi"], // Optional: Enum for specific languages
             },
-            content: {
-              type: String,
-              required: true,
-            },
+            content: imageSchema,
           },
         ],
       },
     ],
+    isUpdated: {
+      type: Boolean,
+      default: false,
+    },
+    isAccepted: {
+      type: Boolean,
+      default: false,
+    },
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

@@ -6,7 +6,9 @@ const {
   updateMemberGraphSchema,
 } = require("../validations/graphValidation");
 
-// @desc    Create a memberGraph ==> /api/graph/
+// @desc    Create a memberGraph
+// @route   POST /api/graph/
+// @access  Admin
 const createMemberGraph = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
@@ -31,11 +33,13 @@ const createMemberGraph = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Get all memberGraphs ==> /api/graph/
+// @desc    Get all memberGraphs
+// @route   GET /api/graph/
+// @access  Public
 const getAllMemberGraphs = asyncHandler(async (req, res) => {
   try {
     const memberGraphs = await MemberGraph.find({});
@@ -51,11 +55,13 @@ const getAllMemberGraphs = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Get a memberGraph by id ==> /api/graph/:id
+// @desc    Get a memberGraph by id
+// @route   GET /api/graph/:id
+// @access  Public
 const getMemberGraphById = asyncHandler(async (req, res) => {
   try {
     const memberGraph = await MemberGraph.findById(req.params.id);
@@ -71,11 +77,13 @@ const getMemberGraphById = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Update a memberGraph by id ==> /api/graph/:id
+// @desc    Update a memberGraph by id
+// @route   PUT /api/graph/:id
+// @access  Admin
 const updateMemberGraph = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
@@ -115,11 +123,13 @@ const updateMemberGraph = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Delete a memberGraph by id ==> /api/graph/:id
+// @desc    Delete a memberGraph by id
+// @route   DELETE /api/graph/:id
+// @access  Admin
 const deleteMemberGraph = asyncHandler(async (req, res) => {
   try {
     const memberGraph = await MemberGraph.findByIdAndDelete(req.params.id);
@@ -135,7 +145,7 @@ const deleteMemberGraph = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 

@@ -14,6 +14,9 @@ const galleryRoutes = require("./routes/gallery.routes");
 const graphRoutes = require("./routes/graph.routes");
 const libraryRoutes = require("./routes/library.routes");
 const faqRoutes = require("./routes/faq.routes");
+const rajyapalRoutes = require("./routes/rajyapal.routes");
+const memberRoutes = require("./routes/member.routes");
+const feedbackRoutes = require("./routes/feedback.routes");
 
 // defining modules
 const app = express();
@@ -52,6 +55,9 @@ app.use("/api/gallery", galleryRoutes);
 app.use("/api/graph", graphRoutes);
 app.use("/api/library", libraryRoutes);
 app.use("/api/faq", faqRoutes);
+app.use("/api/rajyapal", rajyapalRoutes);
+app.use("/api/member", memberRoutes);
+app.use("/api/feedback", feedbackRoutes);
 
 // static files
 app.use("/images", express.static("./images"));

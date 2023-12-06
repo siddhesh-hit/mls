@@ -37,6 +37,18 @@ const vidhanMandal = new mongoose.Schema({
       documents: ImageSchema,
     },
   ],
+  isUpdated: {
+    type: Boolean,
+    default: false,
+  },
+  isAccepted: {
+    type: Boolean,
+    default: false,
+  },
+  isActive: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const VidhanMandal = mongoose.model("VidhanMandal", vidhanMandal);

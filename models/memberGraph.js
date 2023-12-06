@@ -101,6 +101,10 @@ const memberGraphSchema = new mongoose.Schema({
       },
     ],
   },
+  isActive: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const MemberGraph = mongoose.model("MemberGraph", memberGraphSchema);

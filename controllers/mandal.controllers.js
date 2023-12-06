@@ -7,7 +7,9 @@ const {
   updateVidhanMandalValidation,
 } = require("../validations/mandalValidation");
 
-// @desc    Create a vidhan mandal ==> /api/mandal/
+// @desc    Create a vidhan mandal
+// @route   POST /api/mandal/
+// @access  Admin
 const createVidhanMandal = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
@@ -62,11 +64,13 @@ const createVidhanMandal = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error(error.message, error);
+    throw new Error(error);
   }
 });
 
-// @desc    Get all vidhan mandals ==> /api/mandal/
+// @desc    Get all vidhan mandals
+// @route   GET /api/mandal/
+// @access  Public
 const getVidhanMandals = asyncHandler(async (req, res) => {
   try {
     const vidhanMandals = await VidhanMandal.find({});
@@ -82,11 +86,13 @@ const getVidhanMandals = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Get a vidhan mandal by id ==> /api/mandal/:id
+// @desc    Get a vidhan mandal by id
+// @route   GET /api/mandal/:id
+// @access  Public
 const getVidhanMandalById = asyncHandler(async (req, res) => {
   try {
     const vidhanMandal = await VidhanMandal.findById(req.params.id);
@@ -102,11 +108,13 @@ const getVidhanMandalById = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Update a vidhan mandal by id ==> /api/mandal/:id
+// @desc    Update a vidhan mandal by id
+// @route   PUT /api/mandal/:id
+// @access  Admin
 const updateVidhanMandal = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
@@ -182,11 +190,13 @@ const updateVidhanMandal = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Delete a vidhan mandal by id ==> /api/mandal/:id
+// @desc    Delete a vidhan mandal by id
+// @route   DELETE /api/mandal/:id
+// @access  Admin
 const deleteVidhanMandal = asyncHandler(async (req, res) => {
   try {
     const vidhanMandal = await VidhanMandal.findByIdAndDelete(req.params.id);
@@ -202,7 +212,7 @@ const deleteVidhanMandal = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 

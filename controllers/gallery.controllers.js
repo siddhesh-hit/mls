@@ -24,7 +24,9 @@ const imageValidate = (data) => {
   return schema.validate(data);
 };
 
-// @desc    Create a mandal gallery ==> /api/gallery/
+// @desc    Create a mandal gallery
+// @route   POST /api/gallery/
+// @access  Admin
 const createMandalGallery = asyncHandler(async (req, res) => {
   try {
     let files = req.files;
@@ -63,11 +65,13 @@ const createMandalGallery = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Get all mandal galleries ==> /api/gallery/
+// @desc    Get all mandal galleries
+// @route   GET /api/gallery/
+// @access  Public
 const getAllMandalGalleries = asyncHandler(async (req, res) => {
   try {
     const gallery = await MandalGallery.find();
@@ -85,11 +89,13 @@ const getAllMandalGalleries = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Get a mandal gallery by id ==> /api/gallery/:id
+// @desc    Get a mandal gallery by id
+// @route   GET /api/gallery/:id
+// @access  Public
 const getMandalGalleryById = asyncHandler(async (req, res) => {
   try {
     const gallery = await MandalGallery.findById(req.params.id);
@@ -107,11 +113,13 @@ const getMandalGalleryById = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Update a mandal gallery by id ==> /api/gallery/:id
+// @desc    Update a mandal gallery by id
+// @route   PUT /api/gallery/:id
+// @access  Admin
 const updateMandalGallery = asyncHandler(async (req, res) => {
   try {
     let file = req.files;
@@ -162,11 +170,13 @@ const updateMandalGallery = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Delete a mandal gallery by id ==> /api/gallery/:id
+// @desc    Delete a mandal gallery by id
+// @route   DELETE /api/gallery/:id
+// @access  Admin
 const deleteMandalGallery = asyncHandler(async (req, res) => {
   try {
     // check if gallery is present
@@ -185,7 +195,7 @@ const deleteMandalGallery = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error("Server Error" + error);
+    throw new Error(error);
   }
 });
 

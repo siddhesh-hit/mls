@@ -6,7 +6,9 @@ const {
   updateVidhanSabhaValidation,
 } = require("../validations/sabhaValidation");
 
-// @desc    Create a vidhanSabha ==> /api/sabha
+// @desc    Create a vidhanSabha
+// @route   POST /api/sabha
+// @access  Admin
 const createVidhanSabha = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
@@ -51,11 +53,13 @@ const createVidhanSabha = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error(error.message, error);
+    throw new Error(error);
   }
 });
 
-// @desc    Get all vidhanSabhas ==> /api/sabha
+// @desc    Get all vidhanSabhas
+// @route   GET /api/sabha
+// @access  Public
 const getVidhanSabhas = asyncHandler(async (req, res) => {
   try {
     const vidhanSabhas = await VidhanSabha.find();
@@ -71,11 +75,13 @@ const getVidhanSabhas = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error(error.message, error);
+    throw new Error(error);
   }
 });
 
-// @desc    Get single vidhanSabha by id ==> /api/sabha/:id
+// @desc    Get single vidhanSabha by id
+// @route   GET /api/sabha/:id
+// @access  Public
 const getVidhanSabhaById = asyncHandler(async (req, res) => {
   try {
     const vidhanSabha = await VidhanSabha.findById(req.params.id);
@@ -91,15 +97,19 @@ const getVidhanSabhaById = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error(error.message, error);
+    throw new Error(error);
   }
 });
 
-// @desc    Update a vidhanSabha ==> /api/sabha/:id
+// @desc    Update a vidhanSabha
+// @route   PUT /api/sabha/:id
+// @access  Admin
 const updateVidhanSabha = asyncHandler(async (req, res) => {
   try {
     let id = req.params.id;
     let data = req.body;
+
+    // console.log(data);
 
     // check if vidhanSabha exists
     const vidhanSabhaExists = await VidhanSabha.findById(id);
@@ -167,11 +177,13 @@ const updateVidhanSabha = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error(error.message, error);
+    throw new Error(error);
   }
 });
 
-// @desc    Delete a vidhanSabha ==> /api/sabha/:id
+// @desc    Delete a vidhanSabha
+// @route   DELETE /api/sabha/:id
+// @access  Admin
 const deleteVidhanSabha = asyncHandler(async (req, res) => {
   try {
     const vidhanSabha = await VidhanSabha.findByIdAndDelete(req.params.id);
@@ -186,7 +198,7 @@ const deleteVidhanSabha = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     res.status(500);
-    throw new Error(error.message, error);
+    throw new Error(error);
   }
 });
 

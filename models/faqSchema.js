@@ -22,6 +22,10 @@ const faqSchema = new mongoose.Schema(
         required: true,
       },
     },
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

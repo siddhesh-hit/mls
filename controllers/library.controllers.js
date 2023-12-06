@@ -6,7 +6,9 @@ const {
   updateLibraryValidation,
 } = require("../validations/libraryValidation");
 
-// @desc    Create new library ==> /api/library/
+// @desc    Create new library
+// @route   POST /api/library/
+// @access  Admin
 const createLibrary = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
@@ -47,11 +49,13 @@ const createLibrary = asyncHandler(async (req, res) => {
     }
   } catch (error) {
     res.status(500);
-    throw new Error("Internal Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Get all libraries ==> /api/library/
+// @desc    Get all libraries
+// @route   GET /api/library/
+// @access  Public
 const getLibraries = asyncHandler(async (req, res) => {
   try {
     const libraries = await Library.find({});
@@ -66,11 +70,13 @@ const getLibraries = asyncHandler(async (req, res) => {
     }
   } catch (error) {
     res.status(500);
-    throw new Error("Internal Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Get single library ==> /api/library/:id
+// @desc    Get single library
+// @route   GET /api/library/:id
+// @access  Public
 const getLibrary = asyncHandler(async (req, res) => {
   try {
     const library = await Library.findById(req.params.id);
@@ -85,11 +91,13 @@ const getLibrary = asyncHandler(async (req, res) => {
     }
   } catch (error) {
     res.status(500);
-    throw new Error("Internal Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Update library ==> /api/library/:id
+// @desc    Update library
+// @route   PUT /api/library/:id
+// @access  Admin
 const updateLibrary = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
@@ -111,7 +119,7 @@ const updateLibrary = asyncHandler(async (req, res) => {
     // check if file is available and add it to the data
     if (file) {
       data.banner = file;
-    }  else {
+    } else {
       data.banner = libraryExists.banner;
     }
 
@@ -139,11 +147,13 @@ const updateLibrary = asyncHandler(async (req, res) => {
     }
   } catch (error) {
     res.status(500);
-    throw new Error("Internal Server Error" + error);
+    throw new Error(error);
   }
 });
 
-// @desc    Delete library ==> /api/library/:id
+// @desc    Delete library
+// @route   DELETE /api/library/:id
+// @access  Admin
 const deleteLibrary = asyncHandler(async (req, res) => {
   try {
     let id = req.params.id;
@@ -168,7 +178,7 @@ const deleteLibrary = asyncHandler(async (req, res) => {
     }
   } catch (error) {
     res.status(500);
-    throw new Error("Internal Server Error" + error);
+    throw new Error(error);
   }
 });
 
