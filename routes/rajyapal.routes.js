@@ -46,8 +46,7 @@ router
 router
   .route("/:id")
   .get(getLegislativeMemberById)
-  .put(updateLegislativeMember, authMiddleware, checkRoleMiddleware(["Admin"]))
-  .delete(
+  .put(
     authMiddleware,
     checkRoleMiddleware(["Admin"]),
     upload.fields([
@@ -57,6 +56,11 @@ router
         maxCount: 5,
       },
     ]),
+    updateLegislativeMember
+  )
+  .delete(
+    authMiddleware,
+    checkRoleMiddleware(["Admin"]),
     deleteLegislativeMember
   );
 

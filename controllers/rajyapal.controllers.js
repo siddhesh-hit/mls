@@ -46,10 +46,6 @@ const createLegislativeMember = asyncHandler(async (req, res) => {
 
     data.speeches = newSpeeches;
 
-    data.speeches.map((val) => {
-      console.log(val.values);
-    });
-
     // validate data
     // const { error } = createRajyapalMemberValidation(data);
     // if (error) {
@@ -139,15 +135,48 @@ const updateLegislativeMember = asyncHandler(async (req, res) => {
     data.marathi = JSON.parse(data.marathi);
     data.english = JSON.parse(data.english);
     data.url = JSON.parse(data.url);
+    data.speeches = JSON.parse(data.speeches);
+    // data.documents = data.documents.map((doc) => JSON.parse(doc));
 
-    let { documents } = req.files;
-
-    // validate data
-    const { error } = updateRajyapalMemberValidation(data);
-    if (error) {
+    // check if rajyapal exists
+    const rajyapalExists = await LegislativeMember.findById(req.params.id);
+    if (!rajyapalExists) {
       res.status(400);
-      throw new Error(error.details[0].message);
+      throw new Error("No rajypal found for the existing the id.");
     }
+
+    let { banner, documents } = req.files;
+
+    // add image to data
+    data.image = banner ? banner[0] : rajyapalExists.image;
+
+    let newSpeeches = [];
+    let countOfDocument = 0;
+    for (let i = 0; i < data.speeches.length; i++) {
+      let object = {
+        year: data.speeches[i].year,
+        values: data.speeches[i].values.map((value) => {
+          return {
+            language: value.language,
+            content:
+              value.content && Object.keys(value.content).length !== 0
+                ? value.content
+                : documents[countOfDocument++],
+          };
+        }),
+      };
+      // console.log(object.values, "check");
+      newSpeeches.push(object);
+    }
+
+    data.speeches = newSpeeches;
+
+    // // validate data
+    // const { error } = updateRajyapalMemberValidation(data);
+    // if (error) {
+    //   res.status(400);
+    //   throw new Error(error.details[0].message);
+    // }
 
     // update legislative member by id
     const updatedLegislativeMember = await LegislativeMember.findByIdAndUpdate(
@@ -168,7 +197,10 @@ const updateLegislativeMember = asyncHandler(async (req, res) => {
       message: "Successfully updated legislative member",
       data: updatedLegislativeMember,
     });
-  } catch (error) {}
+  } catch (error) {
+    res.status(500);
+    throw new Error(error);
+  }
 });
 
 // @desc    Delete a legislative member
