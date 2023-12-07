@@ -28,7 +28,7 @@ const memberLegislativeSchema = new mongoose.Schema(
         type: String,
       },
       first_time_elected: {
-        type: Boolean,
+        type: String,
       },
       date_of_birth: {
         type: String,
@@ -67,14 +67,16 @@ const memberLegislativeSchema = new mongoose.Schema(
         type: String,
       },
     },
-    political_joruney: {
-      date: {
-        type: String,
+    political_journey: [
+      {
+        date: {
+          type: String,
+        },
+        title: {
+          type: String,
+        },
       },
-      title: {
-        type: String,
-      },
-    },
+    ],
     election_data: {
       constituency: {
         type: String,

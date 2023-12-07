@@ -14,10 +14,10 @@ const createMember = asyncHandler(async (req, res) => {
     let data = req.body;
 
     data.basic_info = JSON.parse(data.basic_info);
-    data.political_joruney = JSON.parse(data.political_joruney);
+    data.political_journey = JSON.parse(data.political_journey);
     data.election_data = JSON.parse(data.election_data);
 
-    let { profile } = req.files;
+    let profile = req.file;
 
     // check if profile is available
     if (!profile) {
@@ -34,6 +34,8 @@ const createMember = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error(error.details[0].message);
     }
+
+    console.log(data);
 
     // create a new legislative members
     const memberLegislative = await MemberLegislative.create(data);

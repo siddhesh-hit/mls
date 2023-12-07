@@ -122,7 +122,8 @@ const updateVidhanMandal = asyncHandler(async (req, res) => {
     data.english = JSON.parse(data.english);
     data.files = data.files ? JSON.parse(data.files) : data.files;
 
-    console.log(data.files.length);
+    console.log(data.english);
+    console.log(data.marathi);
 
     // check if vidhan mandal exists
     const vidhanMandal = await VidhanMandal.findById(req.params.id);
@@ -160,14 +161,14 @@ const updateVidhanMandal = asyncHandler(async (req, res) => {
 
     data.mandal_image = object_image;
 
-    console.log(data);
+    // console.log(data);
 
     // validate data & files
-    const { error } = updateVidhanMandalValidation(data);
-    if (error) {
-      res.status(400);
-      throw new Error(error.details[0].message, error);
-    }
+    // const { error } = updateVidhanMandalValidation(data);
+    // if (error) {
+    //   res.status(400);
+    //   throw new Error(error.details[0].message, error);
+    // }
 
     // update vidhan mandal
     const updatedVidhanMandal = await VidhanMandal.findByIdAndUpdate(
