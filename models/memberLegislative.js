@@ -8,6 +8,9 @@ const memberLegislativeSchema = new mongoose.Schema(
       house: {
         type: String,
       },
+      assembly_number: {
+        type: String,
+      },
       profile: ImageSchema,
       name: {
         type: String,
