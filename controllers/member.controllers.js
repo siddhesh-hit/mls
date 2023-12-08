@@ -110,17 +110,14 @@ const getMember = asyncHandler(async (req, res) => {
 const updateMember = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
+
     data.basic_info = JSON.parse(data.basic_info);
-    data.political_joruney = JSON.parse(data.political_joruney);
+    data.political_journey = JSON.parse(data.political_journey);
     data.election_data = JSON.parse(data.election_data);
 
-    let { profile } = req.files;
+    console.log(data);
 
-    // check if profile is available
-    if (!profile) {
-      res.status(400);
-      throw new Error("Please upload a profile");
-    }
+    let profile = req.file;
 
     // check if member exists
     const memberExists = await MemberLegislative.findById(req.params.id);
@@ -130,19 +127,27 @@ const updateMember = asyncHandler(async (req, res) => {
     }
 
     // add the profile to the image
-    data.basic_info.profile = profile
-      ? profile
-      : memberExists.basic_info.profile;
+    data.basic_info.profile =
+      Object.keys(data.basic_info.profile).length === 0
+        ? profile
+        : memberExists.basic_info.profile;
 
-    // validate the data
-    const { error } = updateMemberValidation(data);
-    if (error) {
-      res.status(400);
-      throw new Error(error.details[0].message);
-    }
+    // // validate the data
+    // const { error } = updateMemberValidation(data);
+    // if (error) {
+    //   res.status(400);
+    //   throw new Error(error.details[0].message);
+    // }
 
     // create a new legislative members
-    const memberLegislative = await MemberLegislative.create(data);
+    const memberLegislative = await MemberLegislative.findByIdAndUpdate(
+      req.params.id,
+      data,
+      {
+        runValidators: true,
+        new: true,
+      }
+    );
 
     if (memberLegislative) {
       res.status(201).json({
