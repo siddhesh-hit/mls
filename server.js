@@ -17,6 +17,7 @@ const faqRoutes = require("./routes/faq.routes");
 const rajyapalRoutes = require("./routes/rajyapal.routes");
 const memberRoutes = require("./routes/member.routes");
 const feedbackRoutes = require("./routes/feedback.routes");
+const helpdeskRoutes = require("./routes/helpdesk.routes");
 
 // defining modules
 const app = express();
@@ -58,6 +59,7 @@ app.use("/api/faq", faqRoutes);
 app.use("/api/rajyapal", rajyapalRoutes);
 app.use("/api/member", memberRoutes);
 app.use("/api/feedback", feedbackRoutes);
+app.use("/api/helpdesk", helpdeskRoutes);
 
 // static files
 app.use("/images", express.static("./images"));
