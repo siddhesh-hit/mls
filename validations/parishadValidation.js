@@ -42,41 +42,43 @@ const createVidhanParishadValidation = (data) => {
 
 // update VidhanParishad validation
 const updateVidhanParishadValidation = (data) => {
-  const schema = joi.object({
-    marathi: joi.object({
-      description: joi.string().required(),
+  const schema = joi
+    .object({
+      marathi: joi.object({
+        description: joi.string().required(),
+        legislative_council: joi.array().items(
+          joi
+            .object({
+              _id: joi.any().optional(),
+              council_name: joi.string().required(),
+              council_description: joi.string().required(),
+            })
+            .unknown(true)
+        ),
+      }),
+      english: joi.object({
+        description: joi.string().required(),
+        legislative_council: joi.array().items(
+          joi
+            .object({
+              _id: joi.any().optional(),
+              council_name: joi.string().required(),
+              council_description: joi.string().required(),
+            })
+            .unknown(true)
+        ),
+      }),
+      banner_image: imageValidation.required(),
       legislative_council: joi.array().items(
         joi
           .object({
             _id: joi.any().optional(),
-            council_name: joi.string().required(),
-            council_description: joi.string().required(),
+            council_profile: imageValidation.required(),
           })
           .unknown(true)
       ),
-    }),
-    english: joi.object({
-      description: joi.string().required(),
-      legislative_council: joi.array().items(
-        joi
-          .object({
-            _id: joi.any().optional(),
-            council_name: joi.string().required(),
-            council_description: joi.string().required(),
-          })
-          .unknown(true)
-      ),
-    }),
-    banner_image: imageValidation.required(),
-    legislative_council: joi.array().items(
-      joi
-        .object({
-          _id: joi.any().optional(),
-          council_profile: imageValidation.required(),
-        })
-        .unknown(true)
-    ),
-  });
+    })
+    .unknown(true);
   return schema.validate(data);
 };
 

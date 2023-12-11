@@ -3,6 +3,7 @@ const multer = require("multer");
 
 const {
   getVidhanMandals,
+  getActiveVidhanMandal,
   getVidhanMandalById,
   createVidhanMandal,
   updateVidhanMandal,
@@ -32,6 +33,7 @@ const upload = multer({
 });
 
 // routes
+router.get("/active", getActiveVidhanMandal);
 router
   .route("/")
   .get(getVidhanMandals)

@@ -12,21 +12,21 @@ const {
 const createLibrary = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
-    let file = req.file;
+    let { banner } = req.files;
 
     data.english = JSON.parse(data.english);
     data.marathi = JSON.parse(data.marathi);
 
     // check if file is available
-    if (!file) {
+    if (!banner) {
       res.status(400);
       throw new Error("Please upload a file");
     }
 
     // add the image to the data
-    data.banner = file;
+    data.banner = banner[0];
 
-    // console.log(data);
+    console.log(data);
 
     // validate request body
     const { error } = createLibraryValidation(data);
@@ -74,6 +74,26 @@ const getLibraries = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get active data
+// @route   GET /api/mandal/active
+// @access  Public
+const getActiveLibrary = asyncHandler(async (req, res) => {
+  try {
+    const getActive = await Library.findOne({ isActive: true }).exec();
+    if (!getActive) {
+      res.status(400);
+      throw new Error("No active data found.");
+    }
+    res.status(201).json({
+      message: "Library fetched successfully.",
+      data: getActive,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error(error);
+  }
+});
+
 // @desc    Get single library
 // @route   GET /api/library/:id
 // @access  Public
@@ -101,13 +121,13 @@ const getLibrary = asyncHandler(async (req, res) => {
 const updateLibrary = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
-    let file = req.files;
+    let { banner } = req.files;
 
     data.english = JSON.parse(data.english);
     data.marathi = JSON.parse(data.marathi);
+    data.file = JSON.parse(data.file);
 
     console.log(data);
-    console.log(file);
 
     // check if the library exists
     const libraryExists = await Library.findById(req.params.id);
@@ -117,11 +137,13 @@ const updateLibrary = asyncHandler(async (req, res) => {
     }
 
     // check if file is available and add it to the data
-    if (file) {
-      data.banner = file;
+    if (banner && Object.keys(data.file).length !== 0) {
+      data.banner = banner[0];
     } else {
       data.banner = libraryExists.banner;
     }
+
+    delete data.file;
 
     // validate request body
     const { error } = updateLibraryValidation(data);
@@ -185,6 +207,7 @@ const deleteLibrary = asyncHandler(async (req, res) => {
 module.exports = {
   getLibraries,
   getLibrary,
+  getActiveLibrary,
   createLibrary,
   updateLibrary,
   deleteLibrary,

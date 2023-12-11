@@ -59,6 +59,26 @@ const getAllMemberGraphs = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get active data
+// @route   GET /api/graph/active
+// @access  Public
+const getActiveMemberGraph = asyncHandler(async (req, res) => {
+  try {
+    const getActive = await MemberGraph.findOne({ isActive: true }).exec();
+    if (!getActive) {
+      res.status(400);
+      throw new Error("No active data found.");
+    }
+    res.status(201).json({
+      message: "MemberGraph fetched successfully.",
+      data: getActive,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error(error);
+  }
+});
+
 // @desc    Get a memberGraph by id
 // @route   GET /api/graph/:id
 // @access  Public
@@ -152,6 +172,7 @@ const deleteMemberGraph = asyncHandler(async (req, res) => {
 module.exports = {
   getAllMemberGraphs,
   getMemberGraphById,
+  getActiveMemberGraph,
   createMemberGraph,
   updateMemberGraph,
   deleteMemberGraph,

@@ -85,6 +85,26 @@ const getVidhanParishads = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get active data
+// @route   GET /api/parishad/active
+// @access  Public
+const getActiveVidhanParishad = asyncHandler(async (req, res) => {
+  try {
+    const getActive = await VidhanParishad.findOne({ isActive: true }).exec();
+    if (!getActive) {
+      res.status(400);
+      throw new Error("No active data found.");
+    }
+    res.status(201).json({
+      message: "Vidhan Parishad fetched successfully.",
+      data: getActive,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error(error);
+  }
+});
+
 // @desc    Get vidhanParishad by id
 // @route   GET /api/parishad/:id
 // @access  Public
@@ -218,6 +238,7 @@ const deleteVidhanParishad = asyncHandler(async (req, res) => {
 
 module.exports = {
   getVidhanParishads,
+  getActiveVidhanParishad,
   getVidhanParishadById,
   createVidhanParishad,
   updateVidhanParishad,

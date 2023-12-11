@@ -25,22 +25,24 @@ const createFAQValidation = (data) => {
 
 // Update a FAQ validation
 const updateFAQValidation = (data) => {
-  const schema = joi.object({
-    english: joi
-      .object({
-        question: joi.string().required(),
-        answer: joi.string().required(),
-        _id: joi.any().optional(),
-      })
-      .optional(),
-    marathi: joi
-      .object({
-        question: joi.string().required(),
-        answer: joi.string().required(),
-        _id: joi.any().optional(),
-      })
-      .optional(),
-  });
+  const schema = joi
+    .object({
+      english: joi
+        .object({
+          question: joi.string().required(),
+          answer: joi.string().required(),
+          _id: joi.any().optional(),
+        })
+        .optional(),
+      marathi: joi
+        .object({
+          question: joi.string().required(),
+          answer: joi.string().required(),
+          _id: joi.any().optional(),
+        })
+        .optional(),
+    })
+    .unknown(true);
   return schema.validate(data);
 };
 

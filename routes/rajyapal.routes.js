@@ -4,6 +4,7 @@ const multer = require("multer");
 const {
   getALLLegislativeMembers,
   getLegislativeMemberById,
+  getActiveLegislativeMember,
   createLegislativeMember,
   updateLegislativeMember,
   deleteLegislativeMember,
@@ -27,6 +28,8 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage, limits: { fileSize: 3000000 } });
 
 // routes
+router.get("/active", getActiveLegislativeMember);
+
 router
   .route("/")
   .get(getALLLegislativeMembers)

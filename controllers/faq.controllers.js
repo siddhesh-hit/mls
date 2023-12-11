@@ -77,6 +77,26 @@ const getAllFAQs = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get active data
+// @route   GET /api/faq/active
+// @access  Public
+const getActiveFaq = asyncHandler(async (req, res) => {
+  try {
+    const getActive = await Faq.find({ isActive: true }).exec();
+    if (!getActive) {
+      res.status(400);
+      throw new Error("No active data found.");
+    }
+    res.status(201).json({
+      message: "Faq fetched successfully.",
+      data: getActive,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error(error);
+  }
+});
+
 // @desc    Get a FAQ by ID
 // @route   GET /api/faq/:id
 // @access  Public
@@ -186,6 +206,7 @@ const deleteFAQById = asyncHandler(async (req, res) => {
 
 module.exports = {
   createFAQ,
+  getActiveFaq,
   getAllFAQs,
   getFAQById,
   updateFAQById,

@@ -1,30 +1,32 @@
+// Constituency Name	मतदारसंघाचे नाव	Assembly Number
+
 const mongoose = require("mongoose");
 
-const faqSchema = new mongoose.Schema(
+const constituencySchema = new mongoose.Schema(
   {
     marathi: {
-      question: {
+      constituency_assembly: {
         type: String,
         required: true,
       },
-      answer: {
-        type: String,
+      assembly_number: {
+        type: Number,
         required: true,
       },
     },
     english: {
-      question: {
+      constituency_assembly: {
         type: String,
         required: true,
       },
-      answer: {
-        type: String,
+      assembly_number: {
+        type: Number,
         required: true,
       },
     },
     isActive: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     isUpdated: {
       type: Boolean,
@@ -34,16 +36,12 @@ const faqSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    isActive: {
-      type: Boolean,
-      default: false,
-    },
   },
   {
     timestamps: true,
   }
 );
 
-const Faq = mongoose.model("Faq", faqSchema);
+const Constituency = mongoose.model("Constituency", constituencySchema);
 
-module.exports = Faq;
+module.exports = Constituency;

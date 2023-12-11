@@ -79,6 +79,26 @@ const getVidhanSabhas = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get active data
+// @route   GET /api/sabha/active
+// @access  Public
+const getActiveVidhanSabha = asyncHandler(async (req, res) => {
+  try {
+    const getActive = await VidhanSabha.findOne({ isActive: true }).exec();
+    if (!getActive) {
+      res.status(400);
+      throw new Error("No active data found.");
+    }
+    res.status(201).json({
+      message: "Vidhan Sabha fetched successfully.",
+      data: getActive,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error(error);
+  }
+});
+
 // @desc    Get single vidhanSabha by id
 // @route   GET /api/sabha/:id
 // @access  Public
@@ -204,6 +224,7 @@ const deleteVidhanSabha = asyncHandler(async (req, res) => {
 
 module.exports = {
   getVidhanSabhas,
+  getActiveVidhanSabha,
   getVidhanSabhaById,
   createVidhanSabha,
   updateVidhanSabha,

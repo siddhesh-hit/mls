@@ -3,6 +3,7 @@ const router = require("express").Router();
 const {
   getAllMemberGraphs,
   getMemberGraphById,
+  getActiveMemberGraph,
   createMemberGraph,
   updateMemberGraph,
   deleteMemberGraph,
@@ -14,6 +15,8 @@ const {
 } = require("../middlewares/authMiddleware");
 
 // routes
+router.get("/active", getActiveMemberGraph);
+
 router
   .route("/")
   .get(getAllMemberGraphs)

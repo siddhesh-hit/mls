@@ -4,6 +4,7 @@ const multer = require("multer");
 const {
   getLibraries,
   getLibrary,
+  getActiveLibrary,
   createLibrary,
   updateLibrary,
   deleteLibrary,
@@ -42,6 +43,9 @@ const upload = multer({
 });
 
 // routes
+
+router.get("/active", getActiveLibrary);
+
 router
   .route("/")
   .get(getLibraries)

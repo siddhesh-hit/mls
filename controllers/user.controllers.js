@@ -639,6 +639,11 @@ const regenerateRefreshToken = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Check logged in
+// @route   GET /api/user/validate
+// @access  Public
+// const
+
 module.exports = {
   registerUserPhone,
   verifyUserPhone,

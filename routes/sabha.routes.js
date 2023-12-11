@@ -3,6 +3,7 @@ const multer = require("multer");
 
 const {
   getVidhanSabhas,
+  getActiveVidhanSabha,
   getVidhanSabhaById,
   createVidhanSabha,
   updateVidhanSabha,
@@ -32,6 +33,7 @@ const upload = multer({
 });
 
 // routes
+router.get("/active", getActiveVidhanSabha);
 router
   .route("/")
   .get(getVidhanSabhas)

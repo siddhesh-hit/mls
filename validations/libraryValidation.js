@@ -32,15 +32,17 @@ const createLibraryValidation = (data) => {
 
 // update library validation
 const updateLibraryValidation = (data) => {
-  const schema = joi.object({
-    marathi: joi.object({
-      description: joi.string().required(),
-    }),
-    english: joi.object({
-      description: joi.string().required(),
-    }),
-    banner: imageValidation,
-  });
+  const schema = joi
+    .object({
+      marathi: joi.object({
+        description: joi.string().required(),
+      }),
+      english: joi.object({
+        description: joi.string().required(),
+      }),
+      banner: imageValidation,
+    })
+    .unknown(true);
 
   return schema.validate(data);
 };

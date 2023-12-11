@@ -97,6 +97,28 @@ const getALLLegislativeMembers = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get active data
+// @route   GET /api/rajyapal/active
+// @access  Public
+const getActiveLegislativeMember = asyncHandler(async (req, res) => {
+  try {
+    const getActive = await LegislativeMember.findOne({
+      isActive: true,
+    }).exec();
+    if (!getActive) {
+      res.status(400);
+      throw new Error("No active data found.");
+    }
+    res.status(201).json({
+      message: "Legislative member fetched successfully.",
+      data: getActive,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error(error);
+  }
+});
+
 // @desc    Get legislative member by id
 // @route   GET /api/rajyapal/:id
 // @access  Public
@@ -234,6 +256,7 @@ const deleteLegislativeMember = asyncHandler(async (req, res) => {
 module.exports = {
   getALLLegislativeMembers,
   getLegislativeMemberById,
+  getActiveLegislativeMember,
   createLegislativeMember,
   updateLegislativeMember,
   deleteLegislativeMember,

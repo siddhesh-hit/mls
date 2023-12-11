@@ -1,30 +1,24 @@
+// District Name
+
 const mongoose = require("mongoose");
 
-const faqSchema = new mongoose.Schema(
+const districtSchema = new mongoose.Schema(
   {
     marathi: {
-      question: {
-        type: String,
-        required: true,
-      },
-      answer: {
+      district: {
         type: String,
         required: true,
       },
     },
     english: {
-      question: {
-        type: String,
-        required: true,
-      },
-      answer: {
+      district: {
         type: String,
         required: true,
       },
     },
     isActive: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     isUpdated: {
       type: Boolean,
@@ -34,16 +28,12 @@ const faqSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    isActive: {
-      type: Boolean,
-      default: false,
-    },
   },
   {
     timestamps: true,
   }
 );
 
-const Faq = mongoose.model("Faq", faqSchema);
+const District = mongoose.model("District", districtSchema);
 
-module.exports = Faq;
+module.exports = District;

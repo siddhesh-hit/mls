@@ -90,11 +90,33 @@ const getVidhanMandals = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get active data
+// @route   GET /api/mandal/active
+// @access  Public
+const getActiveVidhanMandal = asyncHandler(async (req, res) => {
+  try {
+    const getActive = await VidhanMandal.findOne({ isActive: true }).exec();
+    if (!getActive) {
+      res.status(400);
+      throw new Error("No active data found.");
+    }
+    res.status(201).json({
+      message: "Vidhan Mandal fetched successfully.",
+      data: getActive,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error(error);
+  }
+});
+
 // @desc    Get a vidhan mandal by id
 // @route   GET /api/mandal/:id
 // @access  Public
 const getVidhanMandalById = asyncHandler(async (req, res) => {
   try {
+    // const data = req.params;
+    // console.log(data);
     const vidhanMandal = await VidhanMandal.findById(req.params.id);
 
     if (!vidhanMandal) {
@@ -118,6 +140,8 @@ const getVidhanMandalById = asyncHandler(async (req, res) => {
 const updateVidhanMandal = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
+
+    console.log(data);
     data.marathi = JSON.parse(data.marathi);
     data.english = JSON.parse(data.english);
     data.files = data.files ? JSON.parse(data.files) : data.files;
@@ -219,6 +243,7 @@ const deleteVidhanMandal = asyncHandler(async (req, res) => {
 
 module.exports = {
   getVidhanMandals,
+  getActiveVidhanMandal,
   getVidhanMandalById,
   createVidhanMandal,
   updateVidhanMandal,

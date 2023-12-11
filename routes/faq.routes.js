@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const {
   createFAQ,
+  getActiveFaq,
   getAllFAQs,
   getFAQById,
   updateFAQById,
@@ -13,6 +14,8 @@ const {
 } = require("../middlewares/authMiddleware");
 
 // routes
+router.get("/active", getActiveFaq);
+
 router
   .route("/")
   .get(getAllFAQs)

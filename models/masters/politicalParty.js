@@ -1,30 +1,34 @@
+// Party Full Name	Short Name	Party Flag	Party Symbol
+
 const mongoose = require("mongoose");
 
-const faqSchema = new mongoose.Schema(
+const imageSchema = require("../imageSchema");
+
+const politicalPartySchema = new mongoose.Schema(
   {
     marathi: {
-      question: {
+      party_name: {
         type: String,
         required: true,
       },
-      answer: {
+      short_name: {
         type: String,
         required: true,
       },
     },
     english: {
-      question: {
+      party_name: {
         type: String,
         required: true,
       },
-      answer: {
+      short_name: {
         type: String,
         required: true,
       },
     },
     isActive: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     isUpdated: {
       type: Boolean,
@@ -34,16 +38,14 @@ const faqSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    isActive: {
-      type: Boolean,
-      default: false,
-    },
+    party_flag: imageSchema,
+    party_symbol: imageSchema,
   },
   {
     timestamps: true,
   }
 );
 
-const Faq = mongoose.model("Faq", faqSchema);
+const PoliticalParty = mongoose.model("PoliticalParty", politicalPartySchema);
 
-module.exports = Faq;
+module.exports = PoliticalParty;
