@@ -6,18 +6,7 @@ const dotenv = require("dotenv");
 // internal modules
 const connectDB = require("./config/db.config");
 const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
-const userRoutes = require("./routes/user.routes");
-const sabhaRoutes = require("./routes/sabha.routes");
-const parishadRoutes = require("./routes/parishad.routes");
-const mandalRoutes = require("./routes/mandal.routes");
-const galleryRoutes = require("./routes/gallery.routes");
-const graphRoutes = require("./routes/graph.routes");
-const libraryRoutes = require("./routes/library.routes");
-const faqRoutes = require("./routes/faq.routes");
-const rajyapalRoutes = require("./routes/rajyapal.routes");
-const memberRoutes = require("./routes/member.routes");
-const feedbackRoutes = require("./routes/feedback.routes");
-const helpdeskRoutes = require("./routes/helpdesk.routes");
+const routes = require("./routes");
 
 // defining modules
 const app = express();
@@ -48,18 +37,7 @@ app.get("/back", (req, res) => {
 });
 
 // defining the routes
-app.use("/api/user", userRoutes);
-app.use("/api/sabha", sabhaRoutes);
-app.use("/api/parishad", parishadRoutes);
-app.use("/api/mandal", mandalRoutes);
-app.use("/api/gallery", galleryRoutes);
-app.use("/api/graph", graphRoutes);
-app.use("/api/library", libraryRoutes);
-app.use("/api/faq", faqRoutes);
-app.use("/api/rajyapal", rajyapalRoutes);
-app.use("/api/member", memberRoutes);
-app.use("/api/feedback", feedbackRoutes);
-app.use("/api/helpdesk", helpdeskRoutes);
+app.use("/", routes);
 
 // static files
 app.use("/images", express.static("./images"));

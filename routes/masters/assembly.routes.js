@@ -10,7 +10,7 @@ const {
 const {
   authMiddleware,
   checkRoleMiddleware,
-} = require("../middlewares/authMiddleware");
+} = require("../../middlewares/authMiddleware");
 
 // routes
 router

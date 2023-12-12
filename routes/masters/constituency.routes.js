@@ -1,27 +1,27 @@
 const router = require("express").Router();
 const {
-  createAssembly,
-  getAllAssembly,
-  getAssembly,
-  updateAssembly,
-  deleteAssembly,
+  createConstituency,
+  getAllConstituency,
+  getConstituency,
+  updateConstituency,
+  deleteConstituency,
 } = require("../../controllers/masters/constituency.controllers");
 
 const {
   authMiddleware,
   checkRoleMiddleware,
-} = require("../middlewares/authMiddleware");
+} = require("../../middlewares/authMiddleware");
 
 // routes
 router
   .route("/")
-  .get(getAllAssembly)
-  .post(authMiddleware, checkRoleMiddleware(["Admin"]), createAssembly);
+  .get(getAllConstituency)
+  .post(authMiddleware, checkRoleMiddleware(["Admin"]), createConstituency);
 
 router
   .route("/:id")
-  .get(getAssembly)
-  .put(authMiddleware, checkRoleMiddleware(["Admin"]), updateAssembly)
-  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteAssembly);
+  .get(getConstituency)
+  .put(authMiddleware, checkRoleMiddleware(["Admin"]), updateConstituency)
+  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteConstituency);
 
 module.exports = router;

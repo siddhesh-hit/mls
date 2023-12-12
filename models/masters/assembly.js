@@ -6,47 +6,35 @@ const assemblySchema = new mongoose.Schema(
   {
     marathi: {
       assembly_number: {
-        type: Number,
+        type: String,
         required: true,
       },
       assembly_name: {
-        type: String,
-        required: true,
-      },
-      start_date: {
-        type: String,
-        required: true,
-      },
-      end_date: {
-        type: String,
-        required: true,
-      },
-      current_assembly: {
         type: String,
         required: true,
       },
     },
     english: {
       assembly_number: {
-        type: Number,
+        type: String,
         required: true,
       },
       assembly_name: {
         type: String,
         required: true,
       },
-      start_date: {
-        type: String,
-        required: true,
-      },
-      end_date: {
-        type: String,
-        required: true,
-      },
-      current_assembly: {
-        type: String,
-        required: true,
-      },
+    },
+    start_date: {
+      type: String,
+      required: true,
+    },
+    end_date: {
+      type: String,
+      required: true,
+    },
+    current_assembly: {
+      type: String,
+      required: true,
     },
     isActive: {
       type: Boolean,

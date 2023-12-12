@@ -26,6 +26,8 @@ const politicalPartySchema = new mongoose.Schema(
         required: true,
       },
     },
+    party_flag: imageSchema,
+    party_symbol: imageSchema,
     isActive: {
       type: Boolean,
       default: true,
@@ -38,8 +40,6 @@ const politicalPartySchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    party_flag: imageSchema,
-    party_symbol: imageSchema,
   },
   {
     timestamps: true,

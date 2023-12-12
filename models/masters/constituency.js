@@ -10,7 +10,7 @@ const constituencySchema = new mongoose.Schema(
         required: true,
       },
       assembly_number: {
-        type: Number,
+        type: String,
         required: true,
       },
     },
@@ -20,7 +20,7 @@ const constituencySchema = new mongoose.Schema(
         required: true,
       },
       assembly_number: {
-        type: Number,
+        type: String,
         required: true,
       },
     },
