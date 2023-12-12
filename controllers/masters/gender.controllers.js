@@ -96,7 +96,10 @@ const updateGender = asyncHandler(async (req, res) => {
     }
 
     // update gender
-    const gender = await Gender.findByIdAndUpdate(data);
+    const gender = await Gender.findByIdAndUpdate(req.params.id, data, {
+      new: true,
+      runValidators: true,
+    });
     if (!gender) {
       res.status(400);
       throw new Error("Gender not created.");

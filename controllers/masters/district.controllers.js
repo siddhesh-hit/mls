@@ -86,6 +86,8 @@ const updateDistrict = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
 
+    console.log(data);
+
     // validate the data
     const { error } = updateDistrictValidation(data);
     if (error) {

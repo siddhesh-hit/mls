@@ -2,17 +2,16 @@ const joi = require("joi");
 
 // create an Gender validation
 const createGenderValidation = (data) => {
-  const schema = joi.object({
-    marathi: joi.object({
-      gender: joi.string().required(),
-    }),
-    english: joi.object({
-      gender: joi.string().required(),
-    }),
-    // isActive: joi.boolean().required(),
-    // isAccepted: joi.boolean().required(),
-    // isUpdated: joi.boolean().required(),
-  });
+  const schema = joi.array().items(
+    joi.object({
+      marathi: joi.object({
+        gender: joi.string().required(),
+      }),
+      english: joi.object({
+        gender: joi.string().required(),
+      }),
+    })
+  );
 
   return schema.validate(data);
 };
