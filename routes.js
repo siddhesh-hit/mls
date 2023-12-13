@@ -21,6 +21,8 @@ const districtRoutes = require("./routes/masters/district.routes");
 const genderRoutes = require("./routes/masters/gender.routes");
 const partyRoutes = require("./routes/masters/party.routes");
 
+const visitRoute = require("./routes/visit.routes");
+
 // defining the routes
 router.use("/api/user", userRoutes);
 router.use("/api/sabha", sabhaRoutes);
@@ -40,5 +42,7 @@ router.use("/api/constituency", constituencyRoutes);
 router.use("/api/district", districtRoutes);
 router.use("/api/gender", genderRoutes);
 router.use("/api/party", partyRoutes);
+
+router.use("/api/visit", visitRoute);
 
 module.exports = router;
