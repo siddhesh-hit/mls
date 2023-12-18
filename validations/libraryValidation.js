@@ -19,12 +19,18 @@ const imageValidation = joi
 const createLibraryValidation = (data) => {
   const schema = joi.object({
     marathi: joi.object({
-      description: joi.string().required(),
+      description: joi
+        .string()
+        .required()
+        .label("Marathi Description is required"),
     }),
     english: joi.object({
-      description: joi.string().required(),
+      description: joi
+        .string()
+        .required()
+        .label("English Description is required"),
     }),
-    banner: imageValidation.required(),
+    banner: imageValidation.required().label("Image is required"),
   });
 
   return schema.validate(data);
@@ -35,12 +41,18 @@ const updateLibraryValidation = (data) => {
   const schema = joi
     .object({
       marathi: joi.object({
-        description: joi.string().required(),
+        description: joi
+          .string()
+          .required()
+          .label("Marathi Description is required"),
       }),
       english: joi.object({
-        description: joi.string().required(),
+        description: joi
+          .string()
+          .required()
+          .label("English Description is required"),
       }),
-      banner: imageValidation,
+      banner: imageValidation.required().label("Image is required"),
     })
     .unknown(true);
 

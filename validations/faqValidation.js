@@ -6,16 +6,14 @@ const createFAQValidation = (data) => {
     joi.object({
       english: joi
         .object({
-          question: joi.string().required(),
-          answer: joi.string().required(),
-          _id: joi.any().optional(),
+          question: joi.string().required().label("Question is required"),
+          answer: joi.string().required().label("Answer is required"),
         })
         .optional(),
       marathi: joi
         .object({
-          question: joi.string().required(),
-          answer: joi.string().required(),
-          _id: joi.any().optional(),
+          question: joi.string().required().label("Question is required"),
+          answer: joi.string().required().label("Answer is required"),
         })
         .optional(),
     })
@@ -29,15 +27,15 @@ const updateFAQValidation = (data) => {
     .object({
       english: joi
         .object({
-          question: joi.string().required(),
-          answer: joi.string().required(),
+          question: joi.string().required().label("Question is required"),
+          answer: joi.string().required().label("Answer is required"),
           _id: joi.any().optional(),
         })
         .optional(),
       marathi: joi
         .object({
-          question: joi.string().required(),
-          answer: joi.string().required(),
+          question: joi.string().required().label("Question is required"),
+          answer: joi.string().required().label("Answer is required"),
           _id: joi.any().optional(),
         })
         .optional(),

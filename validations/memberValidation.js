@@ -20,44 +20,74 @@ const createMemberValidation = (data) => {
   const schema = joi.object({
     basic_info: joi
       .object({
-        house: joi.string().required(),
-        profile: imageValidation.required(),
-        name: joi.string().required(),
-        surname: joi.string().required(),
-        constituency: joi.string().required(),
-        party: joi.string().required(),
-        gender: joi.string().required(),
-        district: joi.string().required(),
-        first_time_elected: joi.string().required(),
-        date_of_birth: joi.string().required(),
-        place_of_birth: joi.string().required(),
-        education: joi.string().required(),
-        language: joi.string().required(),
-        marital_status: joi.string().required(),
-        children: joi.string().required(),
-        business: joi.string().required(),
-        hobby: joi.string().required(),
-        foreign_migration: joi.string().required(),
-        address: joi.string().required(),
-        mobile_number: joi.string().required(),
-        email: joi.string().required(),
+        house: joi.string().required().label("House is required."),
+        profile: imageValidation.required().label("Profile is required."),
+        name: joi.string().required().label("Name is required."),
+        surname: joi.string().required().label("Surname is required."),
+        constituency: joi
+          .string()
+          .required()
+          .label("Constituency is required."),
+        party: joi.string().required().label("Party is required."),
+        gender: joi.string().required().label("Gender is required."),
+        district: joi.string().required().label("District is required."),
+        first_time_elected: joi
+          .string()
+          .required()
+          .label("First time elected is required."),
+        date_of_birth: joi
+          .string()
+          .required()
+          .label("Date of birth is required."),
+        place_of_birth: joi
+          .string()
+          .required()
+          .label("Place of birth is required."),
+        education: joi.string().required().label("Education is required."),
+        language: joi.string().required().label("Language is required."),
+        marital_status: joi
+          .string()
+          .required()
+          .label("Marital Status is required."),
+        children: joi.string().required().label("Children is required."),
+        business: joi.string().required().label("Business is required."),
+        hobby: joi.string().required().label("Hobby is required."),
+        foreign_migration: joi
+          .string()
+          .required()
+          .label("Foreign Migration is required."),
+        address: joi.string().required().label("Address is required."),
+        mobile_number: joi
+          .string()
+          .required()
+          .label("Mobile number is required."),
+        email: joi.string().required().label("Email is required."),
       })
       .unknown(true),
     political_journey: joi.array().items(
       joi.object({
-        date: joi.string().required(),
-        title: joi.string().required(),
+        date: joi.date().required().label("Date is required."),
+        title: joi.string().required().label("Title is required."),
       })
     ),
     election_data: joi.object({
-      constituency: joi.string().required(),
-      total_electorate: joi.string().required(),
-      total_valid_voting: joi.string().required(),
+      constituency: joi.string().required().label("Constituency is required."),
+      total_electorate: joi
+        .string()
+        .required()
+        .label("Total electorate is required."),
+      total_valid_voting: joi
+        .string()
+        .required()
+        .label("Total valid voting is required."),
       member_election_result: joi.array().items(
         joi.object({
-          candidate_name: joi.string().required(),
-          votes: joi.string().required(),
-          party: joi.string().required(),
+          candidate_name: joi
+            .string()
+            .required()
+            .label("Candidate name is required."),
+          votes: joi.string().required().label("Votes is required."),
+          party: joi.string().required().label("Party is required."),
         })
       ),
     }),
@@ -71,50 +101,79 @@ const updateMemberValidation = (data) => {
   const schema = joi.object({
     basic_info: joi
       .object({
-        house: joi.string().required(),
-        profile: imageValidation.required(),
-        name: joi.string().required(),
-        surname: joi.string().required(),
-        constituency: joi.string().required(),
-        party: joi.string().required(),
-        gender: joi.string().required(),
-        district: joi.string().required(),
-        first_time_elected: joi.string().required(),
-        date_of_birth: joi.string().required(),
-        place_of_birth: joi.string().required(),
-        education: joi.string().required(),
-        language: joi.string().required(),
-        marital_status: joi.string().required(),
-        children: joi.string().required(),
-        business: joi.string().required(),
-        hobby: joi.string().required(),
-        foreign_migration: joi.string().required(),
-        address: joi.string().required(),
-        mobile_number: joi.string().required(),
-        email: joi.string().required(),
+        house: joi.string().required().label("House is required."),
+        profile: imageValidation.required().label("Profile is required."),
+        name: joi.string().required().label("Name is required."),
+        surname: joi.string().required().label("Surname is required."),
+        constituency: joi
+          .string()
+          .required()
+          .label("Constituency is required."),
+        party: joi.string().required().label("Party is required."),
+        gender: joi.string().required().label("Gender is required."),
+        district: joi.string().required().label("District is required."),
+        first_time_elected: joi
+          .string()
+          .required()
+          .label("First time elected is required."),
+        date_of_birth: joi
+          .string()
+          .required()
+          .label("Date of birth is required."),
+        place_of_birth: joi
+          .string()
+          .required()
+          .label("Place of birth is required."),
+        education: joi.string().required().label("Education is required."),
+        language: joi.string().required().label("Language is required."),
+        marital_status: joi
+          .string()
+          .required()
+          .label("Marital Status is required."),
+        children: joi.string().required().label("Children is required."),
+        business: joi.string().required().label("Business is required."),
+        hobby: joi.string().required().label("Hobby is required."),
+        foreign_migration: joi
+          .string()
+          .required()
+          .label("Foreign Migration is required."),
+        address: joi.string().required().label("Address is required."),
+        mobile_number: joi
+          .string()
+          .required()
+          .label("Mobile number is required."),
+        email: joi.string().required().label("Email is required."),
       })
       .unknown(true),
 
     political_journey: joi.array().items(
       joi
         .object({
-          date: joi.string().required(),
-          title: joi.string().required(),
+          date: joi.date().required().label("Date is required."),
+          title: joi.string().required().label("Title is required."),
           _id: joi.any(),
         })
         .unknown(true)
     ),
     election_data: joi.object({
-      constituency: joi.string().required(),
-      total_electorate: joi.string().required(),
-      total_valid_voting: joi.string().required(),
+      constituency: joi.string().required().label("Constituency is required."),
+      total_electorate: joi
+        .string()
+        .required()
+        .label("Total electorate is required."),
+      total_valid_voting: joi
+        .string()
+        .required()
+        .label("Total valid voting is required."),
       member_election_result: joi.array().items(
         joi
           .object({
-            candidate_name: joi.string().required(),
-            votes: joi.string().required(),
-            party: joi.string().required(),
-            _id: joi.any(),
+            candidate_name: joi
+              .string()
+              .required()
+              .label("Candidate name is required."),
+            votes: joi.string().required().label("Votes is required."),
+            party: joi.string().required().label("Party is required."),
           })
           .unknown(true)
       ),

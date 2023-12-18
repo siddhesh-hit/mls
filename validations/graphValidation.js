@@ -6,52 +6,97 @@ const createMemberGraphSchema = (data) => {
     marathi: joi.object({
       partyRuling: joi.array().items(
         joi.object({
-          partyName: joi.string().required(),
-          partyMember: joi.number().required(),
+          partyName: joi
+            .string()
+            .required()
+            .label("Marathi Party name is required"),
+          partyMember: joi
+            .number()
+            .required()
+            .label("Marathi Party member is required"),
         })
       ),
       partyOpposition: joi.array().items(
         joi.object({
-          partyName: joi.string().required(),
-          partyMember: joi.number().required(),
+          partyName: joi
+            .string()
+            .required()
+            .label("Marathi Party name is required"),
+          partyMember: joi
+            .number()
+            .required()
+            .label("Marathi Party member is required"),
         })
       ),
       partyOther: joi.array().items(
         joi.object({
-          partyName: joi.string().required(),
-          partyMember: joi.number().required(),
+          partyName: joi
+            .string()
+            .required()
+            .label("Marathi Party name is required"),
+          partyMember: joi
+            .number()
+            .required()
+            .label("Marathi Party member is required"),
         })
       ),
       partyVacant: joi.array().items(
         joi.object({
-          partyName: joi.string().required(),
-          partyMember: joi.number().required(),
+          partyName: joi.string().required().label("Party name is required"),
+          partyMember: joi
+            .number()
+            .required()
+            .label("Marathi Party member is required"),
         })
       ),
     }),
     english: joi.object({
       partyRuling: joi.array().items(
         joi.object({
-          partyName: joi.string().required(),
-          partyMember: joi.number().required(),
+          partyName: joi
+            .string()
+            .required()
+            .label("English Party name is required"),
+          partyMember: joi
+            .number()
+            .required()
+            .label("English Party member is required"),
         })
       ),
       partyOpposition: joi.array().items(
         joi.object({
-          partyName: joi.string().required(),
-          partyMember: joi.number().required(),
+          partyName: joi
+            .string()
+            .required()
+            .label("English Party name is required"),
+          partyMember: joi
+            .number()
+            .required()
+            .label("English Party member is required"),
         })
       ),
       partyOther: joi.array().items(
         joi.object({
-          partyName: joi.string().required(),
-          partyMember: joi.number().required(),
+          partyName: joi
+            .string()
+            .required()
+            .label("English Party name is required"),
+          partyMember: joi
+            .number()
+            .required()
+            .label("English Party member is required"),
         })
       ),
       partyVacant: joi.array().items(
         joi.object({
-          partyName: joi.string().required(),
-          partyMember: joi.number().required(),
+          partyName: joi
+            .string()
+            .required()
+            .label("English Party name is required"),
+          partyMember: joi
+            .number()
+            .required()
+            .label("English Party member is required"),
         })
       ),
     }),
@@ -67,8 +112,14 @@ const updateMemberGraphSchema = (data) => {
       partyRuling: joi.array().items(
         joi
           .object({
-            partyName: joi.string().required(),
-            partyMember: joi.number().required(),
+            partyName: joi
+              .string()
+              .required()
+              .label("Marathi Party name is required"),
+            partyMember: joi
+              .number()
+              .required()
+              .label("Marathi Party member is required"),
             _id: joi.any().optional(),
           })
           .optional()
@@ -76,8 +127,14 @@ const updateMemberGraphSchema = (data) => {
       partyOpposition: joi.array().items(
         joi
           .object({
-            partyName: joi.string().required(),
-            partyMember: joi.number().required(),
+            partyName: joi
+              .string()
+              .required()
+              .label("Marathi Party name is required"),
+            partyMember: joi
+              .number()
+              .required()
+              .label("Marathi Party member is required"),
             _id: joi.any().optional(),
           })
           .optional()
@@ -85,8 +142,14 @@ const updateMemberGraphSchema = (data) => {
       partyOther: joi.array().items(
         joi
           .object({
-            partyName: joi.string().required(),
-            partyMember: joi.number().required(),
+            partyName: joi
+              .string()
+              .required()
+              .label("Marathi Party name is required"),
+            partyMember: joi
+              .number()
+              .required()
+              .label("Marathi Party member is required"),
             _id: joi.any().optional(),
           })
           .optional()
@@ -94,8 +157,14 @@ const updateMemberGraphSchema = (data) => {
       partyVacant: joi.array().items(
         joi
           .object({
-            partyName: joi.string().required(),
-            partyMember: joi.number().required(),
+            partyName: joi
+              .string()
+              .required()
+              .label("Marathi Party name is required"),
+            partyMember: joi
+              .number()
+              .required()
+              .label("Marathi Party member is required"),
             _id: joi.any().optional(),
           })
           .optional()
@@ -105,8 +174,14 @@ const updateMemberGraphSchema = (data) => {
       partyRuling: joi.array().items(
         joi
           .object({
-            partyName: joi.string().required(),
-            partyMember: joi.number().required(),
+            partyName: joi
+              .string()
+              .required()
+              .label("English Party name is required"),
+            partyMember: joi
+              .number()
+              .required()
+              .label("English Party member is required"),
             _id: joi.any().optional(),
           })
           .optional()
@@ -114,8 +189,14 @@ const updateMemberGraphSchema = (data) => {
       partyOpposition: joi.array().items(
         joi
           .object({
-            partyName: joi.string().required(),
-            partyMember: joi.number().required(),
+            partyName: joi
+              .string()
+              .required()
+              .label("English Party name is required"),
+            partyMember: joi
+              .number()
+              .required()
+              .label("English Party member is required"),
             _id: joi.any().optional(),
           })
           .optional()
@@ -123,8 +204,14 @@ const updateMemberGraphSchema = (data) => {
       partyOther: joi.array().items(
         joi
           .object({
-            partyName: joi.string().required(),
-            partyMember: joi.number().required(),
+            partyName: joi
+              .string()
+              .required()
+              .label("English Party name is required"),
+            partyMember: joi
+              .number()
+              .required()
+              .label("English Party member is required"),
             _id: joi.any().optional(),
           })
           .optional()
@@ -132,8 +219,14 @@ const updateMemberGraphSchema = (data) => {
       partyVacant: joi.array().items(
         joi
           .object({
-            partyName: joi.string().required(),
-            partyMember: joi.number().required(),
+            partyName: joi
+              .string()
+              .required()
+              .label("English Party name is required"),
+            partyMember: joi
+              .number()
+              .required()
+              .label("English Party member is required"),
             _id: joi.any().optional(),
           })
           .optional()

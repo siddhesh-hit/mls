@@ -23,8 +23,11 @@ const createVidhanMandalValidation = (data) => {
         .array()
         .items(
           joi.object({
-            title: joi.string().required(),
-            description: joi.string().required(),
+            title: joi.string().required().label("Marathi Title is required."),
+            description: joi
+              .string()
+              .required()
+              .label("Marathi Description is required."),
           })
         )
         .required(),
@@ -34,8 +37,11 @@ const createVidhanMandalValidation = (data) => {
         .array()
         .items(
           joi.object({
-            title: joi.string().required(),
-            description: joi.string().required(),
+            title: joi.string().required().label("English Title is required."),
+            description: joi
+              .string()
+              .required()
+              .label("English Description is required."),
           })
         )
         .required(),
@@ -44,8 +50,8 @@ const createVidhanMandalValidation = (data) => {
       .array()
       .items(
         joi.object({
-          image: imageValidation.required(),
-          documents: imageValidation.required(),
+          image: imageValidation.required().label("Image is required."),
+          documents: imageValidation.required().label("Documents is required."),
         })
       )
       .required(),

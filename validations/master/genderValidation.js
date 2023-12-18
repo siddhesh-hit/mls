@@ -5,10 +5,10 @@ const createGenderValidation = (data) => {
   const schema = joi.array().items(
     joi.object({
       marathi: joi.object({
-        gender: joi.string().required(),
+        gender: joi.string().required().label("Marathi Gender is required."),
       }),
       english: joi.object({
-        gender: joi.string().required(),
+        gender: joi.string().required().label("English Gender is required."),
       }),
     })
   );
@@ -21,10 +21,10 @@ const updateGenderValidation = (data) => {
   const schema = joi
     .object({
       marathi: joi.object({
-        gender: joi.string().required(),
+        gender: joi.string().required().label("Marathi Gender is required."),
       }),
       english: joi.object({
-        gender: joi.string().required(),
+        gender: joi.string().required().label("English Gender is required."),
       }),
       isActive: joi.boolean().required(),
       isAccepted: joi.boolean().required(),

@@ -3,9 +3,9 @@ const joi = require("joi");
 // create feedback validation
 const createFeedbackValidation = (data) => {
   const schema = joi.object({
-    full_name: joi.string().required(),
-    email: joi.string().required(),
-    feedback: joi.string().required(),
+    full_name: joi.string().required().label("First name is required"),
+    email: joi.string().required().label("Email is required"),
+    feedback: joi.string().required().label("Feedback is required"),
   });
 
   return schema.validate(data);
@@ -14,9 +14,9 @@ const createFeedbackValidation = (data) => {
 // update feedback validation
 const updateFeedbackValidation = (data) => {
   const schema = joi.object({
-    full_name: joi.string().required(),
-    email: joi.string().required(),
-    feedback: joi.string().required(),
+    full_name: joi.string().required().label("First name is required"),
+    email: joi.string().required().label("Email is required"),
+    feedback: joi.string().required().label("Feedback is required"),
     _id: joi.string().optional(),
   });
 

@@ -19,22 +19,42 @@ const imageValidation = joi
 const createVidhanParishadValidation = (data) => {
   const schema = joi.object({
     marathi: joi.object({
-      description: joi.string().required(),
+      description: joi
+        .string()
+        .required()
+        .label("Marathi Description is required."),
       legislative_council: joi.array().items({
-        council_name: joi.string().required(),
-        council_description: joi.string().required(),
+        council_name: joi
+          .string()
+          .required()
+          .label("Marathi Council name is required."),
+        council_description: joi
+          .string()
+          .required()
+          .label("Marathi Council description is required."),
       }),
     }),
     english: joi.object({
-      description: joi.string().required(),
+      description: joi
+        .string()
+        .required()
+        .label("English Description is required."),
       legislative_council: joi.array().items({
-        council_name: joi.string().required(),
-        council_description: joi.string().required(),
+        council_name: joi
+          .string()
+          .required()
+          .label("English Council name is required."),
+        council_description: joi
+          .string()
+          .required()
+          .label("English Council description is required."),
       }),
     }),
-    banner_image: imageValidation.required(),
+    banner_image: imageValidation.required().label("banner image is required"),
     legislative_council: joi.array().items({
-      council_profile: imageValidation.required(),
+      council_profile: imageValidation
+        .required()
+        .label("Council profile is required"),
     }),
   });
   return schema.validate(data);
@@ -45,35 +65,57 @@ const updateVidhanParishadValidation = (data) => {
   const schema = joi
     .object({
       marathi: joi.object({
-        description: joi.string().required(),
+        description: joi
+          .string()
+          .required()
+          .label("Marathi Description is required."),
         legislative_council: joi.array().items(
           joi
             .object({
               _id: joi.any().optional(),
-              council_name: joi.string().required(),
-              council_description: joi.string().required(),
+              council_name: joi
+                .string()
+                .required()
+                .label("Marathi Council name is required."),
+              council_description: joi
+                .string()
+                .required()
+                .label("Marathi Council description is required."),
             })
             .unknown(true)
         ),
       }),
       english: joi.object({
-        description: joi.string().required(),
+        description: joi
+          .string()
+          .required()
+          .label("English Description is required."),
         legislative_council: joi.array().items(
           joi
             .object({
               _id: joi.any().optional(),
-              council_name: joi.string().required(),
-              council_description: joi.string().required(),
+              council_name: joi
+                .string()
+                .required()
+                .label("English Council name is required."),
+              council_description: joi
+                .string()
+                .required()
+                .label("English Council description is required."),
             })
             .unknown(true)
         ),
       }),
-      banner_image: imageValidation.required(),
+      banner_image: imageValidation
+        .required()
+        .label("banner image is required"),
       legislative_council: joi.array().items(
         joi
           .object({
             _id: joi.any().optional(),
-            council_profile: imageValidation.required(),
+            council_profile: imageValidation
+              .required()
+              .label("Council profile is required"),
           })
           .unknown(true)
       ),
