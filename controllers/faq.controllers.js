@@ -6,6 +6,8 @@ const {
   updateFAQValidation,
 } = require("../validations/faqValidation");
 
+const notificationGenerator = require("../utils/notification");
+
 // @desc    Create a new FAQ
 // @route   POST /api/faq/
 // @access  Admin
@@ -42,6 +44,8 @@ const createFAQ = asyncHandler(async (req, res) => {
       }
       FAQs.push(faq);
     }
+
+    await notificationGenerator("FAQ", "New FAQs added!", res);
 
     res.status(201).json({
       message: "FAQ created successfully",
@@ -162,6 +166,8 @@ const updateFAQById = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Something went wrong");
     } else {
+      await notificationGenerator("FAQ", "FAQs Updated!", res);
+
       res.status(200).json({
         message: "FAQ updated successfully",
         data: updatedFAQ,

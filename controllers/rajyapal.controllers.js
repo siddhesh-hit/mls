@@ -6,6 +6,8 @@ const {
 } = require("../validations/rajyapalValidation");
 const LegislativeMember = require("../models/rajyapalMember");
 
+const notificationGenerator = require("../utils/notification");
+
 // @desc    Create a legislative member
 // @route   POST /api/rajyapal
 // @access  Private/Admin
@@ -59,6 +61,7 @@ const createLegislativeMember = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Unable to create legislative member");
     } else {
+      await notificationGenerator("Rajypal", "New Rajypal added!", res);
       res.status(200).json({
         success: true,
         message: "Successfully created legislative member",
@@ -212,6 +215,8 @@ const updateLegislativeMember = asyncHandler(async (req, res) => {
       res.status(404);
       throw new Error("No legislative member found");
     }
+
+    await notificationGenerator("Rajyapal", "Rajyapal updated!", res);
 
     // send response
     res.status(200).json({

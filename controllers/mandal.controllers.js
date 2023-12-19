@@ -7,6 +7,8 @@ const {
   updateVidhanMandalValidation,
 } = require("../validations/mandalValidation");
 
+const notificationGenerator = require("../utils/notification");
+
 // @desc    Create a vidhan mandal
 // @route   POST /api/mandal/
 // @access  Admin
@@ -57,6 +59,8 @@ const createVidhanMandal = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Something went wrong while creating the Vidhan Mandal.");
     }
+
+    await notificationGenerator("VidhanMandal", "New VidhanMandal added!", res);
 
     res.status(201).json({
       message: "Vidhan Mandal created successfully.",
@@ -208,6 +212,8 @@ const updateVidhanMandal = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Something went wrong while updating the Vidhan Mandal.");
     }
+
+    await notificationGenerator("VidhanMandal", "VidhanMandal updated!", res);
 
     res.status(200).json({
       message: "Vidhan Mandal updated successfully.",

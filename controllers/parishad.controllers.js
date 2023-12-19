@@ -6,6 +6,8 @@ const {
   updateVidhanParishadValidation,
 } = require("../validations/parishadValidation");
 
+const notificationGenerator = require("../utils/notification");
+
 // @desc    Create a vidhanParishad
 // @route   POST /api/parishad
 // @access  Admin
@@ -50,6 +52,12 @@ const createVidhanParishad = asyncHandler(async (req, res) => {
         "Something went wrong while creating the VidhanParishad."
       );
     }
+
+    await notificationGenerator(
+      "VidhanParishad",
+      "New VidhanParishad added!",
+      res
+    );
 
     res.status(201).json({
       message: "VidhanParishad created successfully.",
@@ -200,6 +208,12 @@ const updateVidhanParishad = asyncHandler(async (req, res) => {
         "Something went wrong while updating the VidhanParishad."
       );
     }
+
+    await notificationGenerator(
+      "VidhanParishad",
+      "VidhanParishad updated!",
+      res
+    );
 
     res.status(200).json({
       message: "VidhanParishad updated successfully.",

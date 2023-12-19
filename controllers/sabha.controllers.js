@@ -6,6 +6,8 @@ const {
   updateVidhanSabhaValidation,
 } = require("../validations/sabhaValidation");
 
+const notificationGenerator = require("../utils/notification");
+
 // @desc    Create a vidhanSabha
 // @route   POST /api/sabha
 // @access  Admin
@@ -46,6 +48,8 @@ const createVidhanSabha = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Something went wrong while creating the vidhanSabha.");
     }
+
+    await notificationGenerator("VidhanSabha", "New VidhanSabha added!", res);
 
     res.status(201).json({
       message: "VidhanSabha created successfully.",
@@ -190,6 +194,8 @@ const updateVidhanSabha = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Something went wrong while updating the vidhanSabha.");
     }
+
+    await notificationGenerator("VidhanSabha", "VidhanSabha updated!", res);
 
     res.status(200).json({
       message: "VidhanSabha updated successfully.",

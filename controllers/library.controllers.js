@@ -121,13 +121,14 @@ const getLibrary = asyncHandler(async (req, res) => {
 const updateLibrary = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
+    // console.log(data);
+
     let { banner } = req.files;
+    // console.log(req.files);
 
     data.english = JSON.parse(data.english);
     data.marathi = JSON.parse(data.marathi);
     data.file = JSON.parse(data.file);
-
-    console.log(data);
 
     // check if the library exists
     const libraryExists = await Library.findById(req.params.id);
@@ -137,11 +138,13 @@ const updateLibrary = asyncHandler(async (req, res) => {
     }
 
     // check if file is available and add it to the data
-    if (banner && Object.keys(data.file).length !== 0) {
+    if (banner && Object.keys(data.file).length === 0) {
       data.banner = banner[0];
     } else {
       data.banner = libraryExists.banner;
     }
+
+    // console.log(data);
 
     delete data.file;
 

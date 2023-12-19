@@ -7,6 +7,8 @@ const {
   updateFeedbackValidation,
 } = require("../validations/feedbackValidation");
 
+const notificationGenerator = require("../utils/notification");
+
 // @desc    Create a feedback
 // @route   POST /api/feedback/
 // @access  Public

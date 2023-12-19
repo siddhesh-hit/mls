@@ -1,8 +1,12 @@
 const router = require("express").Router();
 
-const { visitCount } = require("../controllers/visit.controllers");
+const {
+  visitCount,
+  getAllNotification,
+} = require("../controllers/visit.controllers");
 
 // routes
 router.put("/", visitCount);
+router.get("/notification", getAllNotification);
 
 module.exports = router;

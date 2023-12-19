@@ -6,6 +6,8 @@ const {
   updateMemberValidation,
 } = require("../validations/memberValidation");
 
+const notificationGenerator = require("../utils/notification");
+
 // @desc    Create new legislativeMember
 // @route   POST /api/member/
 // @access  Admin
@@ -41,6 +43,11 @@ const createMember = asyncHandler(async (req, res) => {
     const memberLegislative = await MemberLegislative.create(data);
 
     if (memberLegislative) {
+      await notificationGenerator(
+        "LegislativeMember",
+        "New Legislative Member added!",
+        res
+      );
       res.status(201).json({
         success: true,
         message: "Legislative Member created successfully",
@@ -150,6 +157,12 @@ const updateMember = asyncHandler(async (req, res) => {
     );
 
     if (memberLegislative) {
+      await notificationGenerator(
+        "LegislativeMember",
+        "Legislative Member Updated!",
+        res
+      );
+
       res.status(201).json({
         success: true,
         message: "Legislative Member created successfully",

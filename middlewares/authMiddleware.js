@@ -9,29 +9,12 @@ const cookieParser = require("cookie-parser");
 const cookieParserMiddleware = cookieParser();
 const authMiddleware = asyncHandler(async (req, res, next) => {
   try {
-    // console.log(req.headers.cookie["refreshToken"]);
     // Parse cookies using cookie-parser
     cookieParserMiddleware(req, res, () => {});
 
     const refresh_token = req.cookies.refreshToken;
 
     const access_token = req.cookies.accessToken;
-
-    // const refresh_token = req.headers.cookie
-    //   .split(" ")
-    //   .find((el) => {
-    //     return el.includes("refreshToken");
-    //   })
-    //   .split("=")[1]
-    //   .slice(0, -1);
-
-    // const access_token = req.headers.cookie
-    //   .split(" ")
-    //   .find((el) => {
-    //     return el.includes("accessToken");
-    //   })
-    //   .split("=")[1]
-    //   .slice(0, -1);
 
     if (!refresh_token) {
       res.status(401);

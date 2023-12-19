@@ -2,11 +2,13 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const cron = require("node-cron");
 
 // internal modules
 const connectDB = require("./config/db.config");
 const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
 const routes = require("./routes");
+const main = require("./services/dumpDatabase");
 
 // defining modules
 const app = express();
@@ -58,6 +60,11 @@ connectDB()
   .catch((err) => {
     console.error("Error connecting to MongoDB:", err);
   });
+
+// // cronjob for data dump
+// cron.schedule("0 0 * * *", () => {
+//   main().catch(console.error);
+// });
 
 // export the app
 module.exports = app;
