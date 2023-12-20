@@ -22,10 +22,6 @@ const faqSchema = new mongoose.Schema(
         required: true,
       },
     },
-    isActive: {
-      type: Boolean,
-      default: false,
-    },
     isUpdated: {
       type: Boolean,
       default: false,

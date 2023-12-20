@@ -22,6 +22,18 @@ const helpdeskSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    isUpdated: {
+      type: Boolean,
+      default: false,
+    },
+    isAccepted: {
+      type: Boolean,
+      default: false,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,

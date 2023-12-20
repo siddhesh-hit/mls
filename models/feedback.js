@@ -14,9 +14,10 @@ const feedbackSchema = new mongoose.Schema(
     //     type: String,
     //     required: true,
     //   },
-    //   address: {
-    //     type: String,
-    //   },
+    subject: {
+      type: String,
+      required: true,
+    },
     feedback: {
       type: String,
       required: true,
