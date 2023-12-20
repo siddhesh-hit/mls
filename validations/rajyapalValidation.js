@@ -49,6 +49,7 @@ const createRajyapalMemberValidation = (data) => {
         .required()
         .label("English Political  name is required"),
     }),
+    date_of_birth: joi.string().required().label("Date of birth is required"),
     image: imageValidation.required().label("Image is required"),
     url: joi.string().required().label("URL is required"),
     speeches: joi.array().items(

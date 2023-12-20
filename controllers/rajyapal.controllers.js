@@ -19,11 +19,10 @@ const createLegislativeMember = asyncHandler(async (req, res) => {
     data.english = JSON.parse(data.english);
     data.url = JSON.parse(data.url);
     data.speeches = JSON.parse(data.speeches);
-    data.isCurrent = data.isCurrent;
 
-    // if(data.isCurrent) {
-
-    // }
+    if (data.isCurrent) {
+      data.isActive = true;
+    }
 
     let { banner, documents } = req.files;
 
@@ -189,7 +188,6 @@ const updateLegislativeMember = asyncHandler(async (req, res) => {
     data.english = JSON.parse(data.english);
     data.url = JSON.parse(data.url);
     data.speeches = JSON.parse(data.speeches);
-    data.isCurrent = data.isCurrent;
     // data.documents = data.documents.map((doc) => JSON.parse(doc));
 
     // check if rajyapal exists

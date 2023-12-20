@@ -48,6 +48,10 @@ const legislativeMember = new mongoose.Schema(
         required: true,
       },
     },
+    date_of_birth: {
+      type: String,
+      required: true,
+    },
     image: imageSchema,
     url: {
       type: String,
