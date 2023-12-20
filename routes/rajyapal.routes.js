@@ -5,6 +5,7 @@ const {
   getALLLegislativeMembers,
   getLegislativeMemberById,
   getActiveLegislativeMember,
+  getCurrentLegislativeMember,
   createLegislativeMember,
   updateLegislativeMember,
   deleteLegislativeMember,
@@ -29,6 +30,7 @@ const upload = multer({ storage: storage, limits: { fileSize: 3000000 } });
 
 // routes
 router.get("/active", getActiveLegislativeMember);
+router.get("/current", getCurrentLegislativeMember);
 
 router
   .route("/")

@@ -19,6 +19,11 @@ const createLegislativeMember = asyncHandler(async (req, res) => {
     data.english = JSON.parse(data.english);
     data.url = JSON.parse(data.url);
     data.speeches = JSON.parse(data.speeches);
+    data.isCurrent = data.isCurrent;
+
+    // if(data.isCurrent) {
+
+    // }
 
     let { banner, documents } = req.files;
 
@@ -122,6 +127,29 @@ const getActiveLegislativeMember = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get currect legislative member
+// @route   GET /api/rajyapal/current
+// @access  Public
+const getCurrentLegislativeMember = asyncHandler(async (req, res) => {
+  try {
+    const getCurrent = await LegislativeMember.findOne({
+      isCurrent: true,
+    }).exec();
+
+    if (!getCurrent) {
+      res.status(400);
+      throw new Error("No Current data found.");
+    }
+    res.status(201).json({
+      message: "Legislative member fetched successfully.",
+      data: getCurrent,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error(error);
+  }
+});
+
 // @desc    Get legislative member by id
 // @route   GET /api/rajyapal/:id
 // @access  Public
@@ -161,6 +189,7 @@ const updateLegislativeMember = asyncHandler(async (req, res) => {
     data.english = JSON.parse(data.english);
     data.url = JSON.parse(data.url);
     data.speeches = JSON.parse(data.speeches);
+    data.isCurrent = data.isCurrent;
     // data.documents = data.documents.map((doc) => JSON.parse(doc));
 
     // check if rajyapal exists
@@ -262,6 +291,7 @@ module.exports = {
   getALLLegislativeMembers,
   getLegislativeMemberById,
   getActiveLegislativeMember,
+  getCurrentLegislativeMember,
   createLegislativeMember,
   updateLegislativeMember,
   deleteLegislativeMember,

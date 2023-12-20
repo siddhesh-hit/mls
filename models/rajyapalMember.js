@@ -83,6 +83,10 @@ const legislativeMember = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isCurrent: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
