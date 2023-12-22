@@ -101,6 +101,7 @@ const getALLLegislativeMembers = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get active and false current data
+// @desc    Get active and false current data
 // @route   GET /api/rajyapal/active
 // @access  Public
 const getActiveLegislativeMember = asyncHandler(async (req, res) => {
