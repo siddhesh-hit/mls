@@ -20,10 +20,6 @@ const createLegislativeMember = asyncHandler(async (req, res) => {
     data.url = JSON.parse(data.url);
     data.speeches = JSON.parse(data.speeches);
 
-    if (data.isCurrent) {
-      data.isActive = true;
-    }
-
     let { banner, documents } = req.files;
 
     // check if files exist
@@ -104,13 +100,20 @@ const getALLLegislativeMembers = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get active data
+// @desc    Get active and false current data
 // @route   GET /api/rajyapal/active
 // @access  Public
 const getActiveLegislativeMember = asyncHandler(async (req, res) => {
   try {
-    const getActive = await LegislativeMember.findOne({
-      isActive: true,
+    const getActive = await LegislativeMember.find({
+      $and: [
+        {
+          isActive: true,
+        },
+        {
+          isCurrent: false,
+        },
+      ],
     }).exec();
     if (!getActive) {
       res.status(400);
