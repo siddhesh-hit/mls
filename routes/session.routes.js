@@ -40,7 +40,7 @@ router
     checkRoleMiddleware(["Admin"]),
     upload.fields([
       {
-        name: document,
+        name: "document",
         maxCount: 10,
       },
     ]),
@@ -55,11 +55,12 @@ router
     checkRoleMiddleware(["Admin"]),
     upload.fields([
       {
-        name: document,
+        name: "document",
         maxCount: 10,
       },
     ]),
     updateSession
-  );
+  )
+  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteSession);
 
 module.exports = router;

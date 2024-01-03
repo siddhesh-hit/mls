@@ -17,12 +17,23 @@ const createVidhanSabha = asyncHandler(async (req, res) => {
 
     data.marathi = JSON.parse(data.marathi);
     data.english = JSON.parse(data.english);
+    data.publication = JSON.parse(data.publication);
+    data.structure = JSON.parse(data.structure);
 
-    let { banner_image, legislative_profile } = req.files;
+    let {
+      banner_image,
+      legislative_profile,
+      publication_docs_en,
+      publication_docs_mr,
+      profile,
+    } = req.files;
 
+    // add images to the file
     data.banner_image = banner_image[0];
 
-    // add all legislative profiles in req.body.legislative_council
+    data.structure.profile = profile[0];
+
+    // add all legislative profiles
     let legislative_council = [];
     for (let i = 0; i < legislative_profile.length; i++) {
       legislative_council.push({
@@ -32,7 +43,25 @@ const createVidhanSabha = asyncHandler(async (req, res) => {
 
     data.legislative_council = legislative_council;
 
-    console.log(data);
+    // add all publication docs
+    let publications = [];
+    let docEn = 0,
+      docMr = 0;
+    for (let i = 0; i < publication_docs_en.length; i++) {
+      let object = {
+        english: {
+          name: data.publication[i].english.name,
+          document: publication_docs_en[docEn++],
+        },
+        marathi: {
+          name: data.publication[i].english.name,
+          document: publication_docs_mr[docMr++],
+        },
+      };
+      publications.push(object);
+    }
+
+    data.publication = publications;
 
     // validate data & files
     const { error } = createVidhanSabhaValidation(data);

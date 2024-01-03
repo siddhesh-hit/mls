@@ -46,6 +46,29 @@ const vidhanParishadSchema = new mongoose.Schema(
         council_profile: ImageSchema,
       },
     ],
+    publication: [
+      {
+        english: {
+          name: {
+            type: String,
+          },
+          document: ImageSchema,
+        },
+        marathi: {
+          name: {
+            type: String,
+          },
+          document: ImageSchema,
+        },
+      },
+    ],
+    structure: {
+      name: String,
+      profile: ImageSchema,
+      type: String,
+      term_limit: Number,
+      seats: Number,
+    },
     isUpdated: {
       type: Boolean,
       default: false,

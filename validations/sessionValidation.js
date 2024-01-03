@@ -17,7 +17,8 @@ const imageValidation = joi
 
 // create session calender validation
 const createSessionCalendarValidation = (data) => {
-  const schema = joi.array().items(
+  const schema =
+    // joi.array().items(
     joi.object({
       marathi: joi.object({
         session: joi.string().optional().label("Marathi session is required"),
@@ -29,29 +30,50 @@ const createSessionCalendarValidation = (data) => {
       houses: joi.string().required().label("Houses is required"),
       year: joi.string().required().label("Year is required"),
       date: joi.string().required().label("Date is required"),
-      docuemnt: imageValidation.required().label("Document is required"),
-    })
-  );
+      documents: joi.array().items(
+        joi.object({
+          title: joi.string().optional().label("Title is required"),
+          date: joi.string().optional().label("Date is required"),
+          document: imageValidation.required().label("Document is required"),
+        })
+      ),
+    });
+  // );
 
   return schema.validate(data);
 };
 
 // update session calender validation
 const updateSessionCalendarValidation = (data) => {
-  const schema = joi.object({
-    marathi: joi.object({
-      session: joi.string().optional().label("Marathi session is required"),
-    }),
-    english: joi.object({
-      session: joi.string().optional().label("English session is required"),
-    }),
-    topic_name: joi.string().required().label("Topic name is required"),
-    houses: joi.string().required().label("Houses is required"),
-    year: joi.string().required().label("Year is required"),
-    date: joi.string().required().label("Date is required"),
-    _id: joi.any().optional(),
-    docuemnt: imageValidation.required().label("Document is required"),
-  });
+  const schema = joi
+    .object({
+      marathi: joi
+        .object({
+          session: joi.string().optional().label("Marathi session is required"),
+        })
+        .unknown(true),
+      english: joi
+        .object({
+          session: joi.string().optional().label("English session is required"),
+        })
+        .unknown(true),
+      _id: joi.any().optional(),
+      topic_name: joi.string().required().label("Topic name is required"),
+      houses: joi.string().required().label("Houses is required"),
+      year: joi.string().required().label("Year is required"),
+      date: joi.string().required().label("Date is required"),
+      documents: joi.array().items(
+        joi
+          .object({
+            title: joi.string().optional().label("Title is required"),
+            date: joi.string().optional().label("Date is required"),
+            document: imageValidation.required().label("Document is required"),
+            _id: joi.any().optional(),
+          })
+          .unknown(true)
+      ),
+    })
+    .unknown(true);
 
   return schema.validate(data);
 };

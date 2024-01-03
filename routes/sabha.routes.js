@@ -49,6 +49,18 @@ router
         name: "legislative_profile",
         maxCount: 10,
       },
+      {
+        name: "publication_docs_en",
+        maxCount: 5,
+      },
+      {
+        name: "publication_docs_mr",
+        maxCount: 5,
+      },
+      {
+        name: "profile",
+        maxCount: 1,
+      },
     ]),
     createVidhanSabha
   );
@@ -67,6 +79,18 @@ router
       {
         name: "legislative_profile",
         maxCount: 10,
+      },
+      {
+        name: "publication_docs_en",
+        maxCount: 5,
+      },
+      {
+        name: "publication_docs_mr",
+        maxCount: 5,
+      },
+      {
+        name: "profile",
+        maxCount: 1,
       },
     ]),
     updateVidhanSabha

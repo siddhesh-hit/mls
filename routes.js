@@ -14,6 +14,7 @@ const rajyapalRoutes = require("./routes/rajyapal.routes");
 const memberRoutes = require("./routes/member.routes");
 const feedbackRoutes = require("./routes/feedback.routes");
 const helpdeskRoutes = require("./routes/helpdesk.routes");
+const sessionRoutes = require("./routes/session.routes");
 
 const assemblyRoutes = require("./routes/masters/assembly.routes");
 const constituencyRoutes = require("./routes/masters/constituency.routes");
@@ -36,6 +37,7 @@ router.use("/api/rajyapal", rajyapalRoutes);
 router.use("/api/member", memberRoutes);
 router.use("/api/feedback", feedbackRoutes);
 router.use("/api/helpdesk", helpdeskRoutes);
+router.use("/api/session", sessionRoutes);
 
 router.use("/api/assembly", assemblyRoutes);
 router.use("/api/constituency", constituencyRoutes);

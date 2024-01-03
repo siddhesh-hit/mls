@@ -13,10 +13,9 @@ const notificationGenerator = require("../utils/notification");
 // @access  Admin
 const createSession = asyncHandler(async (req, res) => {
   try {
-    let data = req.body;
+    let data = req.body.data;
 
-    data.marathi = JSON.parse(data.marathi);
-    data.english = JSON.parse(data.english);
+    data = JSON.parse(data);
 
     let { document } = req.files;
 
@@ -27,9 +26,9 @@ const createSession = asyncHandler(async (req, res) => {
     }
 
     // add document to the data
-    for (let i = 0; i < data.length; i++) {
-      data[i].document = document[i];
-    }
+    data.documents.forEach((ele, ind) => {
+      ele.document = document[ind];
+    });
 
     // validate the data
     const { error } = createSessionCalendarValidation(data);
@@ -37,6 +36,8 @@ const createSession = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error(error.details[0].message);
     }
+
+    console.log(data);
 
     // create session calendar
     const sessionCalendar = await SessionCalendar.create(data);
@@ -57,6 +58,7 @@ const createSession = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Session Calendar created successfully.",
       data: sessionCalendar,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -117,24 +119,27 @@ const getSession = asyncHandler(async (req, res) => {
 // @access  Admin
 const updateSession = asyncHandler(async (req, res) => {
   try {
-    let data = req.body;
+    let data = req.body.data;
 
     // check if session calendar exists
     const sessionExists = await SessionCalendar.findById(req.params.id);
-    if (sessionExists) {
+    if (!sessionExists) {
       res.status(400);
       throw new Error("No session calendar exists for the id");
     }
 
-    data.marathi = JSON.parse(data.marathi);
-    data.english = JSON.parse(data.english);
+    data = JSON.parse(data);
 
     let { document } = req.files;
 
     // add document to the data
-    for (let i = 0; i < data.length; i++) {
-      data[i].document = document[i];
-    }
+    let docCount = 0;
+    data.documents.forEach((ele, ind) => {
+      ele.document =
+        Object.keys(ele.document).length > 0
+          ? ele.document
+          : document[docCount++];
+    });
 
     // validate the data
     const { error } = updateSessionCalendarValidation(data);
@@ -142,8 +147,9 @@ const updateSession = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error(error.details[0].message);
     }
+    console.log(data);
 
-    // create session calendar
+    // update session calendar
     const sessionCalendar = await SessionCalendar.findByIdAndUpdate(
       req.params.id,
       data,
@@ -169,6 +175,7 @@ const updateSession = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Session Calendar created updated.",
       data: sessionCalendar,
+      success: true,
     });
   } catch (error) {
     res.status(500);

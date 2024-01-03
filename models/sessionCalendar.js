@@ -31,7 +31,19 @@ const sessionCalendarSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    document: ImageSchema,
+    documents: [
+      {
+        title: {
+          type: String,
+          required: true,
+        },
+        date: {
+          type: String,
+          required: true,
+        },
+        document: ImageSchema,
+      },
+    ],
   },
   {
     timestamps: true,
