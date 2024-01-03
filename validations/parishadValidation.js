@@ -33,6 +33,15 @@ const createVidhanParishadValidation = (data) => {
           .required()
           .label("Marathi Council description is required."),
       }),
+      structure: joi.object({
+        name: joi.string().required().label("Name description is required."),
+        type: joi.string().required().label("Type description is required."),
+        term_limit: joi
+          .string()
+          .required()
+          .label("Term limit description is required."),
+        seats: joi.string().required().label("Seats description is required."),
+      }),
     }),
     english: joi.object({
       description: joi
@@ -49,7 +58,19 @@ const createVidhanParishadValidation = (data) => {
           .required()
           .label("English Council description is required."),
       }),
+      structure: joi.object({
+        name: joi.string().required().label("Name description is required."),
+        type: joi.string().required().label("Type description is required."),
+        term_limit: joi
+          .string()
+          .required()
+          .label("Term limit description is required."),
+        seats: joi.string().required().label("Seats description is required."),
+      }),
     }),
+    structure_profile: imageValidation
+      .required()
+      .label("structure profile is required"),
     banner_image: imageValidation.required().label("banner image is required"),
     legislative_council: joi.array().items({
       council_profile: imageValidation
@@ -68,18 +89,6 @@ const createVidhanParishadValidation = (data) => {
         }),
       })
     ),
-    structure: joi.object({
-      name: joi.string().required().label("Structure name is required"),
-      profile: imageValidation
-        .required()
-        .label("Structure profile is required"),
-      type: joi.string().required().label("Structure type is required"),
-      term_limit: joi
-        .number()
-        .required()
-        .label("Structure term limit is required"),
-      seats: joi.number().required().label("Structure seats is required"),
-    }),
   });
   return schema.validate(data);
 };
@@ -108,6 +117,27 @@ const updateVidhanParishadValidation = (data) => {
             })
             .unknown(true)
         ),
+        structure: joi
+          .object({
+            _id: joi.any().optional(),
+            name: joi
+              .string()
+              .required()
+              .label("Name description is required."),
+            type: joi
+              .string()
+              .required()
+              .label("Type description is required."),
+            term_limit: joi
+              .string()
+              .required()
+              .label("Term limit description is required."),
+            seats: joi
+              .string()
+              .required()
+              .label("Seats description is required."),
+          })
+          .unknown(true),
       }),
       english: joi.object({
         description: joi
@@ -129,7 +159,31 @@ const updateVidhanParishadValidation = (data) => {
             })
             .unknown(true)
         ),
+        structure: joi
+          .object({
+            _id: joi.any().optional(),
+            name: joi
+              .string()
+              .required()
+              .label("Name description is required."),
+            type: joi
+              .string()
+              .required()
+              .label("Type description is required."),
+            term_limit: joi
+              .string()
+              .required()
+              .label("Term limit description is required."),
+            seats: joi
+              .string()
+              .required()
+              .label("Seats description is required."),
+          })
+          .unknown(true),
       }),
+      structure_profile: imageValidation
+        .required()
+        .label("structure profile is required"),
       banner_image: imageValidation
         .required()
         .label("banner image is required"),
@@ -163,21 +217,6 @@ const updateVidhanParishadValidation = (data) => {
           })
           .unknown(true)
       ),
-      structure: joi
-        .object({
-          name: joi.string().required().label("Structure name is required"),
-          profile: imageValidation
-            .required()
-            .label("Structure profile is required"),
-          type: joi.string().required().label("Structure type is required"),
-          term_limit: joi
-            .number()
-            .required()
-            .label("Structure term limit is required"),
-          seats: joi.number().required().label("Structure seats is required"),
-          _id: joi.any().optional(),
-        })
-        .unknown(true),
     })
     .unknown(true);
   return schema.validate(data);

@@ -13,55 +13,33 @@ const notificationGenerator = require("../utils/notification");
 // @access  Admin
 const createVidhanSabha = asyncHandler(async (req, res) => {
   try {
-    let data = req.body;
+    let data = req.body.data;
+    data = JSON.parse(data);
 
-    data.marathi = JSON.parse(data.marathi);
-    data.english = JSON.parse(data.english);
-    data.publication = JSON.parse(data.publication);
-    data.structure = JSON.parse(data.structure);
+    // console.log(req.files);
 
     let {
       banner_image,
+      profile,
       legislative_profile,
       publication_docs_en,
       publication_docs_mr,
-      profile,
     } = req.files;
 
     // add images to the file
     data.banner_image = banner_image[0];
+    data.structure_profile = profile[0];
 
-    data.structure.profile = profile[0];
-
-    // add all legislative profiles
-    let legislative_council = [];
-    for (let i = 0; i < legislative_profile.length; i++) {
-      legislative_council.push({
-        council_profile: legislative_profile[i],
-      });
-    }
-
-    data.legislative_council = legislative_council;
+    // add all legislative profiles in files
+    data.legislative_council.forEach((element, index) => {
+      element.council_profile = legislative_profile[index];
+    });
 
     // add all publication docs
-    let publications = [];
-    let docEn = 0,
-      docMr = 0;
-    for (let i = 0; i < publication_docs_en.length; i++) {
-      let object = {
-        english: {
-          name: data.publication[i].english.name,
-          document: publication_docs_en[docEn++],
-        },
-        marathi: {
-          name: data.publication[i].english.name,
-          document: publication_docs_mr[docMr++],
-        },
-      };
-      publications.push(object);
-    }
-
-    data.publication = publications;
+    data.publication.forEach((element, index) => {
+      element.english.document = publication_docs_en[index];
+      element.marathi.document = publication_docs_mr[index];
+    });
 
     // validate data & files
     const { error } = createVidhanSabhaValidation(data);
@@ -160,9 +138,9 @@ const getVidhanSabhaById = asyncHandler(async (req, res) => {
 const updateVidhanSabha = asyncHandler(async (req, res) => {
   try {
     let id = req.params.id;
-    let data = req.body;
+    let data = req.body.data;
 
-    // console.log(data);
+    data = JSON.parse(data);
 
     // check if vidhanSabha exists
     const vidhanSabhaExists = await VidhanSabha.findById(id);
@@ -171,42 +149,55 @@ const updateVidhanSabha = asyncHandler(async (req, res) => {
       throw new Error("VidhanSabha not found.");
     }
 
-    data.marathi = JSON.parse(data.marathi);
-    data.english = JSON.parse(data.english);
-    data.files = JSON.parse(data.files);
+    let {
+      banner_image,
+      profile,
+      legislative_profile,
+      publication_docs_en,
+      publication_docs_mr,
+    } = req.files;
 
-    let { banner_image, legislative_profile } = req.files;
-    console.log(req.files);
-
-    // if files available then update files
+    // if new banner_image available, then update files
     if (banner_image) {
       data.banner_image = banner_image[0];
-    } else {
-      data.banner_image = vidhanSabhaExists.banner_image;
     }
 
-    if (legislative_profile) {
-      // add all legislative profiles in req.body.legislative_council
-      let countImg = 0;
-      let legislative_council = [];
-      for (let i = 0; i < vidhanSabhaExists.legislative_council.length; i++) {
-        legislative_council.push({
-          council_profile:
-            data.files[i].council_profile &&
-            Object.keys(data.files[i].council_profile).length !== 0
-              ? data.files[i].council_profile
-              : legislative_profile[countImg++],
-        });
-      }
-      data.legislative_council = legislative_council;
-    } else {
-      data.legislative_council = vidhanSabhaExists.legislative_council;
+    // if new profile available, then update files
+    if (profile) {
+      data.structure_profile = profile[0];
     }
 
-    delete data.files;
-    delete data.legislative_profile;
+    // if new legislative profiles exists, add all files to it's specified position
+    let countImg = 0;
+    if (legislative_profile && legislative_profile.length > 0) {
+      data.legislative_council.forEach((element) => {
+        element.council_profile =
+          Object.keys(element.council_profile).length > 0
+            ? element.council_profile
+            : legislative_profile[countImg++];
+      });
+    }
 
-    // // validate data & files
+    // if new publication docs exists, add all files to it's specified position
+    let countDocEn = 0,
+      countDocMr = 0;
+    if (
+      (publication_docs_en && publication_docs_en.length > 0) ||
+      (publication_docs_mr && publication_docs_mr.length > 0)
+    ) {
+      data.publication.forEach((element) => {
+        element.english.document =
+          Object.keys(element.english.document).length > 0
+            ? element.english.document
+            : publication_docs_en[countDocEn++];
+        element.marathi.document =
+          Object.keys(element.marathi.document).length > 0
+            ? element.marathi.document
+            : publication_docs_mr[countDocMr++];
+      });
+    }
+
+    // validate data & files
     const { error } = updateVidhanSabhaValidation(data);
     if (error) {
       res.status(400);

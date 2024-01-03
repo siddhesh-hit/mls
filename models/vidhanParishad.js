@@ -21,6 +21,20 @@ const vidhanParishadSchema = new mongoose.Schema(
           },
         },
       ],
+      structure: {
+        name: {
+          type: String,
+        },
+        type: {
+          type: String,
+        },
+        term_limit: {
+          type: String,
+        },
+        seats: {
+          type: String,
+        },
+      },
     },
     english: {
       description: {
@@ -39,7 +53,22 @@ const vidhanParishadSchema = new mongoose.Schema(
           },
         },
       ],
+      structure: {
+        name: {
+          type: String,
+        },
+        type: {
+          type: String,
+        },
+        term_limit: {
+          type: String,
+        },
+        seats: {
+          type: String,
+        },
+      },
     },
+    structure_profile: ImageSchema,
     banner_image: ImageSchema,
     legislative_council: [
       {
@@ -62,13 +91,6 @@ const vidhanParishadSchema = new mongoose.Schema(
         },
       },
     ],
-    structure: {
-      name: String,
-      profile: ImageSchema,
-      type: String,
-      term_limit: Number,
-      seats: Number,
-    },
     isUpdated: {
       type: Boolean,
       default: false,
