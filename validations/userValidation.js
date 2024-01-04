@@ -10,6 +10,7 @@ const imageValidation = joi.object({
   filename: joi.string(),
   path: joi.string(),
   size: joi.number(),
+  _id: joi.any().optional(),
 });
 
 // validate user register using phone
@@ -57,18 +58,19 @@ const loginEmailValidate = (data) => {
 
 // update user validation
 const updateUserValidate = (data) => {
-  const schema = joi.object({
-    full_name: joi.string().min(6).required(),
-    email: joi.string().min(6).required().email(),
-    houses: joi.string(),
-    department: joi.string(),
-    password: joi.string().min(6).required(),
-    phone_number: joi.string().required(),
-    gender: joi.string().required(),
-    date_of_birth: joi.date().required(),
-    designation: joi.string(),
-    user_image: imageValidation.optional(),
-  });
+  const schema = joi
+    .object({
+      full_name: joi.string().min(6).required(),
+      email: joi.string().min(6).required().email(),
+      houses: joi.string(),
+      department: joi.string(),
+      phone_number: joi.string().required(),
+      gender: joi.string().required(),
+      date_of_birth: joi.date().required(),
+      designation: joi.string(),
+      user_image: imageValidation.required(),
+    })
+    .unknown(true);
 
   return schema.validate(data);
 };

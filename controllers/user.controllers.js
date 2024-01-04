@@ -422,7 +422,9 @@ const resetUser = asyncHandler(async (req, res) => {
 // @access  Admin
 const getUsers = asyncHandler(async (req, res) => {
   try {
-    const users = await User.find({});
+    const users = await User.find({}).select(
+      "_id full_name houses department designation email phone_number gender date_of_birth user_image"
+    );
     if (!users) {
       res.status(400);
       throw new Error("No users found");
@@ -444,7 +446,9 @@ const getUsers = asyncHandler(async (req, res) => {
 // @access  Public
 const getUserById = asyncHandler(async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.id).select(
+      "_id full_name houses department designation email phone_number gender date_of_birth user_image"
+    );
     if (!user) {
       res.status(400);
       throw new Error("User not found");
@@ -466,19 +470,17 @@ const getUserById = asyncHandler(async (req, res) => {
 // @access  Public
 const updateUser = asyncHandler(async (req, res) => {
   try {
-    let data = req.body;
+    let data = req.body.data;
     let file = req.file;
+
+    data = JSON.parse(data);
 
     let email = data.email;
 
-    // check if file exists
-    if (!file) {
-      res.status(400);
-      throw new Error("Please upload image");
-    }
-
     // add image to data
-    data.user_image = file;
+    data.user_image = file ? file : data.user_image;
+
+    console.log(data);
 
     // check if email already exists
     const { error } = updateUserValidate(data);
