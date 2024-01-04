@@ -51,6 +51,7 @@ const createSession = asyncHandler(async (req, res) => {
 
     await notificationGenerator(
       "Session Calendar",
+      "नवीन सत्र दिनदर्शिका जोडले!",
       "New Session Calendar added!",
       res
     );
@@ -168,6 +169,7 @@ const updateSession = asyncHandler(async (req, res) => {
 
     await notificationGenerator(
       "Session Calendar",
+      "सत्र दिनदर्शिका अपडेट झाले!",
       "Session Calendar updated!",
       res
     );

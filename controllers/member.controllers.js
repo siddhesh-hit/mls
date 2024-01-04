@@ -45,6 +45,7 @@ const createMember = asyncHandler(async (req, res) => {
     if (memberLegislative) {
       await notificationGenerator(
         "LegislativeMember",
+        "विधानपरिषद सदस्य जोडले!",
         "New Legislative Member added!",
         res
       );
@@ -159,6 +160,7 @@ const updateMember = asyncHandler(async (req, res) => {
     if (memberLegislative) {
       await notificationGenerator(
         "LegislativeMember",
+        "विधानपरिषद अपडेट झाले!",
         "Legislative Member Updated!",
         res
       );

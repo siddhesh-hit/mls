@@ -6,9 +6,17 @@ const notificationSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    message: {
-      type: String,
-      required: true,
+    marathi: {
+      message: {
+        type: String,
+        required: true,
+      },
+    },
+    english: {
+      message: {
+        type: String,
+        required: true,
+      },
     },
   },
   { timestamps: true }

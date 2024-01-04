@@ -60,6 +60,7 @@ const createVidhanParishad = asyncHandler(async (req, res) => {
 
     await notificationGenerator(
       "VidhanParishad",
+      "नवी विधानपरिषद जोडले!",
       "New VidhanParishad added!",
       res
     );
@@ -227,6 +228,7 @@ const updateVidhanParishad = asyncHandler(async (req, res) => {
 
     await notificationGenerator(
       "VidhanParishad",
+      "विधानपरिषद अपडेट झाले!",
       "VidhanParishad updated!",
       res
     );

@@ -56,7 +56,12 @@ const createVidhanSabha = asyncHandler(async (req, res) => {
       throw new Error("Something went wrong while creating the vidhanSabha.");
     }
 
-    await notificationGenerator("VidhanSabha", "New VidhanSabha added!", res);
+    await notificationGenerator(
+      "VidhanSabha",
+      "नवी विधानसभा जोडले!",
+      "New VidhanSabha added!",
+      res
+    );
 
     res.status(201).json({
       message: "VidhanSabha created successfully.",
@@ -215,7 +220,12 @@ const updateVidhanSabha = asyncHandler(async (req, res) => {
       throw new Error("Something went wrong while updating the vidhanSabha.");
     }
 
-    await notificationGenerator("VidhanSabha", "VidhanSabha updated!", res);
+    await notificationGenerator(
+      "VidhanSabha",
+      "विधानसभा अपडेट झाले!",
+      "VidhanSabha updated!",
+      res
+    );
 
     res.status(200).json({
       message: "VidhanSabha updated successfully.",

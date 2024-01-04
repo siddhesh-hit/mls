@@ -45,7 +45,12 @@ const createFAQ = asyncHandler(async (req, res) => {
       FAQs.push(faq);
     }
 
-    await notificationGenerator("FAQ", "New FAQs added!", res);
+    await notificationGenerator(
+      "FAQ",
+      "नवीन FAQ जोडले!",
+      "New FAQs added!",
+      res
+    );
 
     res.status(201).json({
       message: "FAQ created successfully",
@@ -166,7 +171,12 @@ const updateFAQById = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Something went wrong");
     } else {
-      await notificationGenerator("FAQ", "FAQs Updated!", res);
+      await notificationGenerator(
+        "FAQ",
+        "FAQs अपडेट झाले!",
+        "FAQs Updated!",
+        res
+      );
 
       res.status(200).json({
         message: "FAQ updated successfully",

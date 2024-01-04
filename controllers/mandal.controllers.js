@@ -60,7 +60,12 @@ const createVidhanMandal = asyncHandler(async (req, res) => {
       throw new Error("Something went wrong while creating the Vidhan Mandal.");
     }
 
-    await notificationGenerator("VidhanMandal", "New VidhanMandal added!", res);
+    await notificationGenerator(
+      "VidhanMandal",
+      "नवीन विधानमंडळ जोडले!",
+      "New VidhanMandal added!",
+      res
+    );
 
     res.status(201).json({
       message: "Vidhan Mandal created successfully.",
@@ -213,7 +218,12 @@ const updateVidhanMandal = asyncHandler(async (req, res) => {
       throw new Error("Something went wrong while updating the Vidhan Mandal.");
     }
 
-    await notificationGenerator("VidhanMandal", "VidhanMandal updated!", res);
+    await notificationGenerator(
+      "VidhanMandal",
+      "विधानमंडळ अपडेट झाले!",
+      "VidhanMandal updated!",
+      res
+    );
 
     res.status(200).json({
       message: "Vidhan Mandal updated successfully.",

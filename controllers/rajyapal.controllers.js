@@ -61,7 +61,12 @@ const createLegislativeMember = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Unable to create legislative member");
     } else {
-      await notificationGenerator("Rajypal", "New Rajypal added!", res);
+      await notificationGenerator(
+        "Rajypal",
+        "नवीन राजपाल जोडले!",
+        "New Rajypal added!",
+        res
+      );
       res.status(200).json({
         success: true,
         message: "Successfully created legislative member",
@@ -247,7 +252,12 @@ const updateLegislativeMember = asyncHandler(async (req, res) => {
       throw new Error("No legislative member found");
     }
 
-    await notificationGenerator("Rajyapal", "Rajyapal updated!", res);
+    await notificationGenerator(
+      "Rajyapal",
+      "राजपाल अपडेट झाले!",
+      "Rajyapal updated!",
+      res
+    );
 
     // send response
     res.status(200).json({
