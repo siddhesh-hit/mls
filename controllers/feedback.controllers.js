@@ -141,7 +141,7 @@ const deleteFeedback = asyncHandler(async (req, res) => {
       res.status(201).json({
         success: true,
         message: "Feedback deleted successfully.",
-        data: feedback,
+        data: {},
       });
     }
   } catch (error) {

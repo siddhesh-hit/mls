@@ -51,6 +51,7 @@ const createParty = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Party created successfully.",
       data: party,
+      success: true,
     });
   } catch (error) {
     res.status(400);
@@ -74,6 +75,7 @@ const getAllParty = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Party fetched successfully.",
       data: parties,
+      success: true,
     });
   } catch (error) {
     res.status(400);
@@ -97,6 +99,7 @@ const getParty = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Party fetched successfully.",
       data: party,
+      success: true,
     });
   } catch (error) {
     res.status(400);
@@ -143,6 +146,7 @@ const updateParty = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Party updated successfully.",
       data: party,
+      success: true,
     });
   } catch (error) {
     res.status(400);
@@ -165,7 +169,8 @@ const deleteParty = asyncHandler(async (req, res) => {
 
     res.status(201).json({
       message: "Party fetched successfully.",
-      data: party,
+      data: {},
+      success: true,
     });
   } catch (error) {
     res.status(400);

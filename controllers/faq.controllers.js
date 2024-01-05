@@ -55,6 +55,7 @@ const createFAQ = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "FAQ created successfully",
       data: FAQs,
+      success: true,
     });
   } catch (error) {
     res.status(501);
@@ -76,9 +77,10 @@ const getAllFAQs = asyncHandler(async (req, res) => {
     }
 
     // send response
-    res.status(200).json({
+    res.status(201).json({
       message: "FAQs fetched successfully",
       data: faq,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -99,6 +101,7 @@ const getActiveFaq = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Faq fetched successfully.",
       data: getActive,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -120,9 +123,10 @@ const getFAQById = asyncHandler(async (req, res) => {
     }
 
     // send response
-    res.status(200).json({
+    res.status(201).json({
       message: "FAQ fetched successfully",
       data: faq,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -178,9 +182,10 @@ const updateFAQById = asyncHandler(async (req, res) => {
         res
       );
 
-      res.status(200).json({
+      res.status(201).json({
         message: "FAQ updated successfully",
         data: updatedFAQ,
+        success: true,
       });
     }
   } catch (error) {
@@ -209,9 +214,10 @@ const deleteFAQById = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Something went wrong");
     } else {
-      res.status(200).json({
+      res.status(201).json({
         message: "FAQ deleted successfully",
-        data: deletedFAQ,
+        data: {},
+        success: true,
       });
     }
   } catch (error) {

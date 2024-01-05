@@ -84,6 +84,7 @@ const getAllSession = asyncHandler(async (req, res) => {
     res.status(200).json({
       message: "Session Calendar fetched successfully.",
       data: sessionCalendar,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -107,6 +108,7 @@ const getSession = asyncHandler(async (req, res) => {
 
     res.status(200).json({
       message: "Session Calendar fetched successfully.",
+      success: true,
       data: sessionCalendar,
     });
   } catch (error) {
@@ -203,7 +205,8 @@ const deleteSession = asyncHandler(async (req, res) => {
 
     res.status(200).json({
       message: "Session Calendar deleted successfully.",
-      data: sessionCalendar,
+      success: true,
+      data: {},
     });
   } catch (error) {
     res.status(500);

@@ -62,6 +62,7 @@ const createMandalGallery = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Vidhan Mandal gallery created successfully.",
       data: galleries,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -86,6 +87,7 @@ const getAllMandalGalleries = asyncHandler(async (req, res) => {
     res.status(200).json({
       message: "Vidhan Mandal gallery fetched successfully.",
       data: gallery,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -110,6 +112,7 @@ const getMandalGalleryById = asyncHandler(async (req, res) => {
     res.status(200).json({
       message: "Vidhan Mandal gallery fetched successfully.",
       data: gallery,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -167,6 +170,7 @@ const updateMandalGallery = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Vidhan Mandal gallery updated successfully.",
       data: gallery,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -192,6 +196,7 @@ const deleteMandalGallery = asyncHandler(async (req, res) => {
     res.status(200).json({
       message: "Vidhan Mandal gallery deleted successfully.",
       data: {},
+      success: true,
     });
   } catch (error) {
     res.status(500);

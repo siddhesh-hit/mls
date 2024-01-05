@@ -30,6 +30,7 @@ const createDistrict = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "District created successfully.",
       data: district,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -51,6 +52,7 @@ const getAllDistrict = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "District fetched successfully.",
       data: district,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -72,6 +74,7 @@ const getDistrict = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "District fetched successfully.",
       data: district,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -107,6 +110,7 @@ const updateDistrict = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "District updated successfully.",
       data: district,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -127,7 +131,8 @@ const deleteDistrict = asyncHandler(async (req, res) => {
     }
     res.status(201).json({
       message: "District deleted successfully.",
-      data: district,
+      data: {},
+      success: true,
     });
   } catch (error) {
     res.status(500);

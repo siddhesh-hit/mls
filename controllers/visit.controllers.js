@@ -26,6 +26,7 @@ const visitCount = asyncHandler(async (req, res) => {
 
     res.status(201).json({
       data: newCount,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -47,6 +48,7 @@ const getAllNotification = asyncHandler(async (req, res) => {
 
     res.status(201).json({
       data: notifications,
+      success: true,
     });
   } catch (error) {
     res.status(500);

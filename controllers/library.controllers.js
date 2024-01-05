@@ -42,6 +42,7 @@ const createLibrary = asyncHandler(async (req, res) => {
       res.status(201).json({
         message: "Library created successfully",
         data: library,
+        success: true,
       });
     } else {
       res.status(400);
@@ -63,6 +64,7 @@ const getLibraries = asyncHandler(async (req, res) => {
       res.status(200).json({
         message: "Libraries fetched successfully",
         data: libraries,
+        success: true,
       });
     } else {
       res.status(404);
@@ -87,6 +89,7 @@ const getActiveLibrary = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Library fetched successfully.",
       data: getActive,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -104,6 +107,7 @@ const getLibrary = asyncHandler(async (req, res) => {
       res.status(200).json({
         message: "Library fetched successfully",
         data: library,
+        success: true,
       });
     } else {
       res.status(404);
@@ -165,6 +169,7 @@ const updateLibrary = asyncHandler(async (req, res) => {
       res.status(200).json({
         message: "Library updated successfully",
         data: updatedLibrary,
+        success: true,
       });
     } else {
       res.status(400);
@@ -196,6 +201,8 @@ const deleteLibrary = asyncHandler(async (req, res) => {
     if (deletedLibrary) {
       res.status(200).json({
         message: "Library deleted successfully",
+        success: true,
+        data: {},
       });
     } else {
       res.status(400);

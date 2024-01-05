@@ -36,6 +36,7 @@ const createConstituency = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Constituency created successfully.",
       data: constituency,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -56,6 +57,7 @@ const getAllConstituency = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Constituency fetched successfully.",
       data: constituency,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -76,6 +78,7 @@ const getConstituency = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Constituency fetched successfully.",
       data: constituency,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -110,6 +113,7 @@ const updateConstituency = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Constituency created successfully.",
       data: constituency,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -130,7 +134,8 @@ const deleteConstituency = asyncHandler(async (req, res) => {
     }
     res.status(201).json({
       message: "Constituency deleted successfully.",
-      data: constituency,
+      data: {},
+      success: true,
     });
   } catch (error) {
     res.status(500);

@@ -54,7 +54,7 @@ const registerUserPhone = asyncHandler(async (req, res) => {
     res.status(201).json({
       success: true,
       message: "User registered successfully",
-      user: newUser,
+      data: newUser,
     });
   } catch (error) {
     res.status(500);
@@ -87,7 +87,7 @@ const verifyUserPhone = asyncHandler(async (req, res) => {
     res.status(201).json({
       success: true,
       message: "User verified successfully",
-      user,
+      data: user,
     });
   } catch (error) {
     res.status(501).json({
@@ -147,7 +147,7 @@ const registerUserEmail = asyncHandler(async (req, res) => {
     res.status(201).json({
       success: true,
       message: "User registered successfully",
-      user: newUser,
+      data: newUser,
     });
   } catch (error) {
     res.status(500);
@@ -180,7 +180,7 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
     res.status(201).json({
       success: true,
       message: "User verified successfully",
-      user,
+      data: user,
     });
   } catch (error) {
     res.status(501);
@@ -247,7 +247,7 @@ const loginUserEmail = asyncHandler(async (req, res) => {
     res.status(201).json({
       success: true,
       message: "User logged in successfully",
-      user,
+      data: user,
     });
   } catch (error) {
     res.status(501);
@@ -433,7 +433,7 @@ const getUsers = asyncHandler(async (req, res) => {
     res.status(201).json({
       success: true,
       message: "Users fetched successfully",
-      users,
+      data: users,
     });
   } catch (error) {
     res.status(501);
@@ -457,7 +457,7 @@ const getUserById = asyncHandler(async (req, res) => {
     res.status(201).json({
       success: true,
       message: "User fetched successfully",
-      user,
+      data: user,
     });
   } catch (error) {
     res.status(501);
@@ -535,6 +535,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 
     res.status(201).json({
       success: true,
+      data: {},
       message: "User deleted successfully",
     });
   } catch (error) {

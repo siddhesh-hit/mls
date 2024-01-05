@@ -65,6 +65,7 @@ const createVidhanSabha = asyncHandler(async (req, res) => {
 
     res.status(201).json({
       message: "VidhanSabha created successfully.",
+      success: true,
       data: vidhanSabha,
     });
   } catch (error) {
@@ -87,6 +88,7 @@ const getVidhanSabhas = asyncHandler(async (req, res) => {
 
     res.status(200).json({
       message: "VidhanSabhas fetched successfully.",
+      success: true,
       data: vidhanSabhas,
     });
   } catch (error) {
@@ -107,6 +109,7 @@ const getActiveVidhanSabha = asyncHandler(async (req, res) => {
     }
     res.status(201).json({
       message: "Vidhan Sabha fetched successfully.",
+      success: true,
       data: getActive,
     });
   } catch (error) {
@@ -129,6 +132,7 @@ const getVidhanSabhaById = asyncHandler(async (req, res) => {
 
     res.status(200).json({
       message: "VidhanSabha fetched successfully.",
+      success: true,
       data: vidhanSabha,
     });
   } catch (error) {
@@ -229,6 +233,7 @@ const updateVidhanSabha = asyncHandler(async (req, res) => {
 
     res.status(200).json({
       message: "VidhanSabha updated successfully.",
+      success: true,
       data: vidhanSabha,
     });
   } catch (error) {
@@ -250,7 +255,9 @@ const deleteVidhanSabha = asyncHandler(async (req, res) => {
     }
 
     res.status(200).json({
+      success: true,
       message: "VidhanSabha deleted successfully.",
+      data: {},
     });
   } catch (error) {
     res.status(500);

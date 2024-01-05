@@ -68,6 +68,7 @@ const createVidhanParishad = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "VidhanParishad created successfully.",
       data: vidhanParishad,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -92,6 +93,7 @@ const getVidhanParishads = asyncHandler(async (req, res) => {
     res.status(200).json({
       message: "VidhanParishads fetched successfully.",
       data: vidhanParishads,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -111,6 +113,7 @@ const getActiveVidhanParishad = asyncHandler(async (req, res) => {
     }
     res.status(201).json({
       message: "Vidhan Parishad fetched successfully.",
+      success: true,
       data: getActive,
     });
   } catch (error) {
@@ -133,6 +136,7 @@ const getVidhanParishadById = asyncHandler(async (req, res) => {
 
     res.status(200).json({
       message: "VidhanParishad fetched successfully.",
+      success: true,
       data: vidhanParishad,
     });
   } catch (error) {
@@ -235,6 +239,7 @@ const updateVidhanParishad = asyncHandler(async (req, res) => {
 
     res.status(200).json({
       message: "VidhanParishad updated successfully.",
+      success: true,
       data: vidhanParishad,
     });
   } catch (error) {
@@ -260,7 +265,9 @@ const deleteVidhanParishad = asyncHandler(async (req, res) => {
     }
 
     res.status(200).json({
+      success: true,
       message: "VidhanParishad deleted successfully.",
+      data: {},
     });
   } catch (error) {
     res.status(500);

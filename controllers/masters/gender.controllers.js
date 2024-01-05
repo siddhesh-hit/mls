@@ -30,6 +30,7 @@ const createGender = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Gender created successfully.",
       data: gender,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -51,6 +52,7 @@ const getAllGender = asyncHandler(async (req, res) => {
     }
     res.status(201).json({
       message: "Genders fetched successfully.",
+      success: true,
       data: genders,
     });
   } catch (error) {
@@ -73,6 +75,7 @@ const getGender = asyncHandler(async (req, res) => {
     }
     res.status(201).json({
       message: "Gender fetched successfully.",
+      success: true,
       data: gender,
     });
   } catch (error) {
@@ -106,6 +109,7 @@ const updateGender = asyncHandler(async (req, res) => {
     }
     res.status(201).json({
       message: "Gender updated successfully.",
+      success: true,
       data: gender,
     });
   } catch (error) {
@@ -128,7 +132,8 @@ const deleteGender = asyncHandler(async (req, res) => {
     }
     res.status(201).json({
       message: "Gender fetched successfully.",
-      data: gender,
+      success: true,
+      data: {},
     });
   } catch (error) {
     res.status(500);

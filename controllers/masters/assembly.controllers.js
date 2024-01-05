@@ -36,6 +36,7 @@ const createAssembly = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Assembly created successfully.",
       data: assembly,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -57,6 +58,8 @@ const getAllAssembly = asyncHandler(async (req, res) => {
 
     res.status(201).json({
       message: "Assembly created successfully.",
+
+      success: true,
       data: assembly,
     });
   } catch (error) {
@@ -80,6 +83,7 @@ const getAssembly = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Assembly created successfully.",
       data: assembly,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -114,6 +118,7 @@ const updateAssembly = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Assembly updated successfully.",
       data: assembly,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -136,7 +141,8 @@ const deleteAssembly = asyncHandler(async (req, res) => {
 
     res.status(201).json({
       message: "Assembly deleted successfully.",
-      data: assembly,
+      data: {},
+      success: true,
     });
   } catch (error) {
     res.status(500);

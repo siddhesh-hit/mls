@@ -128,6 +128,7 @@ const getActiveLegislativeMember = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Legislative member fetched successfully.",
       data: getActive,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -151,6 +152,7 @@ const getCurrentLegislativeMember = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Legislative member fetched successfully.",
       data: getCurrent,
+      success: true,
     });
   } catch (error) {
     res.status(500);

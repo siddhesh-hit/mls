@@ -7,6 +7,7 @@ const User = require("../models/userModel");
 const cookieParser = require("cookie-parser");
 
 const cookieParserMiddleware = cookieParser();
+
 const authMiddleware = asyncHandler(async (req, res, next) => {
   try {
     // Parse cookies using cookie-parser

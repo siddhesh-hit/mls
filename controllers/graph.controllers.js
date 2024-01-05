@@ -30,6 +30,7 @@ const createMemberGraph = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "memberGraph created successfully.",
       data: memberGraph,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -52,6 +53,7 @@ const getAllMemberGraphs = asyncHandler(async (req, res) => {
     res.status(200).json({
       message: "All memberGraphs fetched successfully.",
       data: memberGraphs,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -72,6 +74,7 @@ const getActiveMemberGraph = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "MemberGraph fetched successfully.",
       data: getActive,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -94,6 +97,7 @@ const getMemberGraphById = asyncHandler(async (req, res) => {
     res.status(200).json({
       message: "memberGraph fetched successfully.",
       data: memberGraph,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -140,6 +144,7 @@ const updateMemberGraph = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "memberGraph updated successfully.",
       data: memberGraph,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -162,6 +167,7 @@ const deleteMemberGraph = asyncHandler(async (req, res) => {
     res.status(200).json({
       message: "memberGraph deleted successfully.",
       data: {},
+      success: true,
     });
   } catch (error) {
     res.status(500);

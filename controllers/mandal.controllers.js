@@ -70,6 +70,7 @@ const createVidhanMandal = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Vidhan Mandal created successfully.",
       data: vidhanMandal,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -92,6 +93,7 @@ const getVidhanMandals = asyncHandler(async (req, res) => {
     res.status(200).json({
       message: "Vidhan Mandal fetched successfully.",
       data: vidhanMandals,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -112,6 +114,7 @@ const getActiveVidhanMandal = asyncHandler(async (req, res) => {
     res.status(201).json({
       message: "Vidhan Mandal fetched successfully.",
       data: getActive,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -136,6 +139,7 @@ const getVidhanMandalById = asyncHandler(async (req, res) => {
     res.status(200).json({
       message: "Vidhan Mandal fetched successfully.",
       data: vidhanMandal,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -228,6 +232,7 @@ const updateVidhanMandal = asyncHandler(async (req, res) => {
     res.status(200).json({
       message: "Vidhan Mandal updated successfully.",
       data: updatedVidhanMandal,
+      success: true,
     });
   } catch (error) {
     res.status(500);
@@ -249,7 +254,8 @@ const deleteVidhanMandal = asyncHandler(async (req, res) => {
 
     res.status(200).json({
       message: "Vidhan Mandal deleted successfully.",
-      data: vidhanMandal,
+      data: {},
+      success: true,
     });
   } catch (error) {
     res.status(500);
