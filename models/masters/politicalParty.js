@@ -2,7 +2,7 @@
 
 const mongoose = require("mongoose");
 
-const imageSchema = require("../imageSchema");
+const imageSchema = require("../portals/imageSchema");
 
 const politicalPartySchema = new mongoose.Schema(
   {

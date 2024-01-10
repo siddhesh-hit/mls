@@ -1,9 +1,10 @@
 const asyncHandler = require("express-async-handler");
-const Notification = require("../models/notification");
+const Notification = require("../models/portals/notification");
 
 // @desc    Generate a notification for each module updated
 const notificationGenerator = asyncHandler(
   async (name, messageMr, messageEn, res) => {
+    console.log(name, messageMr, messageEn);
     try {
       // check if name & message exist
       if (!name || !messageMr || !messageEn) {
@@ -19,8 +20,8 @@ const notificationGenerator = asyncHandler(
       // create new Notification
       const createNotification = await Notification.create({
         name,
-        marathi: { messageMr },
-        english: { messageEn },
+        marathi: { message: messageMr },
+        english: { message: messageEn },
       });
     } catch (error) {
       res.status(500).json({ error: error.message });

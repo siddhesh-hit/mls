@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 dotenv.config();
 
-const RefreshToken = require("../models/refreshToken");
+const RefreshToken = require("../models/portals/refreshToken");
 
 // generateToken function
 const accessToken = (user) => {

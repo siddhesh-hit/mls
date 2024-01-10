@@ -39,7 +39,7 @@ app.get("/back", (req, res) => {
 });
 
 // defining the routes
-app.use("/", routes);
+app.use("/api", routes);
 
 // static files
 app.use("/images", express.static("./images"));
