@@ -32,10 +32,6 @@ const assemblySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    current_assembly: {
-      type: String,
-      required: true,
-    },
     isActive: {
       type: Boolean,
       default: true,

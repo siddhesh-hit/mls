@@ -16,12 +16,12 @@ const {
 
 // routes
 router
-  .use("/")
+  .route("/")
   .get(getAllNavigation)
   .post(authMiddleware, checkRoleMiddleware(["Admin"]), createNavigation);
 
 router
-  .use("/:id")
+  .route("/:id")
   .get(getNavigation)
   .put(authMiddleware, checkRoleMiddleware(["Admin"]), updateNavigation)
   .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteNavigation);

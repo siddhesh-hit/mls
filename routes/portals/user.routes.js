@@ -60,7 +60,12 @@ router.post(
   inviteUser
 );
 router.get("/", authMiddleware, checkRoleMiddleware(["Admin"]), getUsers);
-router.get("/:id", authMiddleware, checkRoleMiddleware(["Admin"]), getUserById);
+router.get(
+  "/:id",
+  authMiddleware,
+  checkRoleMiddleware(["User", "Admin"]),
+  getUserById
+);
 router.put(
   "/:id",
   authMiddleware,

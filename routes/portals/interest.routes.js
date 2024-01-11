@@ -15,12 +15,12 @@ const {
 
 // routes
 router
-  .use("/")
+  .route("/")
   .get(getAllInterestArea)
   .post(authMiddleware, checkRoleMiddleware(["Admin"]), createInterestArea);
 
 router
-  .use("/:id")
+  .route("/:id")
   .get(getInterestArea)
   .put(authMiddleware, checkRoleMiddleware(["Admin"]), updateInterestArea)
   .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteInterestArea);

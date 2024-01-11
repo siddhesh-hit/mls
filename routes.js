@@ -15,12 +15,15 @@ const memberRoutes = require("./routes/portals/member.routes");
 const feedbackRoutes = require("./routes/portals/feedback.routes");
 const helpdeskRoutes = require("./routes/portals/helpdesk.routes");
 const sessionRoutes = require("./routes/portals/session.routes");
+const requestRoutes = require("./routes/portals/request.routes");
+const interestRoutes = require("./routes/portals/interest.routes");
 
 const assemblyRoutes = require("./routes/masters/assembly.routes");
 const constituencyRoutes = require("./routes/masters/constituency.routes");
 const districtRoutes = require("./routes/masters/district.routes");
 const genderRoutes = require("./routes/masters/gender.routes");
 const partyRoutes = require("./routes/masters/party.routes");
+const navigationRoutes = require("./routes/masters/navigation.routes");
 
 const visitRoute = require("./routes/portals/visit.routes");
 
@@ -38,12 +41,15 @@ router.use("/member", memberRoutes);
 router.use("/feedback", feedbackRoutes);
 router.use("/helpdesk", helpdeskRoutes);
 router.use("/session", sessionRoutes);
+router.use("/request", requestRoutes);
+router.use("/interest", interestRoutes);
 
 router.use("/assembly", assemblyRoutes);
 router.use("/constituency", constituencyRoutes);
 router.use("/district", districtRoutes);
 router.use("/gender", genderRoutes);
 router.use("/party", partyRoutes);
+router.use("/navigation", navigationRoutes);
 
 router.use("/visit", visitRoute);
 

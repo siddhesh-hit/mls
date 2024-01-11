@@ -3,12 +3,12 @@ const mongoose = require("mongoose");
 const requestAccessSchema = new mongoose.Schema(
   {
     query: {
-      type: mongoose.Schema.type.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Navigation",
       required: true,
     },
     userId: {
-      type: mongoose.Schema.type.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },

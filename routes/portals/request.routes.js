@@ -15,12 +15,12 @@ const {
 
 // routes
 router
-  .use("/")
+  .route("/")
   .get(getAllRequestAccess)
   .post(authMiddleware, checkRoleMiddleware(["Admin"]), createRequestAccess);
 
 router
-  .use("/:id")
+  .route("/:id")
   .get(getRequestAccess)
   .put(authMiddleware, checkRoleMiddleware(["Admin"]), updateRequestAccess)
   .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteRequestAccess);

@@ -125,6 +125,10 @@ const getMember = asyncHandler(async (req, res) => {
   try {
     const member = await MemberLegislative.findById(req.params.id);
 
+    member.political_journey.sort((a, b) => {
+      return new Date(b.date) - new Date(a.date);
+    });
+
     // check if member exists
     if (!member) {
       res.status(400);
