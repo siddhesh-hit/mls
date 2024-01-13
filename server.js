@@ -66,5 +66,9 @@ connectDB()
 //   main().catch(console.error);
 // });
 
+const proNam = process;
+
+// console.log(proNam);
+
 // export the app
 module.exports = app;

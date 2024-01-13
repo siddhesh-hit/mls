@@ -3,13 +3,15 @@ const asyncHandler = require("express-async-handler");
 const Visit = require("../../models/portals/Visit");
 const Notification = require("../../models/portals/notification");
 
-// @desc    Create a count of visit
-// @route   /api/visit/
+// @desc    Update a count of visit
+// @route   PUT /api/visit/
 // @access  Public
 const visitCount = asyncHandler(async (req, res) => {
   try {
     const id = "6579503547089830865d7f7d";
     const visit = await Visit.findById(id);
+
+    console.log(visit);
 
     const oldCount = visit.count + 1;
     console.log(oldCount);
@@ -35,7 +37,7 @@ const visitCount = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get all notifications
-// @route   /api/visit/notification
+// @route   GET /api/visit/notification
 // @access  Public
 const getAllNotification = asyncHandler(async (req, res) => {
   try {

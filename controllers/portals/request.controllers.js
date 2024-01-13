@@ -51,7 +51,11 @@ const createRequestAccess = asyncHandler(async (req, res) => {
 // @access  Admin
 const getAllRequestAccess = asyncHandler(async (req, res) => {
   try {
-    const requestAccesses = await RequestAccess.find({});
+    const requestAccesses = await RequestAccess.find({})
+      .populate("query", "marathi english isDropDown")
+      .populate("userId", "full_name email")
+      .exec();
+
     if (!requestAccesses) {
       res.status(400);
       throw new Error("No RequestAccess found.");
@@ -73,7 +77,10 @@ const getAllRequestAccess = asyncHandler(async (req, res) => {
 // @access  Admin
 const getRequestAccess = asyncHandler(async (req, res) => {
   try {
-    const requestAccess = await RequestAccess.findById(req.params.id);
+    const requestAccess = await RequestAccess.findById(req.params.id)
+      .populate("query", "marathi english isDropDown")
+      .populate("userId", "full_name email")
+      .exec();
 
     if (!requestAccess) {
       res.status(400);

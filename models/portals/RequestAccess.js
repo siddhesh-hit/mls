@@ -22,7 +22,7 @@ const requestAccessSchema = new mongoose.Schema(
     },
     isProvided: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     isActive: {
       type: Boolean,

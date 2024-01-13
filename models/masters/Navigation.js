@@ -2,17 +2,32 @@ const mongoose = require("mongoose");
 
 const navigationSchema = new mongoose.Schema(
   {
-    navigation: {
-      type: String,
-      required: true,
-    },
-    dropDownValue: [
-      {
-        name: {
-          type: String,
-        },
+    marathi: {
+      navigation: {
+        type: String,
+        required: true,
       },
-    ],
+      dropDownValue: [
+        {
+          name: {
+            type: String,
+          },
+        },
+      ],
+    },
+    english: {
+      navigation: {
+        type: String,
+        required: true,
+      },
+      dropDownValue: [
+        {
+          name: {
+            type: String,
+          },
+        },
+      ],
+    },
     isDropDown: {
       type: Boolean,
       default: false,

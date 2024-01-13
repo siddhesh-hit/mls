@@ -51,7 +51,10 @@ const createInterestArea = asyncHandler(async (req, res) => {
 // @access  Public
 const getAllInterestArea = asyncHandler(async (req, res) => {
   try {
-    const interestAreas = await InterestArea.find({});
+    const interestAreas = await InterestArea.find({})
+      .populate("query", "marathi english isDropDown")
+      .populate("userId", "full_name email")
+      .exec();
 
     if (!interestAreas) {
       res.status(400);
@@ -74,7 +77,10 @@ const getAllInterestArea = asyncHandler(async (req, res) => {
 // @access  Public
 const getInterestArea = asyncHandler(async (req, res) => {
   try {
-    const interestArea = await InterestArea.findById(req.params.id);
+    const interestArea = await InterestArea.findById(req.params.id)
+      .populate("query", "marathi english isDropDown")
+      .populate("userId", "full_name email")
+      .exec();
 
     if (!interestArea) {
       res.status(400);

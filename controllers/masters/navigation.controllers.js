@@ -14,20 +14,39 @@ const createNavigation = asyncHandler(async (req, res) => {
   try {
     const data = req.body;
 
+    let formattedData = {};
+
     if (!data) {
       res.status(400);
       throw new Error("Please provide data");
     }
 
-    // validate the data
-    const { error } = createNavigationValidation(data);
-    if (error) {
-      res.status(400);
-      throw new Error(error.details[0].message);
+    if (data.isDropDown) {
+      formattedData = data;
+    } else {
+      let object = {
+        marathi: {
+          navigation: data.marathi.navigation,
+        },
+        english: {
+          navigation: data.english.navigation,
+        },
+        isDropDown: data.isDropDown,
+      };
+      formattedData = object;
     }
 
+    console.log(formattedData);
+
+    // // validate the data
+    // const { error } = createNavigationValidation(data);
+    // if (error) {
+    //   res.status(400);
+    //   throw new Error(error.details[0].message);
+    // }
+
     // create navigation
-    const navigate = await Navigation.create(data);
+    const navigate = await Navigation.create(formattedData);
     if (!navigate) {
       res.status(400);
       throw new Error("Navigate not created.");
@@ -56,7 +75,7 @@ const getAllNavigation = asyncHandler(async (req, res) => {
       throw new Error("No navigation found.");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Navigation found successfully.",
       data: navigations,
       success: true,
@@ -72,14 +91,14 @@ const getAllNavigation = asyncHandler(async (req, res) => {
 // @access  Public
 const getNavigation = asyncHandler(async (req, res) => {
   try {
-    const navigation = Navigation.findById(req.params.id);
+    const navigation = await Navigation.findById(req.params.id);
 
     if (!navigation) {
       res.status(400);
       throw new Error("Navigation not found.");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Navigation found successfully.",
       data: navigation,
       success: true,
@@ -121,7 +140,7 @@ const updateNavigation = asyncHandler(async (req, res) => {
       throw new Error("Failed to updated navigation");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Navigation updated successfully",
       data: updateNavigation,
       success: true,
@@ -137,15 +156,15 @@ const updateNavigation = asyncHandler(async (req, res) => {
 // @access  Admin
 const deleteNavigation = asyncHandler(async (req, res) => {
   try {
-    const navigation = Navigation.findByIdAndDelete(req.params.id);
+    const navigation = await Navigation.findByIdAndDelete(req.params.id);
 
     if (!navigation) {
       res.status(400);
       throw new Error("Navigation not found.");
     }
 
-    res.status(201).json({
-      message: "Navigation found successfully.",
+    res.status(200).json({
+      message: "Navigation deleted successfully.",
       data: {},
       success: true,
     });
