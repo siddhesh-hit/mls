@@ -25,7 +25,8 @@ const genderRoutes = require("./routes/masters/gender.routes");
 const partyRoutes = require("./routes/masters/party.routes");
 const navigationRoutes = require("./routes/masters/navigation.routes");
 
-const visitRoute = require("./routes/portals/visit.routes");
+const visitRoute = require("./routes/extras/visit.routes");
+const notificationRoute = require("./routes/extras/notification.routes");
 
 // defining the routes
 router.use("/user", userRoutes);
@@ -52,5 +53,6 @@ router.use("/party", partyRoutes);
 router.use("/navigation", navigationRoutes);
 
 router.use("/visit", visitRoute);
+router.use("/notification", notificationRoute);
 
 module.exports = router;

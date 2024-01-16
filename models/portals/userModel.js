@@ -58,6 +58,10 @@ const userModel = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    notificationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Notification",
+    },
   },
   {
     timestamps: true,

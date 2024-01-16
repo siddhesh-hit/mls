@@ -8,7 +8,7 @@ const cron = require("node-cron");
 const connectDB = require("./config/db.config");
 const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
 const routes = require("./routes");
-const main = require("./services/dumpDatabase");
+// const main = require("./services/dumpDatabase");
 
 // defining modules
 const app = express();

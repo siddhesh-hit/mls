@@ -6,7 +6,9 @@ const {
   updateVidhanParishadValidation,
 } = require("../../validations/portal/parishadValidation");
 
-const notificationGenerator = require("../../utils/notification");
+const {
+  createNotificationFormat,
+} = require("../../controllers/extras/notification.controllers");
 
 // @desc    Create a vidhanParishad
 // @route   POST /api/parishad
@@ -58,12 +60,17 @@ const createVidhanParishad = asyncHandler(async (req, res) => {
       );
     }
 
-    await notificationGenerator(
-      "VidhanParishad",
-      "नवी विधानपरिषद जोडले!",
-      "New VidhanParishad added!",
-      res
-    );
+    let notificationData = {
+      name: "VidhanParishad",
+      marathi: {
+        message: "नवी विधानपरिषद जोडले!",
+      },
+      english: {
+        message: "New VidhanParishad added!",
+      },
+    };
+
+    await createNotificationFormat(notificationData, res);
 
     res.status(201).json({
       message: "VidhanParishad created successfully.",
@@ -155,6 +162,8 @@ const updateVidhanParishad = asyncHandler(async (req, res) => {
 
     data = JSON.parse(data);
 
+    console.log(data);
+
     // check if vidhanParishad exists
     const vidhanParishadExists = await VidhanParishad.findById(id);
     if (!vidhanParishadExists) {
@@ -230,12 +239,17 @@ const updateVidhanParishad = asyncHandler(async (req, res) => {
       );
     }
 
-    await notificationGenerator(
-      "VidhanParishad",
-      "विधानपरिषद अपडेट झाले!",
-      "VidhanParishad updated!",
-      res
-    );
+    let notificationData = {
+      name: "VidhanParishad",
+      marathi: {
+        message: "विधानपरिषद अपडेट झाले!",
+      },
+      english: {
+        message: "VidhanParishad updated!",
+      },
+    };
+
+    await createNotificationFormat(notificationData, res);
 
     res.status(200).json({
       message: "VidhanParishad updated successfully.",

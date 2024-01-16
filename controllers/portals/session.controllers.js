@@ -6,7 +6,9 @@ const {
   updateSessionCalendarValidation,
 } = require("../../validations/portal/sessionValidation");
 
-const notificationGenerator = require("../../utils/notification");
+const {
+  createNotificationFormat,
+} = require("../../controllers/extras/notification.controllers");
 
 // @desc    Create a session calendar
 // @route   POST /api/session/
@@ -49,12 +51,17 @@ const createSession = asyncHandler(async (req, res) => {
       );
     }
 
-    await notificationGenerator(
-      "Session Calendar",
-      "नवीन सत्र दिनदर्शिका जोडले!",
-      "New Session Calendar added!",
-      res
-    );
+    let notificationData = {
+      name: "Session Calendar",
+      marathi: {
+        message: "नवीन सत्र दिनदर्शिका जोडले!",
+      },
+      english: {
+        message: "New Session Calendar added!",
+      },
+    };
+
+    await createNotificationFormat(notificationData, res);
 
     res.status(201).json({
       message: "Session Calendar created successfully.",
@@ -169,12 +176,17 @@ const updateSession = asyncHandler(async (req, res) => {
       );
     }
 
-    await notificationGenerator(
-      "Session Calendar",
-      "सत्र दिनदर्शिका अपडेट झाले!",
-      "Session Calendar updated!",
-      res
-    );
+    let notificationData = {
+      name: "Session Calendar",
+      marathi: {
+        message: "सत्र दिनदर्शिका अपडेट झाले!",
+      },
+      english: {
+        message: "Session Calendar updated!",
+      },
+    };
+
+    await createNotificationFormat(notificationData, res);
 
     res.status(201).json({
       message: "Session Calendar created updated.",

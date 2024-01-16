@@ -6,7 +6,9 @@ const {
   updateVidhanSabhaValidation,
 } = require("../../validations/portal/sabhaValidation");
 
-const notificationGenerator = require("../../utils/notification");
+const {
+  createNotificationFormat,
+} = require("../../controllers/extras/notification.controllers");
 
 // @desc    Create a vidhanSabha
 // @route   POST /api/sabha
@@ -56,12 +58,17 @@ const createVidhanSabha = asyncHandler(async (req, res) => {
       throw new Error("Something went wrong while creating the vidhanSabha.");
     }
 
-    await notificationGenerator(
-      "VidhanSabha",
-      "नवी विधानसभा जोडले!",
-      "New VidhanSabha added!",
-      res
-    );
+    let notificationData = {
+      name: "VidhanSabha",
+      marathi: {
+        message: "नवी विधानसभा जोडले!",
+      },
+      english: {
+        message: "New VidhanSabha added!",
+      },
+    };
+
+    await createNotificationFormat(notificationData, res);
 
     res.status(201).json({
       message: "VidhanSabha created successfully.",
@@ -224,12 +231,17 @@ const updateVidhanSabha = asyncHandler(async (req, res) => {
       throw new Error("Something went wrong while updating the vidhanSabha.");
     }
 
-    await notificationGenerator(
-      "VidhanSabha",
-      "विधानसभा अपडेट झाले!",
-      "VidhanSabha updated!",
-      res
-    );
+    let notificationData = {
+      name: "VidhanSabha",
+      marathi: {
+        message: "विधानसभा अपडेट झाले!",
+      },
+      english: {
+        message: "VidhanSabha updated!",
+      },
+    };
+
+    await createNotificationFormat(notificationData, res);
 
     res.status(200).json({
       message: "VidhanSabha updated successfully.",

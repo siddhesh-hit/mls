@@ -7,7 +7,9 @@ const {
   updateVidhanMandalValidation,
 } = require("../../validations/portal/mandalValidation");
 
-const notificationGenerator = require("../../utils/notification");
+const {
+  createNotificationFormat,
+} = require("../../controllers/extras/notification.controllers");
 
 // @desc    Create a vidhan mandal
 // @route   POST /api/mandal/
@@ -60,12 +62,17 @@ const createVidhanMandal = asyncHandler(async (req, res) => {
       throw new Error("Something went wrong while creating the Vidhan Mandal.");
     }
 
-    await notificationGenerator(
-      "VidhanMandal",
-      "नवीन विधानमंडळ जोडले!",
-      "New VidhanMandal added!",
-      res
-    );
+    let notificationData = {
+      name: "VidhanMandal",
+      marathi: {
+        message: "नवीन विधानमंडळ जोडले!",
+      },
+      english: {
+        message: "New VidhanMandal added!",
+      },
+    };
+
+    await createNotificationFormat(notificationData, res);
 
     res.status(201).json({
       message: "Vidhan Mandal created successfully.",
@@ -206,12 +213,17 @@ const updateVidhanMandal = asyncHandler(async (req, res) => {
       throw new Error("Something went wrong while updating the Vidhan Mandal.");
     }
 
-    await notificationGenerator(
-      "VidhanMandal",
-      "विधानमंडळ अपडेट झाले!",
-      "VidhanMandal updated!",
-      res
-    );
+    let notificationData = {
+      name: "VidhanMandal",
+      marathi: {
+        message: "विधानमंडळ अपडेट झाले!",
+      },
+      english: {
+        message: "VidhanMandal updated!",
+      },
+    };
+
+    await createNotificationFormat(notificationData, res);
 
     res.status(200).json({
       message: "Vidhan Mandal updated successfully.",

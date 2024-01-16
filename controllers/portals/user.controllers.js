@@ -3,6 +3,7 @@ const cookieParser = require("cookie-parser");
 
 const User = require("../../models/portals/userModel");
 const RefreshToken = require("../../models/portals/refreshToken");
+const Notification = require("../../models/extras/Notification");
 
 const {
   loginEmailValidate,
@@ -175,6 +176,17 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
 
     user.email_otp = "";
     user.user_verfied = true;
+
+    const notification = await Notification.create({
+      userId: user._id,
+    });
+
+    if (!notification) {
+      res.status(402);
+      throw new Error("Failed to create user's notification.");
+    }
+
+    user.notificationId = notification._id;
     await user.save();
 
     res.status(201).json({
@@ -482,12 +494,12 @@ const updateUser = asyncHandler(async (req, res) => {
 
     console.log(data);
 
-    // check if email already exists
-    const { error } = updateUserValidate(data);
-    if (error) {
-      res.status(400);
-      throw new Error(error.details[0].message);
-    }
+    // // check if email already exists
+    // const { error } = updateUserValidate(data);
+    // if (error) {
+    //   res.status(400);
+    //   throw new Error(error.details[0].message);
+    // }
 
     // check if email already exists
     let user = await User.findOne({ email });

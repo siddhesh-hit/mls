@@ -6,7 +6,9 @@ const {
   updateMemberValidation,
 } = require("../../validations/portal/memberValidation");
 
-const notificationGenerator = require("../../utils/notification");
+const {
+  createNotificationFormat,
+} = require("../../controllers/extras/notification.controllers");
 
 // @desc    Create new legislativeMember
 // @route   POST /api/member/
@@ -43,12 +45,18 @@ const createMember = asyncHandler(async (req, res) => {
     const memberLegislative = await MemberLegislative.create(data);
 
     if (memberLegislative) {
-      await notificationGenerator(
-        "LegislativeMember",
-        "विधानपरिषद सदस्य जोडले!",
-        "New Legislative Member added!",
-        res
-      );
+      let notificationData = {
+        name: "LegislativeMember",
+        marathi: {
+          message: "विधानपरिषद सदस्य जोडले!",
+        },
+        english: {
+          message: "New Legislative Member added!",
+        },
+      };
+
+      await createNotificationFormat(notificationData, res);
+
       res.status(201).json({
         success: true,
         message: "Legislative Member created successfully",
@@ -192,12 +200,17 @@ const updateMember = asyncHandler(async (req, res) => {
     );
 
     if (memberLegislative) {
-      await notificationGenerator(
-        "LegislativeMember",
-        "विधानपरिषद अपडेट झाले!",
-        "Legislative Member Updated!",
-        res
-      );
+      let notificationData = {
+        name: "LegislativeMember",
+        marathi: {
+          message: "विधानपरिषद सदस्य अपडेट झाले!",
+        },
+        english: {
+          message: "Legislative Member Updated!",
+        },
+      };
+
+      await createNotificationFormat(notificationData, res);
 
       res.status(201).json({
         success: true,

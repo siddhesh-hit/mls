@@ -6,7 +6,9 @@ const {
   updateFAQValidation,
 } = require("../../validations/portal/faqValidation");
 
-const notificationGenerator = require("../../utils/notification");
+const {
+  createNotificationFormat,
+} = require("../../controllers/extras/notification.controllers");
 
 // @desc    Create a new FAQ
 // @route   POST /api/faq/
@@ -45,12 +47,17 @@ const createFAQ = asyncHandler(async (req, res) => {
       FAQs.push(faq);
     }
 
-    await notificationGenerator(
-      "FAQ",
-      "नवीन FAQ जोडले!",
-      "New FAQs added!",
-      res
-    );
+    let notificationData = {
+      name: "FAQ",
+      marathi: {
+        message: "नवीन FAQ जोडले!",
+      },
+      english: {
+        message: "New FAQs added!",
+      },
+    };
+
+    await createNotificationFormat(notificationData, res);
 
     res.status(201).json({
       message: "FAQ created successfully",
@@ -175,12 +182,17 @@ const updateFAQById = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Something went wrong");
     } else {
-      await notificationGenerator(
-        "FAQ",
-        "FAQs अपडेट झाले!",
-        "FAQs Updated!",
-        res
-      );
+      let notificationData = {
+        name: "FAQ",
+        marathi: {
+          message: "FAQs अपडेट झाले!",
+        },
+        english: {
+          message: "FAQs Updated!",
+        },
+      };
+
+      await createNotificationFormat(notificationData, res);
 
       res.status(201).json({
         message: "FAQ updated successfully",

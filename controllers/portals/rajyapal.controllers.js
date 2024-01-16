@@ -6,7 +6,9 @@ const {
 } = require("../../validations/portal/rajyapalValidation");
 const LegislativeMember = require("../../models/portals/rajyapalMember");
 
-const notificationGenerator = require("../../utils/notification");
+const {
+  createNotificationFormat,
+} = require("../../controllers/extras/notification.controllers");
 
 // @desc    Create a legislative member
 // @route   POST /api/rajyapal
@@ -61,12 +63,18 @@ const createLegislativeMember = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Unable to create legislative member");
     } else {
-      await notificationGenerator(
-        "Rajypal",
-        "नवीन राजपाल जोडले!",
-        "New Rajypal added!",
-        res
-      );
+      let notificationData = {
+        name: "Rajypal",
+        marathi: {
+          message: "नवीन राजपाल जोडले!",
+        },
+        english: {
+          message: "New Rajypal added!",
+        },
+      };
+
+      await createNotificationFormat(notificationData, res);
+
       res.status(200).json({
         success: true,
         message: "Successfully created legislative member",
@@ -254,12 +262,17 @@ const updateLegislativeMember = asyncHandler(async (req, res) => {
       throw new Error("No legislative member found");
     }
 
-    await notificationGenerator(
-      "Rajyapal",
-      "राजपाल अपडेट झाले!",
-      "Rajyapal updated!",
-      res
-    );
+    let notificationData = {
+      name: "Rajyapal",
+      marathi: {
+        message: "राजपाल अपडेट झाले!",
+      },
+      english: {
+        message: "Rajyapal updated!",
+      },
+    };
+
+    await createNotificationFormat(notificationData, res);
 
     // send response
     res.status(200).json({
