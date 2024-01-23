@@ -114,7 +114,7 @@ const getActiveVidhanSabha = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No active data found.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "Vidhan Sabha fetched successfully.",
       success: true,
       data: getActive,
@@ -266,7 +266,7 @@ const deleteVidhanSabha = asyncHandler(async (req, res) => {
       throw new Error("Something went wrong while deleting the vidhanSabha.");
     }
 
-    res.status(200).json({
+    res.status(204).json({
       success: true,
       message: "VidhanSabha deleted successfully.",
       data: {},

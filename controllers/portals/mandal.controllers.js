@@ -118,7 +118,7 @@ const getActiveVidhanMandal = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No active data found.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "Vidhan Mandal fetched successfully.",
       data: getActive,
       success: true,
@@ -248,7 +248,7 @@ const deleteVidhanMandal = asyncHandler(async (req, res) => {
       throw new Error("No Vidhan Mandal found");
     }
 
-    res.status(200).json({
+    res.status(204).json({
       message: "Vidhan Mandal deleted successfully.",
       data: {},
       success: true,

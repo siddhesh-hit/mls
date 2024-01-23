@@ -49,7 +49,7 @@ const getAllDistrict = asyncHandler(async (req, res) => {
       res.status(403);
       throw new Error("Couldn't find District.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "District fetched successfully.",
       data: district,
       success: true,
@@ -71,7 +71,7 @@ const getDistrict = asyncHandler(async (req, res) => {
       res.status(403);
       throw new Error("Couldn't find District.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "District fetched successfully.",
       data: district,
       success: true,
@@ -107,7 +107,7 @@ const updateDistrict = asyncHandler(async (req, res) => {
       res.status(403);
       throw new Error("Couldn't find District.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "District updated successfully.",
       data: district,
       success: true,
@@ -129,7 +129,7 @@ const deleteDistrict = asyncHandler(async (req, res) => {
       res.status(403);
       throw new Error("Couldn't find District.");
     }
-    res.status(201).json({
+    res.status(204).json({
       message: "District deleted successfully.",
       data: {},
       success: true,

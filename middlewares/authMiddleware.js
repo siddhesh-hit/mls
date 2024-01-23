@@ -8,6 +8,14 @@ const cookieParser = require("cookie-parser");
 
 const cookieParserMiddleware = cookieParser();
 
+const roles = {
+  superadmin: ["create", "read", "update", "delete", "user"],
+  admin: ["create", "read", "update", "delete", "user"],
+  reviewer: ["read"],
+  contentcreator: ["create", "update"],
+  user: ["read"],
+};
+
 const authMiddleware = asyncHandler(async (req, res, next) => {
   try {
     // Parse cookies using cookie-parser
@@ -63,10 +71,29 @@ const checkRoleMiddleware = (roles) => {
     if (roles.includes(req.user.role)) {
       next();
     } else {
-      res.status(401);
+      res.status(403);
       throw new Error("Not authorized for this route");
     }
   };
 };
 
-module.exports = { authMiddleware, checkRoleMiddleware };
+const hasPermission = (permissionName = "none") => {
+  return function (req, res, next) {
+    const currentUserRole = req.user.role.toLowerCase();
+
+    if (roles[currentUserRole].includes(permissionName)) {
+      next();
+    } else {
+      return res.status(403).json({
+        success: false,
+        result: null,
+        message: "Access denied : you are not granted permission.",
+      });
+    }
+  };
+};
+
+module.exports = { authMiddleware, checkRoleMiddleware, hasPermission };
+// enum: ["Admin", "SuperAdmin", "Reviewer", "ContentCreator", "User"],
+// Admin : Reviewer: Can view and share the remark
+// Admin : Content creator : Can create, update and edit.

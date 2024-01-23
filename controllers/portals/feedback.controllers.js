@@ -51,7 +51,7 @@ const getAllFeedback = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No feedback found");
     } else {
-      res.status(201).json({
+      res.status(200).json({
         success: true,
         message: "Feedback fetched successfully.",
         data: feedback,
@@ -75,7 +75,7 @@ const getFeedback = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No feedback found");
     } else {
-      res.status(201).json({
+      res.status(200).json({
         success: true,
         message: "Feedback fetched successfully.",
         data: feedback,
@@ -112,7 +112,7 @@ const updateFeedback = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No feedback found");
     } else {
-      res.status(201).json({
+      res.status(200).json({
         success: true,
         message: "Feedback fetched successfully.",
         data: feedback,
@@ -136,7 +136,7 @@ const deleteFeedback = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No feedback found");
     } else {
-      res.status(201).json({
+      res.status(204).json({
         success: true,
         message: "Feedback deleted successfully.",
         data: {},

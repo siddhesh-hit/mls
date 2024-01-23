@@ -7,8 +7,10 @@ const {
   updateFeedback,
   deleteFeedback,
 } = require("../../controllers/portals/feedback.controllers");
+
 const {
   authMiddleware,
+  hasPermission,
   checkRoleMiddleware,
 } = require("../../middlewares/authMiddleware");
 
@@ -18,7 +20,17 @@ router.route("/").get(getAllFeedback).post(createFeedback);
 router
   .route("/:id")
   .get(getFeedback)
-  .put(authMiddleware, checkRoleMiddleware(["Admin"]), updateFeedback)
-  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteFeedback);
+  .put(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("update"),
+    updateFeedback
+  )
+  .delete(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("delete"),
+    deleteFeedback
+  );
 
 module.exports = router;

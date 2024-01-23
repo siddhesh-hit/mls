@@ -10,6 +10,7 @@ const {
 
 const {
   authMiddleware,
+  hasPermission,
   checkRoleMiddleware,
 } = require("../../middlewares/authMiddleware");
 
@@ -19,7 +20,17 @@ router.route("/").get(getAllHelpdesk).post(createHelpdesk);
 router
   .route("/:id")
   .get(getHelpdesk)
-  .put(authMiddleware, checkRoleMiddleware(["Admin"]), updateHelpdesk)
-  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteHelpdesk);
+  .put(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("update"),
+    updateHelpdesk
+  )
+  .delete(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("delete"),
+    deleteHelpdesk
+  );
 
 module.exports = router;

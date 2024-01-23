@@ -3,6 +3,9 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const cron = require("node-cron");
+const logger = require("morgan");
+const fs = require("fs");
+const path = require("path");
 
 // internal modules
 const connectDB = require("./config/db.config");
@@ -28,6 +31,40 @@ app.use(express.json());
 app.use(
   express.urlencoded({
     extended: true,
+  })
+);
+
+// logger
+
+// create a write stream (in append mode)
+var successLogStream = fs.createWriteStream(
+  path.join(__dirname, "success.log"),
+  {
+    flags: "a",
+  }
+);
+
+var errorLogStream = fs.createWriteStream(path.join(__dirname, "error.log"), {
+  flags: "a",
+});
+
+// Skip requests that aren't for the homepage
+const skipSuccess = (req, res) => res.statusCode < 400;
+const skipError = (req, res) => res.statusCode >= 400;
+
+// Error logging
+app.use(
+  logger("combined", {
+    skip: skipSuccess,
+    stream: errorLogStream,
+  })
+);
+
+// Success logging
+app.use(
+  logger("combined", {
+    skip: skipError,
+    stream: successLogStream,
   })
 );
 

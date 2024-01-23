@@ -54,7 +54,7 @@ const getAllConstituency = asyncHandler(async (req, res) => {
       res.status(403);
       throw new Error("Couldn't find Constituency.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "Constituency fetched successfully.",
       data: constituency,
       success: true,
@@ -75,7 +75,7 @@ const getConstituency = asyncHandler(async (req, res) => {
       res.status(403);
       throw new Error("Couldn't find Constituency.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "Constituency fetched successfully.",
       data: constituency,
       success: true,
@@ -110,7 +110,7 @@ const updateConstituency = asyncHandler(async (req, res) => {
       res.status(403);
       throw new Error("Couldn't create Constituency.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "Constituency created successfully.",
       data: constituency,
       success: true,
@@ -132,7 +132,7 @@ const deleteConstituency = asyncHandler(async (req, res) => {
       res.status(403);
       throw new Error("Couldn't find Constituency.");
     }
-    res.status(201).json({
+    res.status(204).json({
       message: "Constituency deleted successfully.",
       data: {},
       success: true,

@@ -442,7 +442,7 @@ const getUsers = asyncHandler(async (req, res) => {
       throw new Error("No users found");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "Users fetched successfully",
       data: users,
@@ -466,7 +466,7 @@ const getUserById = asyncHandler(async (req, res) => {
       throw new Error("User not found");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "User fetched successfully",
       data: user,
@@ -519,7 +519,7 @@ const updateUser = asyncHandler(async (req, res) => {
       throw new Error("User not updated");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "User updated successfully",
       data: userUpdated,
@@ -545,7 +545,7 @@ const deleteUser = asyncHandler(async (req, res) => {
     // delete
     await user.deleteOne({ _id: user._id });
 
-    res.status(201).json({
+    res.status(204).json({
       success: true,
       data: {},
       message: "User deleted successfully",
@@ -572,9 +572,9 @@ const regenerateAccessToken = asyncHandler(async (req, res) => {
       throw new Error("Access token not found");
     }
 
-    console.log(req.cookies.accessToken, "===>");
+    // console.log(req.cookies.accessToken, "===>");
 
-    console.log(req);
+    // console.log(req);
 
     // check if access token is valid
     const checkStoredToken = await RefreshToken.findOne({

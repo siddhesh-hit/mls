@@ -72,7 +72,7 @@ const getAllParty = asyncHandler(async (req, res) => {
       throw new Error("Couldn't fetch Party.");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Party fetched successfully.",
       data: parties,
       success: true,
@@ -96,7 +96,7 @@ const getParty = asyncHandler(async (req, res) => {
       throw new Error("Couldn't fetch Party.");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Party fetched successfully.",
       data: party,
       success: true,
@@ -143,7 +143,7 @@ const updateParty = asyncHandler(async (req, res) => {
       throw new Error("Couldn't fetch Party.");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Party updated successfully.",
       data: party,
       success: true,
@@ -167,7 +167,7 @@ const deleteParty = asyncHandler(async (req, res) => {
       throw new Error("Couldn't fetch Party.");
     }
 
-    res.status(201).json({
+    res.status(204).json({
       message: "Party fetched successfully.",
       data: {},
       success: true,

@@ -163,7 +163,7 @@ const deleteNavigation = asyncHandler(async (req, res) => {
       throw new Error("Navigation not found.");
     }
 
-    res.status(200).json({
+    res.status(204).json({
       message: "Navigation deleted successfully.",
       data: {},
       success: true,

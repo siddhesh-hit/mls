@@ -11,6 +11,7 @@ const {
 } = require("../../controllers/portals/member.controllers");
 const {
   authMiddleware,
+  hasPermission,
   checkRoleMiddleware,
 } = require("../../middlewares/authMiddleware");
 
@@ -39,7 +40,8 @@ router
   .get(getAllMember)
   .post(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("create"),
     upload.single("profile"),
     createMember
   );
@@ -49,10 +51,16 @@ router
   .get(getMember)
   .put(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("update"),
     upload.single("profile"),
     updateMember
   )
-  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteMember);
+  .delete(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("delete"),
+    deleteMember
+  );
 
 module.exports = router;

@@ -118,7 +118,7 @@ const getActiveVidhanParishad = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No active data found.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "Vidhan Parishad fetched successfully.",
       success: true,
       data: getActive,
@@ -278,7 +278,7 @@ const deleteVidhanParishad = asyncHandler(async (req, res) => {
       );
     }
 
-    res.status(200).json({
+    res.status(204).json({
       success: true,
       message: "VidhanParishad deleted successfully.",
       data: {},

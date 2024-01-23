@@ -61,7 +61,7 @@ const getAllInterestArea = asyncHandler(async (req, res) => {
       throw new Error("No InterestArea found.");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       message: "InterestArea found successfully.",
       data: interestAreas,
       success: true,
@@ -87,7 +87,7 @@ const getInterestArea = asyncHandler(async (req, res) => {
       throw new Error("No InterestArea found.");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       message: "InterestArea found successfully.",
       data: interestArea,
       success: true,
@@ -134,7 +134,7 @@ const updateInterestArea = asyncHandler(async (req, res) => {
       throw new Error("InterestArea not updated.");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       message: "InterestArea updated successfully.",
       data: interestArea,
       success: true,
@@ -157,7 +157,7 @@ const deleteInterestArea = asyncHandler(async (req, res) => {
       throw new Error("No InterestArea found.");
     }
 
-    res.status(201).json({
+    res.status(204).json({
       message: "InterestArea deleted successfully.",
       data: {},
       success: true,

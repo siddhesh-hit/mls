@@ -11,6 +11,7 @@ const {
 
 const {
   authMiddleware,
+  hasPermission,
   checkRoleMiddleware,
 } = require("../../middlewares/authMiddleware");
 
@@ -34,10 +35,22 @@ const upload = multer({
 // routes
 router
   .route("/")
-  .get(getAllParty)
+  .get(
+    authMiddleware,
+    checkRoleMiddleware([
+      "SuperAdmin",
+      "Admin",
+      "Reviewer",
+      "ContentCreator",
+      "User",
+    ]),
+    hasPermission("read"),
+    getAllParty
+  )
   .post(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("create"),
     upload.fields([
       {
         name: "party_flag",
@@ -51,10 +64,22 @@ router
 
 router
   .route("/:id")
-  .get(getParty)
+  .get(
+    authMiddleware,
+    checkRoleMiddleware([
+      "SuperAdmin",
+      "Admin",
+      "Reviewer",
+      "ContentCreator",
+      "User",
+    ]),
+    hasPermission("read"),
+    getParty
+  )
   .put(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("update"),
     upload.fields([
       {
         name: "party_flag",
@@ -65,6 +90,11 @@ router
     ]),
     updateParty
   )
-  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteParty);
+  .delete(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("delete"),
+    deleteParty
+  );
 
 module.exports = router;

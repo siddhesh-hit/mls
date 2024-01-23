@@ -11,6 +11,7 @@ const {
 
 const {
   authMiddleware,
+  hasPermission,
   checkRoleMiddleware,
 } = require("../../middlewares/authMiddleware");
 
@@ -20,12 +21,27 @@ router.get("/active", getActiveMemberGraph);
 router
   .route("/")
   .get(getAllMemberGraphs)
-  .post(authMiddleware, checkRoleMiddleware("Admin"), createMemberGraph);
+  .post(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("create"),
+    createMemberGraph
+  );
 
 router
   .route("/:id")
   .get(getMemberGraphById)
-  .put(authMiddleware, checkRoleMiddleware("Admin"), updateMemberGraph)
-  .delete(authMiddleware, checkRoleMiddleware("Admin"), deleteMemberGraph);
+  .put(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("update"),
+    updateMemberGraph
+  )
+  .delete(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("delete"),
+    deleteMemberGraph
+  );
 
 module.exports = router;

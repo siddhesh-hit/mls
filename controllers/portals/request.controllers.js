@@ -61,7 +61,7 @@ const getAllRequestAccess = asyncHandler(async (req, res) => {
       throw new Error("No RequestAccess found.");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       message: "RequestAccess found successfully.",
       data: requestAccesses,
       success: true,
@@ -87,7 +87,7 @@ const getRequestAccess = asyncHandler(async (req, res) => {
       throw new Error("No RequestAccess found.");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       message: "RequestAccess found successfully.",
       data: requestAccess,
       success: true,
@@ -133,7 +133,7 @@ const updateRequestAccess = asyncHandler(async (req, res) => {
       throw new Error("RequestAccess not updated.");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       message: "RequestAccess updated successfully.",
       data: requestAccess,
       success: true,
@@ -156,7 +156,7 @@ const deleteRequestAccess = asyncHandler(async (req, res) => {
       throw new Error("No RequestAccess found.");
     }
 
-    res.status(201).json({
+    res.status(204).json({
       message: "RequestAccess deleted successfully.",
       data: {},
       success: true,

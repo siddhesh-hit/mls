@@ -45,7 +45,7 @@ const userModel = new mongoose.Schema(
     user_role: {
       type: String,
       required: true,
-      enum: ["Admin", "Super Admin", "Manager", "User"],
+      enum: ["Admin", "SuperAdmin", "Reviewer", "ContentCreator", "User"],
       default: "User",
     },
     phone_otp: {

@@ -85,7 +85,7 @@ const getAllMember = asyncHandler(async (req, res) => {
       throw new Error("No members found");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "All the legislative members fetched successfully",
       data: members,
@@ -115,7 +115,7 @@ const getMemberHouse = asyncHandler(async (req, res) => {
       throw new Error("No members found");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: `All the legislative members with house ${query} fetched successfully`,
       data: members,
@@ -143,7 +143,7 @@ const getMember = asyncHandler(async (req, res) => {
       throw new Error("No member found");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "The legislative members fetched successfully",
       data: member,
@@ -212,7 +212,7 @@ const updateMember = asyncHandler(async (req, res) => {
 
       await createNotificationFormat(notificationData, res);
 
-      res.status(201).json({
+      res.status(200).json({
         success: true,
         message: "Legislative Member created successfully",
         data: memberLegislative,
@@ -240,7 +240,7 @@ const deleteMember = asyncHandler(async (req, res) => {
       throw new Error("No member found");
     }
 
-    res.status(201).json({
+    res.status(204).json({
       success: true,
       message: "The legislative member deleted successfully",
       data: member,

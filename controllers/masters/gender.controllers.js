@@ -50,7 +50,7 @@ const getAllGender = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Gender not fetched.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "Genders fetched successfully.",
       success: true,
       data: genders,
@@ -73,7 +73,7 @@ const getGender = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Gender not fetched.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "Gender fetched successfully.",
       success: true,
       data: gender,
@@ -107,7 +107,7 @@ const updateGender = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Gender not created.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "Gender updated successfully.",
       success: true,
       data: gender,
@@ -130,7 +130,7 @@ const deleteGender = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Gender not fetched.");
     }
-    res.status(201).json({
+    res.status(204).json({
       message: "Gender fetched successfully.",
       success: true,
       data: {},

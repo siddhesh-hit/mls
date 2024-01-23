@@ -71,7 +71,7 @@ const getActiveMemberGraph = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No active data found.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "MemberGraph fetched successfully.",
       data: getActive,
       success: true,
@@ -141,7 +141,7 @@ const updateMemberGraph = asyncHandler(async (req, res) => {
       throw new Error("Failed to update memberGraph");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       message: "memberGraph updated successfully.",
       data: memberGraph,
       success: true,
@@ -164,7 +164,7 @@ const deleteMemberGraph = asyncHandler(async (req, res) => {
       throw new Error("No memberGraph found");
     }
 
-    res.status(200).json({
+    res.status(204).json({
       message: "memberGraph deleted successfully.",
       data: {},
       success: true,

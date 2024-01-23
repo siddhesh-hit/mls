@@ -12,6 +12,7 @@ const {
 
 const {
   authMiddleware,
+  hasPermission,
   checkRoleMiddleware,
 } = require("../../middlewares/authMiddleware");
 
@@ -33,13 +34,19 @@ const upload = multer({
 });
 
 // routes
-router.get("/active", getActiveVidhanMandal);
+router.get(
+  "/active",
+
+  getActiveVidhanMandal
+);
+
 router
   .route("/")
   .get(getVidhanMandals)
   .post(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("create"),
     upload.fields([
       {
         name: "about_us_img",
@@ -58,7 +65,8 @@ router
   .get(getVidhanMandalById)
   .put(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("update"),
     upload.fields([
       {
         name: "about_us_img",
@@ -71,6 +79,11 @@ router
     ]),
     updateVidhanMandal
   )
-  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteVidhanMandal);
+  .delete(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("delete"),
+    deleteVidhanMandal
+  );
 
 module.exports = router;

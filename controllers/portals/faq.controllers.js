@@ -84,7 +84,7 @@ const getAllFAQs = asyncHandler(async (req, res) => {
     }
 
     // send response
-    res.status(201).json({
+    res.status(200).json({
       message: "FAQs fetched successfully",
       data: faq,
       success: true,
@@ -105,7 +105,7 @@ const getActiveFaq = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No active data found.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "Faq fetched successfully.",
       data: getActive,
       success: true,
@@ -130,7 +130,7 @@ const getFAQById = asyncHandler(async (req, res) => {
     }
 
     // send response
-    res.status(201).json({
+    res.status(200).json({
       message: "FAQ fetched successfully",
       data: faq,
       success: true,
@@ -194,7 +194,7 @@ const updateFAQById = asyncHandler(async (req, res) => {
 
       await createNotificationFormat(notificationData, res);
 
-      res.status(201).json({
+      res.status(200).json({
         message: "FAQ updated successfully",
         data: updatedFAQ,
         success: true,
@@ -226,7 +226,7 @@ const deleteFAQById = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Something went wrong");
     } else {
-      res.status(201).json({
+      res.status(204).json({
         message: "FAQ deleted successfully",
         data: {},
         success: true,

@@ -56,7 +56,7 @@ const getAllAssembly = asyncHandler(async (req, res) => {
       throw new Error("No assembly found.");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Assembly created successfully.",
 
       success: true,
@@ -80,7 +80,7 @@ const getAssembly = asyncHandler(async (req, res) => {
       throw new Error("No assembly found.");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Assembly created successfully.",
       data: assembly,
       success: true,
@@ -112,10 +112,10 @@ const updateAssembly = asyncHandler(async (req, res) => {
       runValidators: true,
     });
     if (!assembly) {
-      res.status(403);
+      res.status(404);
       throw new Error("No assembly found.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "Assembly updated successfully.",
       data: assembly,
       success: true,
@@ -139,7 +139,7 @@ const deleteAssembly = asyncHandler(async (req, res) => {
       throw new Error("No assembly found.");
     }
 
-    res.status(201).json({
+    res.status(204).json({
       message: "Assembly deleted successfully.",
       data: {},
       success: true,

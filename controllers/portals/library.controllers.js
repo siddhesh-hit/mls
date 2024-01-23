@@ -86,7 +86,7 @@ const getActiveLibrary = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No active data found.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "Library fetched successfully.",
       data: getActive,
       success: true,
@@ -199,7 +199,7 @@ const deleteLibrary = asyncHandler(async (req, res) => {
     const deletedLibrary = await Library.findByIdAndDelete(id);
 
     if (deletedLibrary) {
-      res.status(200).json({
+      res.status(204).json({
         message: "Library deleted successfully",
         success: true,
         data: {},

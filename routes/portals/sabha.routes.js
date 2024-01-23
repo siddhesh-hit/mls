@@ -12,6 +12,7 @@ const {
 
 const {
   authMiddleware,
+  hasPermission,
   checkRoleMiddleware,
 } = require("../../middlewares/authMiddleware");
 
@@ -39,7 +40,8 @@ router
   .get(getVidhanSabhas)
   .post(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("create"),
     upload.fields([
       {
         name: "banner_image",
@@ -70,7 +72,8 @@ router
   .get(getVidhanSabhaById)
   .put(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("update"),
     upload.fields([
       {
         name: "banner_image",
@@ -95,6 +98,11 @@ router
     ]),
     updateVidhanSabha
   )
-  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteVidhanSabha);
+  .delete(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("delete"),
+    deleteVidhanSabha
+  );
 
 module.exports = router;

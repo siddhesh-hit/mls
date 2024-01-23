@@ -10,19 +10,27 @@ const {
 
 const {
   authMiddleware,
+  hasPermission,
   checkRoleMiddleware,
 } = require("../../middlewares/authMiddleware");
 
 // routes
-router
-  .route("/")
-  .get(getAllRequestAccess)
-  .post(authMiddleware, checkRoleMiddleware(["Admin"]), createRequestAccess);
+router.route("/").get(getAllRequestAccess).post(createRequestAccess);
 
 router
   .route("/:id")
   .get(getRequestAccess)
-  .put(authMiddleware, checkRoleMiddleware(["Admin"]), updateRequestAccess)
-  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteRequestAccess);
+  .put(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("update"),
+    updateRequestAccess
+  )
+  .delete(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("delete"),
+    deleteRequestAccess
+  );
 
 module.exports = router;

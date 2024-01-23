@@ -11,6 +11,7 @@ const {
 
 const {
   authMiddleware,
+  hasPermission,
   checkRoleMiddleware,
 } = require("../../middlewares/authMiddleware");
 
@@ -37,7 +38,8 @@ router
   .get(getAllMandalGalleries)
   .post(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("create"),
     upload.fields([{ name: "gallery_image", maxCount: 10 }]),
     createMandalGallery
   );
@@ -47,10 +49,16 @@ router
   .get(getMandalGalleryById)
   .put(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("update"),
     upload.fields([{ name: "gallery_image", maxCount: 10 }]),
     updateMandalGallery
   )
-  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteMandalGallery);
+  .delete(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("delete"),
+    deleteMandalGallery
+  );
 
 module.exports = router;

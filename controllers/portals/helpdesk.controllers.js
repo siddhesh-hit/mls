@@ -51,7 +51,7 @@ const getAllHelpdesk = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No helpdesk found");
     } else {
-      res.status(201).json({
+      res.status(200).json({
         success: true,
         message: "helpdesk fetched successfully.",
         data: helpdesk,
@@ -75,7 +75,7 @@ const getHelpdesk = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No helpdesk found");
     } else {
-      res.status(201).json({
+      res.status(200).json({
         success: true,
         message: "helpdesk fetched successfully.",
         data: helpdesk,
@@ -112,7 +112,7 @@ const updateHelpdesk = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No helpdesk found");
     } else {
-      res.status(201).json({
+      res.status(200).json({
         success: true,
         message: "helpdesk fetched successfully.",
         data: helpdesk,
@@ -136,7 +136,7 @@ const deleteHelpdesk = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No helpdesk found");
     } else {
-      res.status(201).json({
+      res.status(204).json({
         success: true,
         message: "helpdesk deleted successfully.",
         data: helpdesk,

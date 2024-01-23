@@ -167,7 +167,7 @@ const updateMandalGallery = asyncHandler(async (req, res) => {
     }
 
     // send response
-    res.status(201).json({
+    res.status(200).json({
       message: "Vidhan Mandal gallery updated successfully.",
       data: gallery,
       success: true,
@@ -193,7 +193,7 @@ const deleteMandalGallery = asyncHandler(async (req, res) => {
     }
 
     // send response
-    res.status(200).json({
+    res.status(204).json({
       message: "Vidhan Mandal gallery deleted successfully.",
       data: {},
       success: true,

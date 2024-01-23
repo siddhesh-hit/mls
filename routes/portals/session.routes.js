@@ -11,6 +11,7 @@ const {
 
 const {
   authMiddleware,
+  hasPermission,
   checkRoleMiddleware,
 } = require("../../middlewares/authMiddleware");
 
@@ -37,7 +38,8 @@ router
   .get(getAllSession)
   .post(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("create"),
     upload.fields([
       {
         name: "document",
@@ -52,7 +54,8 @@ router
   .get(getSession)
   .put(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("update"),
     upload.fields([
       {
         name: "document",
@@ -61,6 +64,11 @@ router
     ]),
     updateSession
   )
-  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteSession);
+  .delete(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("delete"),
+    deleteSession
+  );
 
 module.exports = router;

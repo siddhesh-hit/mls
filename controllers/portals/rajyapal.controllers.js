@@ -75,7 +75,7 @@ const createLegislativeMember = asyncHandler(async (req, res) => {
 
       await createNotificationFormat(notificationData, res);
 
-      res.status(200).json({
+      res.status(201).json({
         success: true,
         message: "Successfully created legislative member",
         data: newLegislativeMember,
@@ -133,7 +133,7 @@ const getActiveLegislativeMember = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No active data found.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "Legislative member fetched successfully.",
       data: getActive,
       success: true,
@@ -157,7 +157,7 @@ const getCurrentLegislativeMember = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No Current data found.");
     }
-    res.status(201).json({
+    res.status(200).json({
       message: "Legislative member fetched successfully.",
       data: getCurrent,
       success: true,
@@ -303,7 +303,7 @@ const deleteLegislativeMember = asyncHandler(async (req, res) => {
     }
 
     // send response
-    res.status(200).json({
+    res.status(204).json({
       success: true,
       message: "Successfully deleted legislative member",
       data: legislativeMember,

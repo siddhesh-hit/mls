@@ -10,18 +10,56 @@ const {
 const {
   authMiddleware,
   checkRoleMiddleware,
+  hasPermission,
 } = require("../../middlewares/authMiddleware");
 
 // routes
 router
   .route("/")
-  .get(getAllConstituency)
-  .post(authMiddleware, checkRoleMiddleware(["Admin"]), createConstituency);
+  .get(
+    authMiddleware,
+    checkRoleMiddleware([
+      "SuperAdmin",
+      "Admin",
+      "Reviewer",
+      "ContentCreator",
+      "User",
+    ]),
+    hasPermission("read"),
+    getAllConstituency
+  )
+  .post(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("create"),
+    createConstituency
+  );
 
 router
   .route("/:id")
-  .get(getConstituency)
-  .put(authMiddleware, checkRoleMiddleware(["Admin"]), updateConstituency)
-  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteConstituency);
+  .get(
+    authMiddleware,
+    checkRoleMiddleware([
+      "SuperAdmin",
+      "Admin",
+      "Reviewer",
+      "ContentCreator",
+      "User",
+    ]),
+    hasPermission("read"),
+    getConstituency
+  )
+  .put(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("update"),
+    updateConstituency
+  )
+  .delete(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin, Admin"]),
+    hasPermission("delete"),
+    deleteConstituency
+  );
 
 module.exports = router;

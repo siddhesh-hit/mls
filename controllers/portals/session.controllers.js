@@ -188,7 +188,7 @@ const updateSession = asyncHandler(async (req, res) => {
 
     await createNotificationFormat(notificationData, res);
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Session Calendar created updated.",
       data: sessionCalendar,
       success: true,
@@ -215,7 +215,7 @@ const deleteSession = asyncHandler(async (req, res) => {
       );
     }
 
-    res.status(200).json({
+    res.status(204).json({
       message: "Session Calendar deleted successfully.",
       success: true,
       data: {},

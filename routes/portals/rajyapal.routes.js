@@ -13,6 +13,7 @@ const {
 
 const {
   authMiddleware,
+  hasPermission,
   checkRoleMiddleware,
 } = require("../../middlewares/authMiddleware");
 
@@ -37,7 +38,8 @@ router
   .get(getALLLegislativeMembers)
   .post(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("create"),
     upload.fields([
       { name: "documents", maxCount: 15 },
       {
@@ -53,7 +55,8 @@ router
   .get(getLegislativeMemberById)
   .put(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("update"),
     upload.fields([
       { name: "documents", maxCount: 15 },
       {
@@ -65,7 +68,8 @@ router
   )
   .delete(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("delete"),
     deleteLegislativeMember
   );
 

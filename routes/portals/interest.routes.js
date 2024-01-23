@@ -10,19 +10,27 @@ const {
 
 const {
   authMiddleware,
+  hasPermission,
   checkRoleMiddleware,
 } = require("../../middlewares/authMiddleware");
 
 // routes
-router
-  .route("/")
-  .get(getAllInterestArea)
-  .post(authMiddleware, checkRoleMiddleware(["Admin"]), createInterestArea);
+router.route("/").get(getAllInterestArea).post(createInterestArea);
 
 router
   .route("/:id")
   .get(getInterestArea)
-  .put(authMiddleware, checkRoleMiddleware(["Admin"]), updateInterestArea)
-  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteInterestArea);
+  .put(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("update"),
+    updateInterestArea
+  )
+  .delete(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("delete"),
+    deleteInterestArea
+  );
 
 module.exports = router;

@@ -23,6 +23,7 @@ const {
 const {
   authMiddleware,
   checkRoleMiddleware,
+  hasPermission,
 } = require("../../middlewares/authMiddleware");
 
 // multer config
@@ -41,6 +42,7 @@ const upload = multer({
     fileSize: 2000000, // 1000000 Bytes = 1 MB
   },
 });
+``;
 
 // routes
 router.post("/registerPhone", registerUserPhone);
@@ -55,28 +57,38 @@ router.post("/reset", resetUser);
 router.post(
   "/invite",
   authMiddleware,
-  checkRoleMiddleware(["Admin"]),
+  checkRoleMiddleware(["SuperAdmin", "Admin"]),
+  hasPermission("create"),
   upload.single("user_image"),
   inviteUser
 );
-router.get("/", authMiddleware, checkRoleMiddleware(["Admin"]), getUsers);
+router.get(
+  "/",
+  authMiddleware,
+  checkRoleMiddleware(["SuperAdmin", "Admin"]),
+  hasPermission("read"),
+  getUsers
+);
 router.get(
   "/:id",
   authMiddleware,
-  checkRoleMiddleware(["User", "Admin"]),
+  checkRoleMiddleware(["SuperAdmin", "User", "Admin"]),
+  hasPermission("read"),
   getUserById
 );
 router.put(
   "/:id",
   authMiddleware,
-  checkRoleMiddleware(["Admin"]),
+  checkRoleMiddleware(["SuperAdmin", "Admin", "User"]),
+  hasPermission("update"),
   upload.single("user_image"),
   updateUser
 );
 router.delete(
   "/:id",
   authMiddleware,
-  checkRoleMiddleware(["User"]),
+  checkRoleMiddleware(["SuperAdmin", "Admin", "User"]),
+  hasPermission("delete"),
   deleteUser
 );
 router.post("/accessToken", regenerateAccessToken);

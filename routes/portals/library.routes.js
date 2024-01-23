@@ -12,6 +12,7 @@ const {
 
 const {
   authMiddleware,
+  hasPermission,
   checkRoleMiddleware,
 } = require("../../middlewares/authMiddleware");
 
@@ -43,7 +44,6 @@ const upload = multer({
 });
 
 // routes
-
 router.get("/active", getActiveLibrary);
 
 router
@@ -51,7 +51,8 @@ router
   .get(getLibraries)
   .post(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("create"),
     upload.fields([
       {
         name: "banner",
@@ -70,7 +71,8 @@ router
   .get(getLibrary)
   .put(
     authMiddleware,
-    checkRoleMiddleware(["Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("update"),
     upload.fields([
       {
         name: "banner",
@@ -83,6 +85,11 @@ router
     ]),
     updateLibrary
   )
-  .delete(authMiddleware, checkRoleMiddleware(["Admin"]), deleteLibrary);
+  .delete(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("delete"),
+    deleteLibrary
+  );
 
 module.exports = router;
