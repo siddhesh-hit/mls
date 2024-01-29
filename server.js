@@ -4,6 +4,8 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const cron = require("node-cron");
 const logger = require("morgan");
+const os = require("os");
+const cluster = require("cluster");
 const fs = require("fs");
 const path = require("path");
 
@@ -76,7 +78,7 @@ app.get("/back", (req, res) => {
 });
 
 // defining the routes
-app.use("/api", routes);
+app.use("/v1/api", routes);
 
 // static files
 app.use("/images", express.static("./images"));
@@ -104,7 +106,7 @@ connectDB()
 // });
 
 const proNam = process;
-
+// console.log(cluster);
 // console.log(proNam);
 
 // export the app

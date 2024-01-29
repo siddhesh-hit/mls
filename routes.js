@@ -17,6 +17,7 @@ const helpdeskRoutes = require("./routes/portals/helpdesk.routes");
 const sessionRoutes = require("./routes/portals/session.routes");
 const requestRoutes = require("./routes/portals/request.routes");
 const interestRoutes = require("./routes/portals/interest.routes");
+const debateRoutes = require("./routes/portals/debate.routes");
 
 const assemblyRoutes = require("./routes/masters/assembly.routes");
 const constituencyRoutes = require("./routes/masters/constituency.routes");
@@ -44,6 +45,7 @@ router.use("/helpdesk", helpdeskRoutes);
 router.use("/session", sessionRoutes);
 router.use("/request", requestRoutes);
 router.use("/interest", interestRoutes);
+router.use("/debate", debateRoutes);
 
 router.use("/assembly", assemblyRoutes);
 router.use("/constituency", constituencyRoutes);

@@ -5,6 +5,7 @@ const {
   createMember,
   getAllMember,
   getMemberHouse,
+  getMemberSearch,
   getMember,
   updateMember,
   deleteMember,
@@ -34,6 +35,7 @@ const upload = multer({
 
 // routes
 router.get("/house", getMemberHouse);
+router.get("/search", getMemberSearch);
 
 router
   .route("/")

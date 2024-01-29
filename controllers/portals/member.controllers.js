@@ -10,7 +10,7 @@ const {
   createNotificationFormat,
 } = require("../../controllers/extras/notification.controllers");
 
-// @desc    Create new legislativeMember
+// @desc    Create new MemberLegislative
 // @route   POST /api/member/
 // @access  Admin
 const createMember = asyncHandler(async (req, res) => {
@@ -72,7 +72,7 @@ const createMember = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get all legislativeMember
+// @desc    Get all MemberLegislative
 // @route   GET /api/member/
 // @access  Public
 const getAllMember = asyncHandler(async (req, res) => {
@@ -96,8 +96,8 @@ const getAllMember = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get all legislativeMember
-// @route   GET /api/member?house=assembly
+// @desc    Get MemberLegislative based on house
+// @route   GET /api/member/house?id=""
 // @access  Public
 const getMemberHouse = asyncHandler(async (req, res) => {
   try {
@@ -126,7 +126,46 @@ const getMemberHouse = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get single legislativeMember
+// @desc    Get MemberLegislative based on query
+// @route   GET /api/member/search?id=""
+// @access  Public
+const getMemberSearch = asyncHandler(async (req, res) => {
+  try {
+    let search = req.query.id;
+
+    // Escape special characters in the search string
+    const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    // Create a regex pattern that allows any characters between the name parts
+    const regexPattern = escapedSearch.split(/\s+/).join(".*");
+    const members = await MemberLegislative.find({
+      $expr: {
+        $regexMatch: {
+          input: { $concat: ["$basic_info.name", " ", "$basic_info.surname"] },
+          regex: regexPattern,
+          options: "i",
+        },
+      },
+    });
+
+    // check if members exists
+    if (!members) {
+      res.status(400);
+      throw new Error("No members found");
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `All the members legislative based on ${search} fetched successfully`,
+      data: members,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error(error);
+  }
+});
+
+// @desc    Get single MemberLegislative
 // @route   GET /api/member/:id
 // @access  Public
 const getMember = asyncHandler(async (req, res) => {
@@ -154,7 +193,7 @@ const getMember = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Update single legislativeMember
+// @desc    Update single MemberLegislative
 // @route   PUT /api/member/:id
 // @access  Admin
 const updateMember = asyncHandler(async (req, res) => {
@@ -227,7 +266,7 @@ const updateMember = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Delete single legislativeMember
+// @desc    Delete single MemberLegislative
 // @route   DELETE /api/member/:id
 // @access  Admin
 const deleteMember = asyncHandler(async (req, res) => {
@@ -255,6 +294,7 @@ module.exports = {
   createMember,
   getAllMember,
   getMemberHouse,
+  getMemberSearch,
   getMember,
   updateMember,
   deleteMember,
