@@ -5,7 +5,7 @@ const generateOTP = () => {
   const characters = lowercaseLetters + uppercaseLetters + numbers;
 
   let otp = "";
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 4; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);
     otp += characters[randomIndex];
   }

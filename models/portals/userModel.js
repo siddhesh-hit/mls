@@ -2,30 +2,50 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
+const imageSchema = require("./imageSchema");
+
 // schema design
 const userModel = new mongoose.Schema(
   {
+    full_name: {
+      type: String,
+    },
+    houses: {
+      type: String,
+      default: "Public User",
+    },
+    department: {
+      type: String,
+      default: "Public User",
+    },
+    designation: {
+      type: String,
+      default: "Public User",
+    },
     email: {
       type: String,
       unique: true,
-      minlength: 5,
-      maxlength: 100,
+      sparse: true,
     },
     password: {
       type: String,
-      minlength: 5,
-      maxlength: 100,
     },
     phone_number: {
       type: String,
       unique: true,
-      minlength: 5,
-      maxlength: 25,
+      sparse: true,
     },
+    gender: {
+      type: String,
+    },
+    date_of_birth: {
+      type: Date,
+    },
+    user_image: imageSchema,
     user_role: {
       type: String,
       required: true,
-      enum: ["Admin", "Super Admin", "Manager", "User"],
+      enum: ["Admin", "SuperAdmin", "Reviewer", "ContentCreator", "User"],
       default: "User",
     },
     phone_otp: {
@@ -37,6 +57,10 @@ const userModel = new mongoose.Schema(
     user_verfied: {
       type: Boolean,
       default: false,
+    },
+    notificationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Notification",
     },
   },
   {
