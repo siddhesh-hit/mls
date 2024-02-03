@@ -111,3 +111,13 @@ const proNam = process;
 
 // export the app
 module.exports = app;
+
+var name = "sidd";
+
+// function sayHello() {
+//   console.log(name);
+//   var name = "oksy ssidd";
+//   console.log("update", name);
+// }
+
+// sayHello();

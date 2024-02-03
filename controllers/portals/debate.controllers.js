@@ -161,79 +161,9 @@ const getDebateById = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get Debate based on query
+// @desc    Get Debate based on single query for multiple fields
 // @route   GET /api/debate/search?id=""
 // @access  Public
-// const getDebateSearch = asyncHandler(async (req, res) => {
-//   try {
-//     let { perPage, perLimit, speaker, topic, keywords, members_name } =
-//       req.query;
-
-//     // console.log(req.query);
-
-//     const matchConditions = [];
-//     if (topic) {
-//       topic = topic.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-//       let obj = { topic: new RegExp(`.*${topic}.*`, "i") };
-//       matchConditions.push(obj);
-//     }
-
-//     if (speaker) {
-//       speaker = speaker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-//       let obj = { speaker: new RegExp(`.*${speaker}.*`, "i") };
-//       matchConditions.push(obj);
-//     }
-
-//     if (keywords) {
-//       keywords = keywords.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-//       let obj = { keywords: new RegExp(`.*${keywords}.*`, "i") };
-//       matchConditions.push(obj);
-//     }
-
-//     if (members_name) {
-//       members_name = members_name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-//       let obj = { members_name: new RegExp(`.*${members_name}.*`, "i") };
-//       matchConditions.push(obj);
-//     }
-
-//     const pageOptions = {
-//       page: parseInt(perPage, 10) || 0,
-//       limit: parseInt(perLimit, 10) || 10,
-//     };
-
-//     console.log(matchConditions);
-
-//     const debates = await Debate.aggregate([
-//       {
-//         $facet: {
-//           data: [
-//             {
-//               $match: { $or: matchConditions },
-//             },
-//             { $skip: pageOptions.page * pageOptions.limit },
-//             { $limit: pageOptions.limit },
-//           ],
-//           count: [
-//             {
-//               $match: { $or: matchConditions },
-//             },
-//             { $count: "count" },
-//           ],
-//         },
-//       },
-//     ]);
-
-//     res.status(200).json({
-//       success: true,
-//       message: `All the debates legislative based on ${topic} fetched successfully`,
-//       data: debates[0].data,
-//       count: debates[0].count.length > 0 ? debates[0].count[0].count : 0,
-//     });
-//   } catch (error) {
-//     res.status(500);
-//     throw new Error(error);
-//   }
-// });
 const getDebateSearch = asyncHandler(async (req, res) => {
   try {
     let { perPage, perLimit, id } = req.query;
@@ -290,75 +220,63 @@ const getDebateSearch = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get Debate based on different query search
-// @route   GET /api/debate/search?id=""
+// @route   GET /api/debate/member?id=""
 // @access  Public
-// const getDebateSearch = asyncHandler(async (req, res) => {
-//   try {
-//     let { perPage, perLimit, speaker, topic, keywords, members_name } =
-//       req.query;
+const getMemberDebateSearch = asyncHandler(async (req, res) => {
+  try {
+    let { perPage, perLimit, houses, name } = req.query;
 
-//     const pageOptions = {
-//       page: parseInt(perPage, 10) || 0,
-//       limit: parseInt(perLimit, 10) || 10,
-//     };
+    console.log(req.query);
 
-//     const facetPipeline = {};
+    name = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
-//     // Function to create a pipeline for each condition
-//     const createPipeline = (field, value) => [
-//       { $match: { [field]: new RegExp(`.*${value}.*`, "i") } },
-//       { $skip: pageOptions.page * pageOptions.limit },
-//       { $limit: pageOptions.limit },
-//       { $group: { _id: null, data: { $push: "$$ROOT" }, count: { $sum: 1 } } },
-//     ];
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
 
-//     if (topic) {
-//       topic = topic.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-//       facetPipeline.topic = createPipeline("topic", topic);
-//     }
+    const debates = await Debate.aggregate([
+      {
+        $match: {
+          $and: [
+            { house: houses },
+            {
+              $or: [
+                { topic: new RegExp(`.*${name}.*`, "i") },
+                { speaker: new RegExp(`.*${name}.*`, "i") },
+                { keywords: new RegExp(`.*${name}.*`, "i") },
+                { members_name: new RegExp(`.*${name}.*`, "i") },
+              ],
+            },
+          ],
+        },
+      },
+      {
+        $facet: {
+          debate: [
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [
+            {
+              $count: "count",
+            },
+          ],
+        },
+      },
+    ]);
 
-//     if (speaker) {
-//       speaker = speaker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-//       facetPipeline.speaker = createPipeline("speaker", speaker);
-//     }
-
-//     if (keywords) {
-//       keywords = keywords.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-//       facetPipeline.keywords = createPipeline("keywords", keywords);
-//     }
-
-//     if (members_name) {
-//       members_name = members_name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-//       facetPipeline.members_name = createPipeline("members_name", members_name);
-//     }
-
-//     const debates = await Debate.aggregate([{ $facet: facetPipeline }]);
-
-//     // Process the results to combine data and count
-//     let combinedData = [];
-//     let totalCount = 0;
-
-//     for (let key in debates[0]) {
-//       if (debates[0][key].length > 0) {
-//         const group = debates[0][key][0];
-//         combinedData.push(...group.data);
-//         totalCount += group.count;
-//       }
-//     }
-
-//     // combinedData.slice();
-
-//     res.status(200).json({
-//       success: true,
-//       message: "Debates fetched successfully",
-//       data: combinedData,
-//       count: totalCount,
-//     });
-//   } catch (error) {
-//     res.status(500);
-//     throw new Error(error);
-//   }
-// });
+    res.status(200).json({
+      success: true,
+      message: "Debates fetched successfully",
+      data: debates[0].debate,
+      count: debates[0].totalCount[0].count,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error(error);
+  }
+});
 
 // @desc    Update a Debate by ID
 // @route   PUT /api/debate/:id
@@ -445,6 +363,7 @@ module.exports = {
   getDebateById,
   getHouseDebates,
   getDebateSearch,
+  getMemberDebateSearch,
   updateDebateById,
   deleteDebateById,
 };
