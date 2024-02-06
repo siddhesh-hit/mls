@@ -42,12 +42,6 @@ const userModel = new mongoose.Schema(
       type: Date,
     },
     user_image: imageSchema,
-    user_role: {
-      type: String,
-      required: true,
-      enum: ["Admin", "SuperAdmin", "Reviewer", "ContentCreator", "User"],
-      default: "User",
-    },
     phone_otp: {
       type: String,
     },
@@ -61,6 +55,10 @@ const userModel = new mongoose.Schema(
     notificationId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Notification",
+    },
+    role_taskId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Role_Task",
     },
   },
   {

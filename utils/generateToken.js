@@ -6,11 +6,14 @@ const RefreshToken = require("../models/portals/refreshToken");
 
 // generateToken function
 const accessToken = (user) => {
+  console.log(user);
+
   const token = jwt.sign(
     {
       id: user._id,
       email: user.email,
-      role: user.user_role,
+      role: user.role_taskId.role,
+      permission: user.role_taskId.permission,
     },
     process.env.JWT_ACCESS_SECRET,
     {
@@ -25,7 +28,8 @@ const refreshToken = async (user) => {
     {
       id: user._id,
       email: user.email,
-      role: user.user_role,
+      role: user.role_taskId.role,
+      permission: user.role_taskId.permission,
     },
     process.env.JWT_REFRESH_SECRET,
     {
