@@ -18,6 +18,10 @@ const {
   deleteUser,
   regenerateAccessToken,
   regenerateRefreshToken,
+  getExportUser,
+  getRoleTasks,
+  getRoleTaskById,
+  updateRoleTask,
 } = require("../../controllers/portals/user.controllers");
 
 const {
@@ -42,7 +46,6 @@ const upload = multer({
     fileSize: 2000000, // 1000000 Bytes = 1 MB
   },
 });
-``;
 
 // routes
 router.post("/registerPhone", registerUserPhone);
@@ -62,6 +65,38 @@ router.post(
   upload.single("user_image"),
   inviteUser
 );
+router.get(
+  "/export",
+  authMiddleware,
+  checkRoleMiddleware(["SuperAdmin", "Admin", "User"]),
+  hasPermission("read"),
+  getExportUser
+);
+
+router.get(
+  "/roletask",
+  authMiddleware,
+  checkRoleMiddleware(["SuperAdmin", "Admin", "User"]),
+  hasPermission("read"),
+  getRoleTasks
+);
+
+router.get(
+  "/roletask/:id",
+  authMiddleware,
+  checkRoleMiddleware(["SuperAdmin", "Admin", "User"]),
+  hasPermission("read"),
+  getRoleTaskById
+);
+
+router.put(
+  "/roletask/:id",
+  authMiddleware,
+  checkRoleMiddleware(["SuperAdmin", "Admin", "User"]),
+  hasPermission("update"),
+  updateRoleTask
+);
+
 router.get(
   "/",
   authMiddleware,

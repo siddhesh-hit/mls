@@ -39,14 +39,14 @@ app.use(
 // logger
 
 // create a write stream (in append mode)
-var successLogStream = fs.createWriteStream(
+let successLogStream = fs.createWriteStream(
   path.join(__dirname, "success.log"),
   {
     flags: "a",
   }
 );
 
-var errorLogStream = fs.createWriteStream(path.join(__dirname, "error.log"), {
+let errorLogStream = fs.createWriteStream(path.join(__dirname, "error.log"), {
   flags: "a",
 });
 
@@ -82,6 +82,7 @@ app.use("/v1/api", routes);
 
 // static files
 app.use("/images", express.static("./images"));
+app.use("/exports", express.static("./exports"));
 
 // error handler
 app.use(notFound);

@@ -8,13 +8,13 @@ const cookieParser = require("cookie-parser");
 
 const cookieParserMiddleware = cookieParser();
 
-const roles = {
-  superadmin: ["create", "read", "update", "delete", "user"],
-  admin: ["create", "read", "update", "delete", "user"],
-  reviewer: ["read"],
-  contentcreator: ["create", "update"],
-  user: ["read"],
-};
+// const roles = {
+//   superadmin: ["create", "read", "update", "delete", "user"],
+//   admin: ["create", "read", "update", "delete", "user"],
+//   reviewer: ["read"],
+//   contentcreator: ["create", "update"],
+//   user: ["read"],
+// };
 
 const authMiddleware = asyncHandler(async (req, res, next) => {
   try {
@@ -22,9 +22,10 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
     cookieParserMiddleware(req, res, () => {});
 
     const refresh_token = req.cookies.refreshToken;
-
     const access_token = req.cookies.accessToken;
-    const date = Math.floor(new Date().getTime() / 1000);
+
+    // console.log(access_token, "==============================>");
+    // console.log(refresh_token, "==============================>");
 
     if (!refresh_token) {
       res.status(401);
@@ -33,17 +34,16 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
 
     const decoded = jwt.verify(refresh_token, process.env.JWT_REFRESH_SECRET);
     if (!decoded) {
-      res.status(401);
+      res.status(403);
       throw new Error("Not an authorized token");
     }
 
     const decoded1 = jwt.verify(access_token, process.env.JWT_ACCESS_SECRET);
+
     if (!decoded1) {
-      res.status(401);
+      res.status(403);
       throw new Error("Not an authorized token.");
     }
-
-    console.log(decoded1);
 
     // if (decoded1.exp > date) {
     const user = await User.findById(decoded.id).select("-password");
@@ -55,7 +55,6 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
     req.user = decoded;
     next();
 
-    // console.log("aya yehan");
     // } else {
     //   res.status(402);
     //   throw new Error("Access token is expired.");
@@ -79,9 +78,9 @@ const checkRoleMiddleware = (roles) => {
 
 const hasPermission = (permissionName = "none") => {
   return function (req, res, next) {
-    const currentUserRole = req.user.role.toLowerCase();
+    const userPermission = req.user.permission;
 
-    if (roles[currentUserRole].includes(permissionName)) {
+    if (userPermission.includes(permissionName)) {
       next();
     } else {
       return res.status(403).json({

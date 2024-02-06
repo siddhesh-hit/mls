@@ -1,9 +1,12 @@
+const fs = require("fs");
+const path = require("path");
 const asyncHandler = require("express-async-handler");
 const cookieParser = require("cookie-parser");
 
 const User = require("../../models/portals/userModel");
 const RefreshToken = require("../../models/portals/refreshToken");
 const Notification = require("../../models/extras/Notification");
+const Role_Task = require("../../models/portals/Role_Task");
 
 const {
   loginEmailValidate,
@@ -14,12 +17,13 @@ const {
 } = require("../../validations/portal/userValidation");
 
 const { accessToken, refreshToken } = require("../../utils/generateToken");
-const otpGenerator = require("../../utils/otpGenerator");
-const generatePassword = require("../../utils/passwordGenerator");
 
 const emailInviteUser = require("../../services/emailInviteUser");
-const otpEmailGenerator = require("../../services/otpEmailGenerator");
 const emailReset = require("../../services/emailReset");
+
+const otpGenerator = require("../../utils/otpGenerator");
+const otpEmailGenerator = require("../../services/otpEmailGenerator");
+const generatePassword = require("../../utils/passwordGenerator");
 
 const cookieParserMiddleware = cookieParser();
 
@@ -177,15 +181,27 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
     user.email_otp = "";
     user.user_verfied = true;
 
+    const role_task = await Role_Task.create({
+      userId: user._id,
+    });
+
+    if (!role_task) {
+      res.status(402);
+      await User.findByIdAndDelete(user._id);
+      throw new Error("Failed to create user's role & task management.");
+    }
+
     const notification = await Notification.create({
       userId: user._id,
     });
 
     if (!notification) {
       res.status(402);
+      await User.findByIdAndDelete(user._id);
       throw new Error("Failed to create user's notification.");
     }
 
+    user.role_taskId = role_task._id;
     user.notificationId = notification._id;
     await user.save();
 
@@ -220,7 +236,15 @@ const loginUserEmail = asyncHandler(async (req, res) => {
     }
 
     // check if user exists
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).populate(
+      "role_taskId",
+      "role permission"
+    );
+    // .select(
+    //   "_id full_name user_verfied email phone_number gender date_of_birth user_image"
+    // );
+    // houses department designation
+
     if (!user) {
       res.status(400);
       throw new Error("User does not exists");
@@ -241,7 +265,7 @@ const loginUserEmail = asyncHandler(async (req, res) => {
     }
 
     // generate access token and refresh token
-    const access_token = accessToken(user);
+    const access_token = await accessToken(user);
     const refresh_token = await refreshToken(user);
 
     // set cookies
@@ -363,6 +387,30 @@ const inviteUser = asyncHandler(async (req, res) => {
       throw new Error("User not registered");
     }
 
+    const role_task = await Role_Task.create({
+      userId: user._id,
+    });
+
+    if (!role_task) {
+      res.status(402);
+      await User.findByIdAndDelete(user._id);
+      throw new Error("Failed to create user's role & task management.");
+    }
+
+    const notification = await Notification.create({
+      userId: user._id,
+    });
+
+    if (!notification) {
+      res.status(402);
+      await User.findByIdAndDelete(user._id);
+      throw new Error("Failed to create user's notification.");
+    }
+
+    user.role_taskId = role_task._id;
+    user.notificationId = notification._id;
+    await user.save();
+
     res.status(201).json({
       success: true,
       message: "User invited successfully",
@@ -381,6 +429,7 @@ const forgotUser = asyncHandler(async (req, res) => {
   try {
     let { email } = req.body;
 
+    console.log(email);
     // check if user exists
     const checkUser = await User.findOne({ email });
     if (!checkUser) {
@@ -567,14 +616,16 @@ const regenerateAccessToken = asyncHandler(async (req, res) => {
 
     const accessOldToken = req.cookies.accessToken;
     const refreshOldToken = req.cookies.refreshToken;
+
+    // console.log(accessOldToken, "==============================>");
+    // console.log(refreshOldToken, "==============================>");
+
     if (!accessOldToken) {
       res.status(400);
       throw new Error("Access token not found");
     }
 
-    // console.log(req.cookies.accessToken, "===>");
-
-    // console.log(req);
+    // console.log("refres", refreshOldToken);
 
     // check if access token is valid
     const checkStoredToken = await RefreshToken.findOne({
@@ -587,7 +638,10 @@ const regenerateAccessToken = asyncHandler(async (req, res) => {
     }
 
     // check if user exists
-    const user = await User.findById(checkStoredToken.userId);
+    const user = await User.findById(checkStoredToken.userId).populate(
+      "role_taskId",
+      "role permission"
+    );
     if (!user) {
       res.status(400);
       throw new Error("User not found");
@@ -663,10 +717,182 @@ const regenerateRefreshToken = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Check logged in
-// @route   GET /api/user/validate
-// @access  Public
-// const
+// @desc    Export each user info
+// @route   GET /api/user/export
+// @access  Admin
+const getExportUser = asyncHandler(async (req, res) => {
+  try {
+    const users = await User.find({});
+    if (!users || users.length === 0) {
+      // Check if users array is empty
+      res.status(400);
+      throw new Error("No users found");
+    }
+
+    const filePath = path.join(__dirname, "../../exports", "userInfo.json");
+
+    const usersJSON = JSON.stringify(users);
+
+    console.log(filePath);
+
+    fs.writeFile(filePath, usersJSON, (err) => {
+      if (err) {
+        console.error("Error writing to file:", err);
+        res.status(500).json({
+          success: false,
+          message: "Error writing to file",
+        });
+        return;
+      }
+      res.status(200).json({
+        success: true,
+        message: "Users fetched successfully",
+        data: {
+          path: "exports/userInfo.json",
+        },
+      });
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(501).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
+// @desc    Get all roles
+// @route   GET /api/user/roletask
+// @access  Admin
+const getRoleTasks = asyncHandler(async (req, res) => {
+  try {
+    const users = await Role_Task.find({})
+      .populate(
+        "userId",
+        "full_name email department designation houses phone_number gender date_of_birth user_image"
+      )
+      .select(
+        "_id role permission taskName activity isBlocked createdAt updatedAt full_name email department designation houses phone_number gender date_of_birth user_image"
+      );
+    if (!users || users.length === 0) {
+      // Check if users array is empty
+      res.status(400);
+      throw new Error("No users found");
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Role & Task fetched successfully",
+      data: users,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(501).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
+// @desc    Get a roles
+// @route   GET /api/user/roletask/:id
+// @access  Admin
+const getRoleTaskById = asyncHandler(async (req, res) => {
+  try {
+    const users = await Role_Task.findById(req.params.id)
+      .populate(
+        "userId",
+        "full_name email department designation houses phone_number gender date_of_birth user_image"
+      )
+      .select(
+        "_id role permission taskName activity isBlocked createdAt updatedAt full_name email department designation houses phone_number gender date_of_birth user_image"
+      );
+    if (!users || users.length === 0) {
+      // Check if users array is empty
+      res.status(400);
+      throw new Error("No users found");
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Role & Task fetched successfully",
+      data: users,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(501).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
+// @desc    Update a roles
+// @route   PUT /api/user/roletask/:id
+// @access  Admin
+const updateRoleTask = asyncHandler(async (req, res) => {
+  try {
+    let data = req.body;
+
+    // check if user exists
+    const user = await User.findById(data.userId._id).populate(
+      "role_taskId",
+      "role permission"
+    );
+    if (!user) {
+      res.status(400);
+      throw new Error("User not found");
+    }
+
+    const users = await Role_Task.findById(req.params.id);
+
+    if (!users || users.length === 0) {
+      // Check if users array is empty
+      res.status(400);
+      throw new Error("No users found");
+    }
+
+    data.userId = data.userId._id;
+
+    const updatedRole = await Role_Task.findByIdAndUpdate(req.params.id, data, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedRole) {
+      res.status(400);
+      throw new Error("Failed to update role");
+    }
+
+    // generate access token and refresh token
+    const access_token = await accessToken(user);
+    const refresh_token = await refreshToken(user);
+
+    // set cookies
+    res.cookie("accessToken", access_token, {
+      httpOnly: true, // set true if the client does not need to read it via JavaScript
+      secure: true, // set to false if not using https
+      sameSite: "None",
+    });
+    res.cookie("refreshToken", refresh_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Role & Task updated successfully",
+      data: updatedRole,
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(501).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
 
 module.exports = {
   registerUserPhone,
@@ -685,4 +911,8 @@ module.exports = {
   deleteUser,
   regenerateAccessToken,
   regenerateRefreshToken,
+  getExportUser,
+  getRoleTasks,
+  getRoleTaskById,
+  updateRoleTask,
 };
