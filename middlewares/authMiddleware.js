@@ -9,7 +9,8 @@ const cookieParser = require("cookie-parser");
 const cookieParserMiddleware = cookieParser();
 
 // const roles = {
-//   superadmin: ["create", "read", "update", "delete", "user"],
+// "create", "read", "update", "delete", "download", "upload";
+//   superadmin: ["create", "read", "update", "delete", "user", "download", "upload", "block"],
 //   admin: ["create", "read", "update", "delete", "user"],
 //   reviewer: ["read"],
 //   contentcreator: ["create", "update"],
