@@ -14,6 +14,7 @@ const accessToken = (user) => {
       email: user.email,
       role: user.role_taskId.role,
       permission: user.role_taskId.permission,
+      taskName: user.role_taskId.taskName,
     },
     process.env.JWT_ACCESS_SECRET,
     {
@@ -30,6 +31,7 @@ const refreshToken = async (user) => {
       email: user.email,
       role: user.role_taskId.role,
       permission: user.role_taskId.permission,
+      taskName: user.role_taskId.taskName,
     },
     process.env.JWT_REFRESH_SECRET,
     {

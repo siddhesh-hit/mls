@@ -238,7 +238,7 @@ const loginUserEmail = asyncHandler(async (req, res) => {
     // check if user exists
     const user = await User.findOne({ email }).populate(
       "role_taskId",
-      "role permission"
+      "role permission taskName"
     );
     // .select(
     //   "_id full_name user_verfied email phone_number gender date_of_birth user_image"
@@ -268,6 +268,19 @@ const loginUserEmail = asyncHandler(async (req, res) => {
     const access_token = await accessToken(user);
     const refresh_token = await refreshToken(user);
 
+    let userData = {
+      full_name: user.full_name,
+      email: user.email,
+      houses: user.houses,
+      department: user.department,
+      designation: user.designation,
+      phone_number: user.phone_number,
+      gender: user.gender,
+      user_image: user.user_image,
+      notificationId: user.notificationId,
+      role_taskId: user.role_taskId,
+    };
+
     // set cookies
     res.cookie("accessToken", access_token, {
       httpOnly: true, // set true if the client does not need to read it via JavaScript
@@ -283,7 +296,7 @@ const loginUserEmail = asyncHandler(async (req, res) => {
     res.status(201).json({
       success: true,
       message: "User logged in successfully",
-      data: user,
+      data: userData,
     });
   } catch (error) {
     res.status(501);
@@ -761,6 +774,33 @@ const getExportUser = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    GET all roles which is user
+// @route   GET /api/user/roletaskUser
+// @access  Admin
+const getUserRoleTasks = asyncHandler(async (req, res) => {
+  try {
+    const users = await Role_Task.find({ role: "User" })
+      .populate(
+        "userId",
+        "full_name email department designation houses phone_number gender date_of_birth user_image"
+      )
+      .select(
+        "_id role permission taskName activity isBlocked createdAt updatedAt full_name email department designation houses phone_number gender date_of_birth user_image"
+      );
+
+    res.status(200).json({
+      success: true,
+      message: "Role & Task fetched successfully",
+      data: users,
+    });
+  } catch (error) {
+    res.status(501).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
 // @desc    Get all roles
 // @route   GET /api/user/roletask
 // @access  Admin
@@ -912,6 +952,7 @@ module.exports = {
   regenerateAccessToken,
   regenerateRefreshToken,
   getExportUser,
+  getUserRoleTasks,
   getRoleTasks,
   getRoleTaskById,
   updateRoleTask,

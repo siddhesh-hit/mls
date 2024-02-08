@@ -19,6 +19,7 @@ const {
   regenerateAccessToken,
   regenerateRefreshToken,
   getExportUser,
+  getUserRoleTasks,
   getRoleTasks,
   getRoleTaskById,
   updateRoleTask,
@@ -71,6 +72,14 @@ router.get(
   checkRoleMiddleware(["SuperAdmin", "Admin", "User"]),
   hasPermission("read"),
   getExportUser
+);
+
+router.get(
+  "/roletaskUser",
+  authMiddleware,
+  checkRoleMiddleware(["SuperAdmin", "Admin", "User"]),
+  hasPermission("read"),
+  getUserRoleTasks
 );
 
 router.get(
