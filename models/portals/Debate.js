@@ -71,6 +71,9 @@ const debateSchema = new mongoose.Schema(
     ministry: {
       type: String,
     },
+    ministry_name: {
+      type: String,
+    },
   },
   {
     timestamps: true,

@@ -6,8 +6,11 @@ const {
   getDebateById,
   getHouseDebates,
   getMemberDebateSearch,
+  getDebateFullSearch,
   updateDebateById,
   deleteDebateById,
+  getDebateFilterOption,
+  getDebateMethodFilterOption,
 } = require("../../controllers/portals/debate.controllers");
 
 const {
@@ -20,7 +23,12 @@ const {
 router.get("/houses", getHouseDebates);
 router.get("/search", getDebateSearch);
 router.get("/member", getMemberDebateSearch);
+router.get("/fields", getDebateFullSearch);
 
+// options
+router.get("/option", getDebateFilterOption);
+
+// basic crud
 router
   .route("/")
   .get(getAllDebates)

@@ -5,6 +5,7 @@ const Debate = require("../../models/portals/Debate");
 const {
   createNotificationFormat,
 } = require("../../controllers/extras/notification.controllers");
+const { marathiToEnglish } = require("../../utils/marathiNumberEng");
 
 // @desc    Create a new Debate
 // @route   POST /api/debate/
@@ -84,15 +85,27 @@ const getAllDebates = asyncHandler(async (req, res) => {
       {
         $match: matchConditions,
       },
-      { $skip: pageOptions.page * pageOptions.limit },
-      { $limit: pageOptions.limit },
+      {
+        $facet: {
+          debate: [
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [
+            {
+              $count: "count",
+            },
+          ],
+        },
+      },
     ]);
 
     // send response
     res.status(200).json({
       message: "Debates fetched successfully",
-      data: debate,
       success: true,
+      data: debate[0]?.debate || [],
+      count: debate[0]?.totalCount[0]?.count || [],
     });
   } catch (error) {
     res.status(500);
@@ -219,7 +232,7 @@ const getDebateSearch = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get Debate based on different query search
+// @desc    Get Debate based on queries including house
 // @route   GET /api/debate/member?id=""
 // @access  Public
 const getMemberDebateSearch = asyncHandler(async (req, res) => {
@@ -275,6 +288,93 @@ const getMemberDebateSearch = asyncHandler(async (req, res) => {
   } catch (error) {
     res.status(500);
     throw new Error(error);
+  }
+});
+
+// @desc    Get Debate based on multiple query
+// @route   GET /api/debate/fields?id=""
+// @access  Public
+const getDebateFullSearch = asyncHandler(async (req, res) => {
+  try {
+    let { perPage, perLimit, ...queries } = req.query;
+
+    if (!(Object.keys(queries).length > 0)) {
+      throw new Error("Fill query first");
+    }
+
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    // compute the queries in an array for using in and stage
+    let arrayOfQuery = Object.keys(queries);
+    let andMatchStage = [];
+
+    for (let i = 0; i < arrayOfQuery.length; i++) {
+      let key = arrayOfQuery[i];
+      let value = queries[arrayOfQuery[i]];
+
+      // if(t)
+
+      if (key === "volume" || key === "kramank") {
+        let engArr = value.split("");
+        let newMarArr;
+        if (typeof +engArr[0] === "number") {
+          newMarArr = engArr.map((item) => {
+            return item;
+          });
+        } else {
+          newMarArr = engArr.map((item) => {
+            item = marathiToEnglish[item];
+            return item;
+          });
+        }
+        let data = newMarArr.join("");
+        value = data;
+      }
+      if (value) {
+        value = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        let obj = {
+          [key]: new RegExp(`.*${value}.*`, "i"),
+        };
+
+        andMatchStage.push(obj);
+      }
+    }
+    console.log(andMatchStage);
+
+    let debates = await Debate.aggregate([
+      {
+        $match: {
+          $and: andMatchStage,
+        },
+      },
+      {
+        $facet: {
+          debate: [
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [
+            {
+              $count: "count",
+            },
+          ],
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "Debates fetched successfully",
+      // data: debates,
+      data: debates[0]?.debate || [],
+      count: debates[0]?.totalCount[0]?.count || [],
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error: " + error);
   }
 });
 
@@ -357,6 +457,88 @@ const deleteDebateById = asyncHandler(async (req, res) => {
   }
 });
 
+// <--- SELECT OPTION FROM DEBATE DATABASE --->
+
+// @desc    Get all distinct values for options
+// @route   GET /api/debate/option?id=
+// @access  Public
+const getDebateFilterOption = asyncHandler(async (req, res) => {
+  try {
+    let query = req.query.id;
+
+    const debates = await Debate.find().distinct(query);
+
+    if (!debates) {
+      res.status(400);
+      throw new Error("No fields for query: " + query);
+    }
+
+    // let debateSet = new Set();
+
+    let newDebates = [];
+    debates.map((item) => {
+      // item = item.replace(/\s/g, "");
+      // debateSet.add(item);
+      // if (item && item !== null && item !== undefined) {
+      //   return item;
+      // }
+
+      if (item) {
+        newDebates.push(item);
+      }
+    });
+
+    // console.log(newDebates);
+    newDebates.sort();
+
+    // console.log(newDebates);
+
+    res.status(200).json({
+      success: true,
+      message: "Debates fetched successfully",
+      // data: Array.from(debateSet).sort(),
+      data: newDebates,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error: " + error);
+  }
+});
+
+// @desc    Get all distinct values for options
+// @route   GET /api/debate/option?id=
+// @access  Public
+const getDebateMethodFilterOption = asyncHandler(async (req, res) => {
+  try {
+    let query = req.query.id;
+
+    const debates = await Debate.find().distinct(query);
+
+    if (!debates) {
+      res.status(400);
+      throw new Error("No fields for query: " + query);
+    }
+
+    let debateSet = new Set();
+
+    debates.map((item) => {
+      item = item.replace(/\s/g, "");
+      debateSet.add(item);
+    });
+
+    console.log(debateSet);
+
+    res.status(200).json({
+      success: true,
+      message: "Debates fetched successfully",
+      data: Array.from(debateSet).sort(),
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error: " + error);
+  }
+});
+
 module.exports = {
   createDebate,
   getAllDebates,
@@ -364,6 +546,9 @@ module.exports = {
   getHouseDebates,
   getDebateSearch,
   getMemberDebateSearch,
+  getDebateFullSearch,
   updateDebateById,
   deleteDebateById,
+  getDebateFilterOption,
+  getDebateMethodFilterOption,
 };

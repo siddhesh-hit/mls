@@ -834,6 +834,37 @@ const getRoleTasks = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get roles based on query
+// @route   GET /api/user/roletask/query?role=
+// @access  ADMIN
+const getRoleTaskOnQuery = asyncHandler(async (req, res) => {
+  try {
+    const query = req.query.role;
+    const roles = await Role_Task.find({ role: query })
+      .populate(
+        "userId",
+        "full_name email department designation houses phone_number gender date_of_birth user_image"
+      )
+      .select(
+        "_id role permission taskName activity isBlocked createdAt updatedAt full_name email department designation houses phone_number gender date_of_birth user_image"
+      );
+    if (!roles) {
+      res.status(400);
+      throw new Error("No entries found for provided role " + query);
+    }
+
+    res.status(200).json({
+      message: "Roles fetched successfully",
+      data: roles,
+      success: true,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error: " + error);
+  }
+});
+
+let viveksir = "name";
 // @desc    Get a roles
 // @route   GET /api/user/roletask/:id
 // @access  Admin
@@ -952,6 +983,7 @@ module.exports = {
   regenerateAccessToken,
   regenerateRefreshToken,
   getExportUser,
+  getRoleTaskOnQuery,
   getUserRoleTasks,
   getRoleTasks,
   getRoleTaskById,
