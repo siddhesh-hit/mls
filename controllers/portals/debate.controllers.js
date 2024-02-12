@@ -344,26 +344,46 @@ const getDebateFullSearch = asyncHandler(async (req, res) => {
     }
     console.log(andMatchStage);
 
-    let debates = await Debate.aggregate([
-      {
-        $match: {
-          $and: andMatchStage,
+    let debates;
+    if (andMatchStage.length > 0) {
+      debates = await Debate.aggregate([
+        {
+          $match: {
+            $and: andMatchStage,
+          },
         },
-      },
-      {
-        $facet: {
-          debate: [
-            { $skip: pageOptions.page * pageOptions.limit },
-            { $limit: pageOptions.limit },
-          ],
-          totalCount: [
-            {
-              $count: "count",
-            },
-          ],
+        {
+          $facet: {
+            debate: [
+              { $skip: pageOptions.page * pageOptions.limit },
+              { $limit: pageOptions.limit },
+            ],
+            totalCount: [
+              {
+                $count: "count",
+              },
+            ],
+          },
         },
-      },
-    ]);
+      ]);
+    } else {
+      // No queries provided, return all debates
+      debates = await Debate.aggregate([
+        {
+          $facet: {
+            debate: [
+              { $skip: pageOptions.page * pageOptions.limit },
+              { $limit: pageOptions.limit },
+            ],
+            totalCount: [
+              {
+                $count: "count",
+              },
+            ],
+          },
+        },
+      ]);
+    }
 
     res.status(200).json({
       success: true,
