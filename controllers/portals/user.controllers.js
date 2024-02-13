@@ -293,7 +293,7 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       sameSite: "None",
     });
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "User logged in successfully",
       data: userData,
@@ -349,7 +349,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "User logged out successfully",
     });
@@ -453,7 +453,7 @@ const forgotUser = asyncHandler(async (req, res) => {
     // mail the reset password link
     emailReset(email);
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "Reset password link sent successfully",
     });
@@ -481,7 +481,7 @@ const resetUser = asyncHandler(async (req, res) => {
     checkUser.password = password;
     await checkUser.save();
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "Password reset successfully",
     });

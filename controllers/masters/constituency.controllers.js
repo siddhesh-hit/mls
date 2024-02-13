@@ -13,29 +13,30 @@ const {
 const createConstituency = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
+    console.log(data);
 
     // validate the data
-    const { error } = createConstituencyValidation(data);
-    if (error) {
-      res.status(400);
-      throw new Error(error.details[0].message);
+    // const { error } = createConstituencyValidation(data);
+    // if (error) {
+    //   res.status(400);
+    //   throw new Error(error.details[0].message);
+    // }
+
+    // // create constituency
+    // let constituency = [];
+
+    // for (let i = 0; i < data.length; i++) {
+    //   constituency.push(createdConstituency);
+    // }
+
+    const createdConstituency = await Constituency.create(data);
+    if (!createConstituency) {
+      res.status(403);
+      throw new Error("Couldn't create Constituency.");
     }
-
-    // create constituency
-    let constituency = [];
-
-    for (let i = 0; i < data.length; i++) {
-      const createdConstituency = await Constituency.create(data);
-      if (!createConstituency) {
-        res.status(403);
-        throw new Error("Couldn't create Constituency.");
-      }
-      constituency.push(createdConstituency);
-    }
-
     res.status(201).json({
       message: "Constituency created successfully.",
-      data: constituency,
+      data: createdConstituency,
       success: true,
     });
   } catch (error) {

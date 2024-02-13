@@ -5,24 +5,57 @@ const mongoose = require("mongoose");
 const constituencySchema = new mongoose.Schema(
   {
     marathi: {
-      constituency_assembly: {
-        type: String,
-        required: true,
+      assembly: {
+        constituency_assembly: {
+          type: String,
+        },
+        assembly_number: {
+          type: String,
+        },
+        year: {
+          type: String,
+        },
       },
-      assembly_number: {
-        type: String,
-        required: true,
+      council: {
+        constituency_type: {
+          type: String,
+        },
+        constituency_name: {
+          type: String,
+        },
+        year: {
+          type: String,
+        },
       },
     },
     english: {
-      constituency_assembly: {
-        type: String,
-        required: true,
+      assembly: {
+        constituency_assembly: {
+          type: String,
+        },
+        assembly_number: {
+          type: String,
+        },
+        year: {
+          type: String,
+        },
       },
-      assembly_number: {
-        type: String,
-        required: true,
+      council: {
+        constituency_type: {
+          type: String,
+        },
+        constituency_name: {
+          type: String,
+        },
+        year: {
+          type: String,
+        },
       },
+    },
+    isHouse: {
+      type: String,
+      enum: ["Assembly", "Constituency"],
+      requried: true,
     },
     isActive: {
       type: Boolean,

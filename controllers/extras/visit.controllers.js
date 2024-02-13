@@ -25,7 +25,7 @@ const visitCount = asyncHandler(async (req, res) => {
       throw new Error("Failed to update the count");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       data: newCount,
       success: true,
     });

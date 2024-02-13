@@ -57,7 +57,7 @@ router
   )
   .delete(
     authMiddleware,
-    checkRoleMiddleware(["SuperAdmin, Admin"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
     hasPermission("delete"),
     deleteConstituency
   );

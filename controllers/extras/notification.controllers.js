@@ -130,7 +130,7 @@ const getAllNotification = asyncHandler(async (req, res) => {
       throw new Error("Failed to get notifications");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       data: notifications,
       success: true,
     });
@@ -152,7 +152,7 @@ const getNotification = asyncHandler(async (req, res) => {
       throw new Error("Failed to get notifications");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       data: notifications,
       success: true,
     });
