@@ -191,7 +191,7 @@ const updateMinister = asyncHandler(async (req, res) => {
 
     // await createNotificationFormat(notificationData, res);
 
-    res.status(201).json({
+    res.status(200).json({
       message: "Minister updated successfully.",
       data: minister,
       success: true,

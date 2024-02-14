@@ -19,6 +19,7 @@ const {
   regenerateAccessToken,
   regenerateRefreshToken,
   getExportUser,
+  getRoleTaskOnQuery,
   getUserRoleTasks,
   getRoleTasks,
   getRoleTaskById,
@@ -69,7 +70,7 @@ router.post(
 router.get(
   "/export",
   authMiddleware,
-  checkRoleMiddleware(["SuperAdmin", "Admin", "User"]),
+  checkRoleMiddleware(["SuperAdmin"]),
   hasPermission("read"),
   getExportUser
 );
@@ -77,15 +78,23 @@ router.get(
 router.get(
   "/roletaskUser",
   authMiddleware,
-  checkRoleMiddleware(["SuperAdmin", "Admin", "User"]),
+  checkRoleMiddleware(["SuperAdmin"]),
   hasPermission("read"),
   getUserRoleTasks
 );
 
 router.get(
+  "/roletask/query",
+  authMiddleware,
+  checkRoleMiddleware(["SuperAdmin"]),
+  hasPermission("read"),
+  getRoleTaskOnQuery
+);
+
+router.get(
   "/roletask",
   authMiddleware,
-  checkRoleMiddleware(["SuperAdmin", "Admin", "User"]),
+  checkRoleMiddleware(["SuperAdmin"]),
   hasPermission("read"),
   getRoleTasks
 );
@@ -93,7 +102,7 @@ router.get(
 router.get(
   "/roletask/:id",
   authMiddleware,
-  checkRoleMiddleware(["SuperAdmin", "Admin", "User"]),
+  checkRoleMiddleware(["SuperAdmin"]),
   hasPermission("read"),
   getRoleTaskById
 );
@@ -101,7 +110,7 @@ router.get(
 router.put(
   "/roletask/:id",
   authMiddleware,
-  checkRoleMiddleware(["SuperAdmin", "Admin", "User"]),
+  checkRoleMiddleware(["SuperAdmin"]),
   hasPermission("update"),
   updateRoleTask
 );
