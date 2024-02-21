@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const asyncHandler = require("express-async-handler");
 const cookieParser = require("cookie-parser");
-
+const jwt = require("jsonwebtoken")
 const User = require("../../models/portals/userModel");
 const RefreshToken = require("../../models/portals/refreshToken");
 const Notification = require("../../models/extras/Notification");
@@ -219,7 +219,7 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
 // @desc    Login user using phone
 // @route   POST /api/user/loginPhone
 // @access  Public
-const loginUserPhone = asyncHandler(async (req, res) => {});
+const loginUserPhone = asyncHandler(async (req, res) => { });
 
 // @desc    Login user using email
 // @route   POST /api/user/loginEmail
@@ -310,7 +310,7 @@ const loginUserEmail = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
   try {
     // Parse cookies using cookie-parser
-    cookieParserMiddleware(req, res, () => {});
+    cookieParserMiddleware(req, res, () => { });
 
     const refresh_token = req.cookies.refreshToken;
     const access_token = req.cookies.accessToken;
@@ -449,13 +449,17 @@ const forgotUser = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("User does not exists");
     }
+    // generate access token and refresh token
+    const access_token = await accessToken(checkUser);
 
     // mail the reset password link
-    emailReset(email);
+
+    emailReset(email, access_token);
 
     res.status(200).json({
       success: true,
       message: "Reset password link sent successfully",
+      data: ` ${process.env.CLIENT_URL}/resetPassword/${access_token}`
     });
   } catch (error) {
     res.status(501);
@@ -468,10 +472,26 @@ const forgotUser = asyncHandler(async (req, res) => {
 // @access  Public
 const resetUser = asyncHandler(async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { token, password } = req.body;
+    if (!token) {
+      res.status(401);
+      throw new Error("Not authorized users");
+    }
+    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
 
+    if (!decoded) {
+      res.status(403);
+      throw new Error("Not an authorized token.");
+    }
+
+    // if (decoded1.exp > date) {
+    const user = await User.findById(decoded.id).select("-password");
+    if (!user) {
+      res.status(401);
+      throw new Error("Not an user in the database");
+    }
     // check if user exists
-    const checkUser = await User.findOne({ email });
+    const checkUser = await User.findOne({ email: user.email });
     if (!checkUser) {
       res.status(400);
       throw new Error("User does not exists");
@@ -481,11 +501,50 @@ const resetUser = asyncHandler(async (req, res) => {
     checkUser.password = password;
     await checkUser.save();
 
+    // generate access token and refresh token
+    const access_token = await accessToken(user);
+    const refresh_token = await refreshToken(user);
+
+    let userData = {
+      full_name: checkUser.full_name,
+      email: checkUser.email,
+      houses: checkUser.houses,
+      department: checkUser.department,
+      designation: checkUser.designation,
+      phone_number: checkUser.phone_number,
+      gender: checkUser.gender,
+      user_image: checkUser.user_image,
+      notificationId: checkUser.notificationId,
+      role_taskId: checkUser.role_taskId,
+      user_verfied: checkUser.user_verfied
+    };
+
+    // set cookies
+    res.cookie("accessToken", access_token, {
+      httpOnly: true, // set true if the client does not need to read it via JavaScript
+      secure: true, // set to false if not using https
+      sameSite: "None",
+    });
+    res.cookie("refreshToken", refresh_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    });
+
     res.status(200).json({
       success: true,
-      message: "Password reset successfully",
+      message: "User logged in successfully",
+      data: userData,
     });
   } catch (error) {
+    // An error occurred during JWT verification
+    if (error.name === 'TokenExpiredError') {
+      res.status(403);
+      throw new Error("Session Is Expired");
+    } else if (error.name === 'JsonWebTokenError') {
+      res.status(403);
+      throw new Error("Not an authorized token.");
+    }
     res.status(501);
     throw new Error(error);
   }
@@ -625,7 +684,7 @@ const regenerateAccessToken = asyncHandler(async (req, res) => {
   try {
     // check if access token exists
 
-    cookieParserMiddleware(req, res, () => {});
+    cookieParserMiddleware(req, res, () => { });
 
     const accessOldToken = req.cookies.accessToken;
     const refreshOldToken = req.cookies.refreshToken;

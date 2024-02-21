@@ -78,7 +78,7 @@ app.get("/back", (req, res) => {
 });
 
 // defining the routes
-app.use("/v1/api", routes);
+app.use("/api/v1", routes);
 
 // static files
 app.use("/images", express.static("./images"));
