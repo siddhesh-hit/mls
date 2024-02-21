@@ -7,7 +7,6 @@ const User = require("../../models/portals/userModel");
 // @desc    Create notification format
 const createNotificationFormat = asyncHandler(async (notificationData, res) => {
   try {
-    console.log(notificationData);
     // check if name & message exist
     if (
       !notificationData.name ||

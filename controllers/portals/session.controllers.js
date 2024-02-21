@@ -1,6 +1,8 @@
 const asyncHandler = require("express-async-handler");
 
 const SessionCalendar = require("../../models/portals/sessionCalendar");
+const User = require("../../models/portals/userModel");
+
 const {
   createSessionCalendarValidation,
   updateSessionCalendarValidation,
@@ -9,6 +11,7 @@ const {
 const {
   createNotificationFormat,
 } = require("../../controllers/extras/notification.controllers");
+const { createPending } = require("../reports/pending.controllers");
 
 // @desc    Create a session calendar
 // @route   POST /api/session/
@@ -16,16 +19,24 @@ const {
 const createSession = asyncHandler(async (req, res) => {
   try {
     let data = req.body.data;
+    let userId = res.locals.userInfo;
+    let { document } = req.files;
 
     data = JSON.parse(data);
-
-    let { document } = req.files;
 
     // check if document exists
     if (!document) {
       res.status(400);
       throw new Error("Document is required!");
     }
+
+    // check if user exists and then add it
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.createdBy = userId.id;
 
     // add document to the data
     data.documents.forEach((ele, ind) => {
@@ -39,32 +50,40 @@ const createSession = asyncHandler(async (req, res) => {
       throw new Error(error.details[0].message);
     }
 
-    console.log(data);
-
     // create session calendar
     const sessionCalendar = await SessionCalendar.create(data);
-
     if (!sessionCalendar) {
       res.status(400);
-      throw new Error(
-        "Something went wrong while creating the Session Calendar."
-      );
+      throw new Error("Failed to create Session Calendar.");
     }
 
-    let notificationData = {
-      name: "Session Calendar",
-      marathi: {
-        message: "नवीन सत्र दिनदर्शिका जोडले!",
-      },
-      english: {
-        message: "New Session Calendar added!",
-      },
-    };
+    // // notify others
+    // let notificationData = {
+    //   name: "Session Calendar",
+    //   marathi: {
+    //     message: "नवीन सत्र दिनदर्शिका जोडले!",
+    //   },
+    //   english: {
+    //     message: "New Session Calendar added!",
+    //   },
+    // };
+    // await createNotificationFormat(notificationData, res);
 
-    await createNotificationFormat(notificationData, res);
+    // create a pending req to accept
+    let pendingData = {
+      modelId: sessionCalendar._id,
+      modelName: "SessionCalendar",
+      action: "Create",
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to create SessionCalendar`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
 
     res.status(201).json({
-      message: "Session Calendar created successfully.",
+      message: "Session Calendar create request forwaded!",
       data: sessionCalendar,
       success: true,
     });
@@ -79,13 +98,22 @@ const createSession = asyncHandler(async (req, res) => {
 // @access  Public
 const getAllSession = asyncHandler(async (req, res) => {
   try {
-    const sessionCalendar = await SessionCalendar.find({});
+    let { perPage, perLimit, ...id } = req.query;
 
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    const sessionCalendar = await SessionCalendar.find(id)
+      .limit(pageOptions.limit)
+      .skip(pageOptions.page * pageOptions.limit)
+      .exec();
+
+    // check if SessionCalendar exists
     if (!sessionCalendar) {
       res.status(400);
-      throw new Error(
-        "Something went wrong while getting the Session Calendar."
-      );
+      throw new Error("No Session Calendar found.");
     }
 
     res.status(200).json({
@@ -130,6 +158,17 @@ const getSession = asyncHandler(async (req, res) => {
 const updateSession = asyncHandler(async (req, res) => {
   try {
     let data = req.body.data;
+    let userId = res.locals.userInfo;
+    let { document } = req.files;
+
+    data = JSON.parse(data);
+
+    // check if user exists and add
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
 
     // check if session calendar exists
     const sessionExists = await SessionCalendar.findById(req.params.id);
@@ -137,10 +176,6 @@ const updateSession = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("No session calendar exists for the id");
     }
-
-    data = JSON.parse(data);
-
-    let { document } = req.files;
 
     // add document to the data
     let docCount = 0;
@@ -151,46 +186,44 @@ const updateSession = asyncHandler(async (req, res) => {
           : document[docCount++];
     });
 
+    data.updatedBy = userId.id;
+
     // validate the data
     const { error } = updateSessionCalendarValidation(data);
     if (error) {
       res.status(400);
       throw new Error(error.details[0].message);
     }
-    console.log(data);
 
-    // update session calendar
-    const sessionCalendar = await SessionCalendar.findByIdAndUpdate(
-      req.params.id,
-      data,
-      {
-        runValidators: true,
-        new: true,
-      }
-    );
+    // // notify others
+    // let notificationData = {
+    //   name: "Session Calendar",
+    //   marathi: {
+    //     message: "सत्र दिनदर्शिका अपडेट झाले!",
+    //   },
+    //   english: {
+    //     message: "Session Calendar updated!",
+    //   },
+    // };
+    // await createNotificationFormat(notificationData, res);
 
-    if (!sessionCalendar) {
-      res.status(400);
-      throw new Error(
-        "Something went wrong while creating the Session Calendar."
-      );
-    }
-
-    let notificationData = {
-      name: "Session Calendar",
-      marathi: {
-        message: "सत्र दिनदर्शिका अपडेट झाले!",
-      },
-      english: {
-        message: "Session Calendar updated!",
-      },
+    // create a pending req to accept
+    let pendingData = {
+      modelId: sessionExists._id,
+      modelName: "SessionCalendar",
+      action: "Update",
+      data_object: data,
     };
-
-    await createNotificationFormat(notificationData, res);
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to update SessionCalendar`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
 
     res.status(200).json({
-      message: "Session Calendar created updated.",
-      data: sessionCalendar,
+      message: "Session Calendar update request forwaded!",
+      data: sessionExists,
       success: true,
     });
   } catch (error) {
@@ -204,19 +237,36 @@ const updateSession = asyncHandler(async (req, res) => {
 // @access  Admin
 const deleteSession = asyncHandler(async (req, res) => {
   try {
-    const sessionCalendar = await SessionCalendar.findByIdAndDelete(
-      req.params.id
-    );
+    let userId = res.locals.userInfo;
 
-    if (!sessionCalendar) {
+    // check if user exists
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
       res.status(400);
-      throw new Error(
-        "Something went wrong while getting the Session Calendar."
-      );
+      throw new Error("Failed to find a user.");
     }
 
+    const sessionCalendar = await SessionCalendar.findById(req.params.id);
+    if (!sessionCalendar) {
+      res.status(400);
+      throw new Error("no Session Calendar found.");
+    }
+
+    // create a pending req to accept
+    let pendingData = {
+      modelId: sessionCalendar._id,
+      modelName: "SessionCalendar",
+      action: "Delete",
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to delete SessionCalendar`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
+
     res.status(204).json({
-      message: "Session Calendar deleted successfully.",
+      message: "Session Calendar delete request forwaded!",
       success: true,
       data: {},
     });

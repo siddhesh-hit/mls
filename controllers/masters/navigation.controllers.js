@@ -8,7 +8,7 @@ const {
 } = require("../../validations/master/navigationValidation");
 
 // @desc    Create a Navigation
-// @route   /api/navigation/
+// @route   /api/v1/navigation/
 // @access  Admin
 const createNavigation = asyncHandler(async (req, res) => {
   try {
@@ -64,7 +64,7 @@ const createNavigation = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get all Navigation
-// @route   /api/navigation/
+// @route   /api/v1/navigation/
 // @access  Public
 const getAllNavigation = asyncHandler(async (req, res) => {
   try {
@@ -87,7 +87,7 @@ const getAllNavigation = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get a Navigation
-// @route   /api/navigation/:id
+// @route   /api/v1/navigation/:id
 // @access  Public
 const getNavigation = asyncHandler(async (req, res) => {
   try {
@@ -110,7 +110,7 @@ const getNavigation = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update a Navigation
-// @route   /api/navigation/:id
+// @route   /api/v1/navigation/:id
 // @access  Admin
 const updateNavigation = asyncHandler(async (req, res) => {
   try {
@@ -152,7 +152,7 @@ const updateNavigation = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete a Navigation
-// @route   /api/navigation/:id
+// @route   /api/v1/navigation/:id
 // @access  Admin
 const deleteNavigation = asyncHandler(async (req, res) => {
   try {

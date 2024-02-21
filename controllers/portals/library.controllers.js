@@ -1,10 +1,17 @@
 const asyncHandler = require("express-async-handler");
+
 const Library = require("../../models/portals/library");
+const User = require("../../models/portals/userModel");
 
 const {
   createLibraryValidation,
   updateLibraryValidation,
 } = require("../../validations/portal/libraryValidation");
+
+const {
+  createNotificationFormat,
+} = require("../extras/notification.controllers");
+const { createPending } = require("../reports/pending.controllers");
 
 // @desc    Create new library
 // @route   POST /api/library/
@@ -12,6 +19,7 @@ const {
 const createLibrary = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
+    let userId = res.locals.userInfo;
     let { banner } = req.files;
 
     data.english = JSON.parse(data.english);
@@ -26,8 +34,6 @@ const createLibrary = asyncHandler(async (req, res) => {
     // add the image to the data
     data.banner = banner[0];
 
-    console.log(data);
-
     // validate request body
     const { error } = createLibraryValidation(data);
     if (error) {
@@ -35,19 +41,52 @@ const createLibrary = asyncHandler(async (req, res) => {
       throw new Error(error.details[0].message);
     }
 
+    // check if user exists and then add it
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.createdBy = userId.id;
+
     // create new library
     const library = await Library.create(data);
-
-    if (library) {
-      res.status(201).json({
-        message: "Library created successfully",
-        data: library,
-        success: true,
-      });
-    } else {
+    if (!library) {
       res.status(400);
       throw new Error("Invalid library data");
     }
+
+    // notify others
+    // let notificationData = {
+    //   name: "Library",
+    //   marathi: {
+    //     message: "नवीन Library जोडले!",
+    //   },
+    //   english: {
+    //     message: "New Library added!",
+    //   },
+    // };
+    // await createNotificationFormat(notificationData, res);
+
+    // create a pending req to accept
+    let pendingData = {
+      modelId: library._id,
+      modelName: "Library",
+      action: "Create",
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to create Library`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
+
+    // send response
+    res.status(201).json({
+      message: "Library create request forwaded!",
+      data: library,
+      success: true,
+    });
   } catch (error) {
     res.status(500);
     throw new Error(error);
@@ -59,17 +98,29 @@ const createLibrary = asyncHandler(async (req, res) => {
 // @access  Public
 const getLibraries = asyncHandler(async (req, res) => {
   try {
-    const libraries = await Library.find({});
-    if (libraries) {
-      res.status(200).json({
-        message: "Libraries fetched successfully",
-        data: libraries,
-        success: true,
-      });
-    } else {
+    let { perPage, perLimit, ...id } = req.query;
+
+    const pageOptions = {
+      limit: parseInt(perPage, 10) || 0,
+      skip: parseInt(perLimit, 10) || 10,
+    };
+
+    // find library
+    const libraries = await Library.find(id)
+      .limit(pageOptions.limit)
+      .skip(pageOptions.skip * pageOptions.limit)
+      .exec();
+
+    if (!libraries) {
       res.status(404);
       throw new Error("No libraries found");
     }
+
+    res.status(200).json({
+      message: "Libraries fetched successfully",
+      data: libraries,
+      success: true,
+    });
   } catch (error) {
     res.status(500);
     throw new Error(error);
@@ -102,17 +153,18 @@ const getActiveLibrary = asyncHandler(async (req, res) => {
 // @access  Public
 const getLibrary = asyncHandler(async (req, res) => {
   try {
+    // find and check
     const library = await Library.findById(req.params.id);
-    if (library) {
-      res.status(200).json({
-        message: "Library fetched successfully",
-        data: library,
-        success: true,
-      });
-    } else {
+    if (!library) {
       res.status(404);
       throw new Error("No library found");
     }
+
+    res.status(200).json({
+      message: "Library fetched successfully",
+      data: library,
+      success: true,
+    });
   } catch (error) {
     res.status(500);
     throw new Error(error);
@@ -125,14 +177,20 @@ const getLibrary = asyncHandler(async (req, res) => {
 const updateLibrary = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
-    // console.log(data);
-
+    let userId = res.locals.userInfo;
     let { banner } = req.files;
-    // console.log(req.files);
 
     data.english = JSON.parse(data.english);
     data.marathi = JSON.parse(data.marathi);
     data.file = JSON.parse(data.file);
+
+    // check if user exists and then add it
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.updatedBy = userId.id;
 
     // check if the library exists
     const libraryExists = await Library.findById(req.params.id);
@@ -147,9 +205,6 @@ const updateLibrary = asyncHandler(async (req, res) => {
     } else {
       data.banner = libraryExists.banner;
     }
-
-    // console.log(data);
-
     delete data.file;
 
     // validate request body
@@ -159,22 +214,37 @@ const updateLibrary = asyncHandler(async (req, res) => {
       throw new Error(error.details[0].message);
     }
 
-    // update library
-    const updatedLibrary = await Library.findByIdAndUpdate(
-      req.params.id,
-      data,
-      { new: true, runValidators: true }
-    );
-    if (updatedLibrary) {
-      res.status(200).json({
-        message: "Library updated successfully",
-        data: updatedLibrary,
-        success: true,
-      });
-    } else {
-      res.status(400);
-      throw new Error("Invalid library data");
-    }
+    // notify others
+    // let notificationData = {
+    //   name: "Library",
+    //   marathi: {
+    //     message: "Library अपडेट झाले!",
+    //   },
+    //   english: {
+    //     message: "Library Updated!",
+    //   },
+    // };
+    // await createNotificationFormat(notificationData, res);
+
+    // create a pending req to accept
+    let pendingData = {
+      modelId: libraryExists._id,
+      modelName: "Library",
+      action: "Update",
+      data_object: data,
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to update Library`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
+
+    res.status(200).json({
+      message: "Library update request forwaded!",
+      data: libraryExists,
+      success: true,
+    });
   } catch (error) {
     res.status(500);
     throw new Error(error);
@@ -187,6 +257,14 @@ const updateLibrary = asyncHandler(async (req, res) => {
 const deleteLibrary = asyncHandler(async (req, res) => {
   try {
     let id = req.params.id;
+    let userId = res.locals.userInfo;
+
+    // check if user exists
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
 
     // check if the library exists
     const libraryExists = await Library.findById(id);
@@ -195,19 +273,24 @@ const deleteLibrary = asyncHandler(async (req, res) => {
       throw new Error("No library found");
     }
 
-    // delete library
-    const deletedLibrary = await Library.findByIdAndDelete(id);
+    // create a pending req to accept
+    let pendingData = {
+      modelId: libraryExists._id,
+      modelName: "Library",
+      action: "Delete",
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to delete Library`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
 
-    if (deletedLibrary) {
-      res.status(204).json({
-        message: "Library deleted successfully",
-        success: true,
-        data: {},
-      });
-    } else {
-      res.status(400);
-      throw new Error("Invalid library data");
-    }
+    res.status(204).json({
+      message: "Library deleted request forwaded!",
+      data: {},
+      success: true,
+    });
   } catch (error) {
     res.status(500);
     throw new Error(error);

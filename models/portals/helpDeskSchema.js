@@ -22,18 +22,17 @@ const helpdeskSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    isUpdated: {
-      type: Boolean,
-      default: false,
-    },
-    isAccepted: {
-      type: Boolean,
-      default: false,
-    },
     isActive: {
       type: Boolean,
-      default: true,
+      default: false,
     },
+    status: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending",
+    },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   {
     timestamps: true,

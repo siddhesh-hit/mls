@@ -4,36 +4,39 @@ const ministerSchema = new mongoose.Schema(
   {
     assembly_number: {
       type: String,
-      requied: true,
+      required: true,
     },
     ministry_type: {
       type: String,
-      requied: true,
+      required: true,
     },
     member_name: {
       type: String,
-      requied: true,
+      required: true,
     },
     designation: {
       type: String,
-      requied: true,
+      required: true,
     },
     ministry: {
       type: String,
-      requied: true,
+      required: true,
     },
-    isUpdated: {
-      type: Boolean,
-      default: false,
-    },
-    isAccepted: {
-      type: Boolean,
-      default: false,
+    isDissolved: {
+      type: Number,
+      default: 0,
     },
     isActive: {
       type: Boolean,
-      default: true,
+      default: false,
     },
+    status: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending",
+    },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );

@@ -34,16 +34,15 @@ const navigationSchema = new mongoose.Schema(
     },
     isActive: {
       type: Boolean,
-      default: true,
-    },
-    isUpdated: {
-      type: Boolean,
       default: false,
     },
-    isAccepted: {
-      type: Boolean,
-      default: false,
+    status: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending",
     },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   {
     timestamps: true,

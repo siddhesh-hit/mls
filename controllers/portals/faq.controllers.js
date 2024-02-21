@@ -1,6 +1,8 @@
 const asyncHandler = require("express-async-handler");
 
 const Faq = require("../../models/portals/faqSchema");
+const User = require("../../models/portals/userModel");
+
 const {
   createFAQValidation,
   updateFAQValidation,
@@ -9,6 +11,7 @@ const {
 const {
   createNotificationFormat,
 } = require("../../controllers/extras/notification.controllers");
+const { createPending } = require("../reports/pending.controllers");
 
 // @desc    Create a new FAQ
 // @route   POST /api/faq/
@@ -16,17 +19,13 @@ const {
 const createFAQ = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
-
-    console.log(data);
+    let userId = res.locals.userInfo;
 
     // check if data is present
     if (!data) {
       res.status(400);
       throw new Error("Please provide data");
     }
-
-    // data.english = JSON.parse(data.english);
-    // data.marathi = JSON.parse(data.marathi);
 
     // validate the data
     const { error } = createFAQValidation(data);
@@ -35,33 +34,50 @@ const createFAQ = asyncHandler(async (req, res) => {
       throw new Error(error.details[0].message);
     }
 
-    // create a new FAQ
-    const FAQs = [];
+    // check if user exists and then add it
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.createdBy = userId.id;
 
-    for (let i = 0; i < data.length; i++) {
-      const faq = await Faq.create(data[i]);
-      if (!faq) {
-        res.status(400);
-        throw new Error("Failed to create FAQ");
-      }
-      FAQs.push(faq);
+    // create a new FAQ
+    const faq = await Faq.create(data);
+    if (!faq) {
+      res.status(400);
+      throw new Error("Failed to create FAQ");
     }
 
-    let notificationData = {
-      name: "FAQ",
-      marathi: {
-        message: "नवीन FAQ जोडले!",
-      },
-      english: {
-        message: "New FAQs added!",
-      },
+    // // notify others
+    // let notificationData = {
+    //   name: "FAQ",
+    //   marathi: {
+    //     message: "नवीन FAQ जोडले!",
+    //   },
+    //   english: {
+    //     message: "New FAQs added!",
+    //   },
+    // };
+    // await createNotificationFormat(notificationData, res);
+
+    // create a pending req to accept
+    let pendingData = {
+      modelId: faq._id,
+      modelName: "Faq",
+      action: "Create",
     };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to create FAQ`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
 
-    await createNotificationFormat(notificationData, res);
-
+    // send response
     res.status(201).json({
-      message: "FAQ created successfully",
-      data: FAQs,
+      message: "FAQ create request forwaded!",
+      data: faq,
       success: true,
     });
   } catch (error) {
@@ -75,9 +91,19 @@ const createFAQ = asyncHandler(async (req, res) => {
 // @access  Public
 const getAllFAQs = asyncHandler(async (req, res) => {
   try {
-    const faq = await Faq.find();
+    let { perPage, perLimit, ...id } = req.query;
 
-    // check if faq is present
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    const faq = await Faq.find(id)
+      .limit(pageOptions.limit)
+      .skip(pageOptions.page * pageOptions.limit)
+      .exec();
+
+    // check if faq exists
     if (!faq) {
       res.status(404);
       throw new Error("No FAQs found");
@@ -147,15 +173,13 @@ const getFAQById = asyncHandler(async (req, res) => {
 const updateFAQById = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
+    let userId = res.locals.userInfo;
 
     // check if data is present
     if (!data) {
       res.status(400);
       throw new Error("Please provide data");
     }
-
-    // data.english = JSON.parse(data.english);
-    // data.marathi = JSON.parse(data.marathi);
 
     // validate the data
     const { error } = updateFAQValidation(data);
@@ -164,6 +188,14 @@ const updateFAQById = asyncHandler(async (req, res) => {
       throw new Error(error.details[0].message);
     }
 
+    // check if user exists and add
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.updatedBy = userId.id;
+
     // check if faq is present
     const faqExists = await Faq.findById(req.params.id);
     if (!faqExists) {
@@ -171,35 +203,38 @@ const updateFAQById = asyncHandler(async (req, res) => {
       throw new Error("FAQ not found");
     }
 
-    // update the faq
-    const updatedFAQ = await Faq.findByIdAndUpdate(req.params.id, data, {
-      new: true,
-      runValidators: true,
+    // // notify others
+    // let notificationData = {
+    //   name: "FAQ",
+    //   marathi: {
+    //     message: "FAQs अपडेट झाले!",
+    //   },
+    //   english: {
+    //     message: "FAQs Updated!",
+    //   },
+    // };
+    // await createNotificationFormat(notificationData, res);
+
+    // create a pending req to accept
+    let pendingData = {
+      modelId: faqExists._id,
+      modelName: "Faq",
+      action: "Update",
+      data_object: data,
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to update FAQ`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
+
+    // send response
+    res.status(200).json({
+      message: "FAQ update request forwaded!",
+      data: faqExists,
+      success: true,
     });
-
-    // check and send response
-    if (!updatedFAQ) {
-      res.status(400);
-      throw new Error("Something went wrong");
-    } else {
-      let notificationData = {
-        name: "FAQ",
-        marathi: {
-          message: "FAQs अपडेट झाले!",
-        },
-        english: {
-          message: "FAQs Updated!",
-        },
-      };
-
-      await createNotificationFormat(notificationData, res);
-
-      res.status(200).json({
-        message: "FAQ updated successfully",
-        data: updatedFAQ,
-        success: true,
-      });
-    }
   } catch (error) {
     res.status(500);
     throw new Error(error);
@@ -211,6 +246,15 @@ const updateFAQById = asyncHandler(async (req, res) => {
 // @access  Admin
 const deleteFAQById = asyncHandler(async (req, res) => {
   try {
+    let userId = res.locals.userInfo;
+
+    // check if user exists
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+
     // check if faq is present
     const faqExists = await Faq.findById(req.params.id);
     if (!faqExists) {
@@ -218,20 +262,24 @@ const deleteFAQById = asyncHandler(async (req, res) => {
       throw new Error("FAQ not found");
     }
 
-    // delete the faq
-    const deletedFAQ = await Faq.findByIdAndDelete(req.params.id);
+    // create a pending req to accept
+    let pendingData = {
+      modelId: faqExists._id,
+      modelName: "Faq",
+      action: "Delete",
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to delete FAQ`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
 
-    // check and send response
-    if (!deletedFAQ) {
-      res.status(400);
-      throw new Error("Something went wrong");
-    } else {
-      res.status(204).json({
-        message: "FAQ deleted successfully",
-        data: {},
-        success: true,
-      });
-    }
+    res.status(204).json({
+      message: "FAQ deleted request forwaded!",
+      data: {},
+      success: true,
+    });
   } catch (error) {
     res.status(500);
     throw new Error(error);

@@ -7,7 +7,7 @@ const {
 } = require("../../validations/master/partyValidation");
 
 // @desc    Create a Party
-// @route   /api/party/
+// @route   /api/v1/party/
 // @access  Admin
 const createParty = asyncHandler(async (req, res) => {
   try {

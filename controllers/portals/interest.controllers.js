@@ -5,7 +5,7 @@ const Navigation = require("../../models/masters/Navigation");
 const User = require("../../models/portals/userModel");
 
 // @desc    Create a InterestArea
-// @route   /api/interest/
+// @route   /api/v1/interest/
 // @access  Admin
 const createInterestArea = asyncHandler(async (req, res) => {
   try {
@@ -47,7 +47,7 @@ const createInterestArea = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get all InterestArea
-// @route   /api/interest/
+// @route   /api/v1/interest/
 // @access  Public
 const getAllInterestArea = asyncHandler(async (req, res) => {
   try {
@@ -73,7 +73,7 @@ const getAllInterestArea = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get a InterestArea
-// @route   /api/interest/:id
+// @route   /api/v1/interest/:id
 // @access  Public
 const getInterestArea = asyncHandler(async (req, res) => {
   try {
@@ -99,7 +99,7 @@ const getInterestArea = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update a InterestArea
-// @route   /api/interest/:id
+// @route   /api/v1/interest/:id
 // @access  Admin
 const updateInterestArea = asyncHandler(async (req, res) => {
   try {
@@ -146,7 +146,7 @@ const updateInterestArea = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete a InterestArea
-// @route   /api/interest/:id
+// @route   /api/v1/interest/:id
 // @access  Admin
 const deleteInterestArea = asyncHandler(async (req, res) => {
   try {

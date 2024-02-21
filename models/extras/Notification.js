@@ -48,15 +48,17 @@ const notificationSchema = new mongoose.Schema(
 // before saving populate the global field
 notificationSchema.pre("save", async function (next) {
   try {
-    const notificationFormats = await NotificationFormat.find({});
+    if (this.isNew) {
+      const notificationFormats = await NotificationFormat.find({});
 
-    const notificationFormatIds = notificationFormats.map(
-      (format) => format._id
-    );
+      const notificationFormatIds = notificationFormats.map(
+        (format) => format._id
+      );
 
-    this.global = [...this.global, ...notificationFormatIds];
+      this.global = [...this.global, ...notificationFormatIds];
 
-    next();
+      next();
+    }
   } catch (error) {
     next(error);
   }

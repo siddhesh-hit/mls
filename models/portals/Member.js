@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const ImageSchema = require("./imageSchema");
 
-const memberLegislativeSchema = new mongoose.Schema(
+const memberSchema = new mongoose.Schema(
   {
     basic_info: {
       house: {
@@ -108,6 +108,13 @@ const memberLegislativeSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    status: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending",
+    },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   {
     timestamps: true,
@@ -117,9 +124,6 @@ const memberLegislativeSchema = new mongoose.Schema(
 delete mongoose.models.LegislativeMember;
 delete mongoose.modelNames.LegislativeMember;
 
-const MemberLegislative = mongoose.model(
-  "MemberLegislative",
-  memberLegislativeSchema
-);
+const Member = mongoose.model("Member", memberSchema);
 
-module.exports = MemberLegislative;
+module.exports = Member;

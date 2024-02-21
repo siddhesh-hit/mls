@@ -112,8 +112,6 @@ const registerUserEmail = asyncHandler(async (req, res) => {
 
     let email = data.email;
 
-    console.log(data);
-
     // add image to data
     data.user_image = file ? file : {};
 
@@ -321,8 +319,6 @@ const logoutUser = asyncHandler(async (req, res) => {
       throw new Error("Refresh token not found");
     }
 
-    console.log(refresh_token);
-
     // check if refresh token is valid
     const checkStoredToken = await RefreshToken.findOne({
       refreshToken: refresh_token,
@@ -332,8 +328,6 @@ const logoutUser = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Refresh token not found");
     }
-
-    console.log(checkStoredToken);
 
     // check if user exists
     const userExists = User.findById(checkStoredToken.userId);
@@ -390,8 +384,6 @@ const inviteUser = asyncHandler(async (req, res) => {
 
     // send invitation email
     const resEmail = emailInviteUser(data.email, password);
-    console.log(resEmail);
-    console.log(data.email);
 
     // register user
     const user = await User.create({ ...data, user_verfied: true });
@@ -442,7 +434,6 @@ const forgotUser = asyncHandler(async (req, res) => {
   try {
     let { email } = req.body;
 
-    console.log(email);
     // check if user exists
     const checkUser = await User.findOne({ email });
     if (!checkUser) {
@@ -554,8 +545,6 @@ const updateUser = asyncHandler(async (req, res) => {
     // add image to data
     data.user_image = file ? file : data.user_image;
 
-    console.log(data);
-
     // // check if email already exists
     // const { error } = updateUserValidate(data);
     // if (error) {
@@ -630,15 +619,10 @@ const regenerateAccessToken = asyncHandler(async (req, res) => {
     const accessOldToken = req.cookies.accessToken;
     const refreshOldToken = req.cookies.refreshToken;
 
-    // console.log(accessOldToken, "==============================>");
-    // console.log(refreshOldToken, "==============================>");
-
     if (!accessOldToken) {
       res.status(400);
       throw new Error("Access token not found");
     }
-
-    // console.log("refres", refreshOldToken);
 
     // check if access token is valid
     const checkStoredToken = await RefreshToken.findOne({
@@ -745,8 +729,6 @@ const getExportUser = asyncHandler(async (req, res) => {
     const filePath = path.join(__dirname, "../../exports", "userInfo.json");
 
     const usersJSON = JSON.stringify(users);
-
-    console.log(filePath);
 
     fs.writeFile(filePath, usersJSON, (err) => {
       if (err) {
@@ -864,7 +846,6 @@ const getRoleTaskOnQuery = asyncHandler(async (req, res) => {
   }
 });
 
-let viveksir = "name";
 // @desc    Get a roles
 // @route   GET /api/user/roletask/:id
 // @access  Admin

@@ -31,6 +31,7 @@ const createLibraryValidation = (data) => {
         .label("English Description is required"),
     }),
     banner: imageValidation.required().label("Image is required"),
+    createdBy: joi.string().required().label("Created by is required"),
   });
 
   return schema.validate(data);
@@ -53,6 +54,8 @@ const updateLibraryValidation = (data) => {
           .label("English Description is required"),
       }),
       banner: imageValidation.required().label("Image is required"),
+      createdBy: joi.string().required().label("Created by is required"),
+      updatedBy: joi.string().required().label("Updated by is required"),
     })
     .unknown(true);
 

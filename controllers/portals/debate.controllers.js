@@ -1,11 +1,13 @@
 const asyncHandler = require("express-async-handler");
 
 const Debate = require("../../models/portals/Debate");
+const User = require("../../models/portals/userModel");
 
 const {
   createNotificationFormat,
 } = require("../../controllers/extras/notification.controllers");
 const { marathiToEnglish } = require("../../utils/marathiNumberEng");
+const { createPending } = require("../reports/pending.controllers");
 
 // @desc    Create a new Debate
 // @route   POST /api/debate/
@@ -13,22 +15,57 @@ const { marathiToEnglish } = require("../../utils/marathiNumberEng");
 const createDebate = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
+    let userId = res.locals.userInfo;
 
-    let notificationData = {
-      name: "Debate",
-      marathi: {
-        message: "नवीन Debate जोडले!",
-      },
-      english: {
-        message: "New Debates added!",
-      },
+    if (!data) {
+      res.status(400);
+      throw new Error("Fill each fields properly");
+    }
+
+    // check if user exists and then add it
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.createdBy = userId.id;
+
+    // create a debate
+    const debate = await Debate.create(data);
+    if (!debate) {
+      res.status(400);
+      throw new Error("Failed to create a debate entry.");
+    }
+
+    // // notify others
+    // let notificationData = {
+    //   name: "Debate",
+    //   marathi: {
+    //     message: "नवीन Debate जोडले!",
+    //   },
+    //   english: {
+    //     message: "New Debates added!",
+    //   },
+    // };
+    // await createNotificationFormat(notificationData, res);
+
+    // create a pending req to accept
+    let pendingData = {
+      modelId: debate._id,
+      modelName: "Debate",
+      action: "Create",
     };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to create Debate`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
 
-    await createNotificationFormat(notificationData, res);
-
+    // send response
     res.status(201).json({
-      message: "Debate created successfully",
-      //   data: Debates,
+      message: "Debate create request forwaded!",
+      data: debate,
       success: true,
     });
   } catch (error) {
@@ -157,7 +194,7 @@ const getDebateById = asyncHandler(async (req, res) => {
     const debate = await Debate.findById(req.params.id);
 
     // check if Debate is present
-    if (!debate) {
+    if (!debate || debate.status === " Pending") {
       res.status(404);
       throw new Error("Debate not found");
     }
@@ -390,7 +427,7 @@ const getDebateFullSearch = asyncHandler(async (req, res) => {
       message: "Debates fetched successfully",
       // data: debates,
       data: debates[0]?.debate || [],
-      count: debates[0]?.totalCount[0]?.count || [],
+      count: debates[0]?.totalCount[0]?.count || 0,
     });
   } catch (error) {
     res.status(500);
@@ -403,40 +440,54 @@ const getDebateFullSearch = asyncHandler(async (req, res) => {
 // @access  Admin
 const updateDebateById = asyncHandler(async (req, res) => {
   try {
-    const debate = await Debate.findById(req.params.id);
+    let data = req.body;
+    let userId = res.locals.userInfo;
 
-    // check if Debate is present
+    // check if user exists
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+
+    // check if Debate is present & update
+    const debate = await Debate.findById(req.params.id);
     if (!debate) {
       res.status(404);
       throw new Error("Debate not found");
     }
+    debate.updatedBy = userId.id;
 
-    const updatedDebate = await Debate.findByIdAndUpdate(req.params.id, data, {
-      runValidators: true,
-      new: true,
-    });
+    // // notify others
+    // let notificationData = {
+    //   name: "Debate",
+    //   marathi: {
+    //     message: "Debates अपडेट झाले!",
+    //   },
+    //   english: {
+    //     message: "Debates Updated!",
+    //   },
+    // };
+    // await createNotificationFormat(notificationData, res);
 
-    // check and send response
-    if (!updatedDebate) {
-      res.status(400);
-      throw new Error("Something went wrong");
-    }
-
-    let notificationData = {
-      name: "Debate",
-      marathi: {
-        message: "Debates अपडेट झाले!",
-      },
-      english: {
-        message: "Debates Updated!",
-      },
+    // create a pending req to accept
+    let pendingData = {
+      modelId: debate._id,
+      modelName: "Debate",
+      action: "Update",
+      data_object: data,
     };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to update Debate`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
 
-    await createNotificationFormat(notificationData, res);
-
+    // send response
     res.status(200).json({
-      message: "Debate updated successfully",
-      data: updatedDebate,
+      message: "Debate updated request forwaded!",
+      data: debate,
       success: true,
     });
   } catch (error) {
@@ -450,6 +501,15 @@ const updateDebateById = asyncHandler(async (req, res) => {
 // @access  Admin
 const deleteDebateById = asyncHandler(async (req, res) => {
   try {
+    let userId = res.locals.userInfo;
+
+    // check is user exists
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+
     // check if Debate is present
     const debateExists = await Debate.findById(req.params.id);
     if (!debateExists) {
@@ -457,20 +517,25 @@ const deleteDebateById = asyncHandler(async (req, res) => {
       throw new Error("Debate not found");
     }
 
-    // delete the Debate
-    const deletedDebate = await Debate.findByIdAndDelete(req.params.id);
+    // create a pending req to accept
+    let pendingData = {
+      modelId: req.params.id,
+      modelName: "Debate",
+      action: "Delete",
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to delete debate.`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
 
-    // check and send response
-    if (!deletedDebate) {
-      res.status(400);
-      throw new Error("Something went wrong");
-    } else {
-      res.status(204).json({
-        message: "Debate deleted successfully",
-        data: {},
-        success: true,
-      });
-    }
+    // send response
+    res.status(200).json({
+      message: "Debate deleted request forwaded successfully",
+      data: {},
+      success: true,
+    });
   } catch (error) {
     res.status(500);
     throw new Error(error);

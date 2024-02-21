@@ -1,14 +1,17 @@
 const asyncHandler = require("express-async-handler");
 
+const RajyapalMember = require("../../models/portals/rajyapalMember");
+const User = require("../../models/portals/userModel");
+
 const {
   createRajyapalMemberValidation,
   updateRajyapalMemberValidation,
 } = require("../../validations/portal/rajyapalValidation");
-const LegislativeMember = require("../../models/portals/rajyapalMember");
 
 const {
   createNotificationFormat,
 } = require("../../controllers/extras/notification.controllers");
+const { createPending } = require("../reports/pending.controllers");
 
 // @desc    Create a legislative member
 // @route   POST /api/rajyapal
@@ -16,13 +19,13 @@ const {
 const createLegislativeMember = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
+    let userId = res.locals.userInfo;
+    let { banner, documents } = req.files;
 
     data.marathi = JSON.parse(data.marathi);
     data.english = JSON.parse(data.english);
     data.url = JSON.parse(data.url);
     data.speeches = JSON.parse(data.speeches);
-
-    let { banner, documents } = req.files;
 
     // check if files exist
     if (!banner || !documents) {
@@ -33,6 +36,7 @@ const createLegislativeMember = asyncHandler(async (req, res) => {
     // add image to data
     data.image = banner[0];
 
+    // add speeches doc to specific speech
     let newSpeeches = [];
     for (let i = 0; i < data.speeches.length; i++) {
       let object = {
@@ -47,8 +51,15 @@ const createLegislativeMember = asyncHandler(async (req, res) => {
       // console.log(object, "check");
       newSpeeches.push(object);
     }
-
     data.speeches = newSpeeches;
+
+    // check if user exists and then add it
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.createdBy = userId.id;
 
     // validate data
     // const { error } = createRajyapalMemberValidation(data);
@@ -58,29 +69,42 @@ const createLegislativeMember = asyncHandler(async (req, res) => {
     // }
 
     // create new legislative member
-    const newLegislativeMember = await LegislativeMember.create(data);
+    const newLegislativeMember = await RajyapalMember.create(data);
     if (!newLegislativeMember) {
       res.status(400);
-      throw new Error("Unable to create legislative member");
-    } else {
-      let notificationData = {
-        name: "Rajypal",
-        marathi: {
-          message: "नवीन राजपाल जोडले!",
-        },
-        english: {
-          message: "New Rajypal added!",
-        },
-      };
-
-      await createNotificationFormat(notificationData, res);
-
-      res.status(201).json({
-        success: true,
-        message: "Successfully created legislative member",
-        data: newLegislativeMember,
-      });
+      throw new Error("Failed to create rajyapal member");
     }
+
+    // // notify others
+    // let notificationData = {
+    //   name: "Rajypal",
+    //   marathi: {
+    //     message: "नवीन राजपाल जोडले!",
+    //   },
+    //   english: {
+    //     message: "New Rajypal added!",
+    //   },
+    // };
+    // await createNotificationFormat(notificationData, res);
+
+    // create a pending req to accept
+    let pendingData = {
+      modelId: newLegislativeMember._id,
+      modelName: "RajyapalMember",
+      action: "Create",
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to create RajyapalMember`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
+
+    res.status(201).json({
+      success: true,
+      message: "Rajyapal create request forwaded!",
+      data: newLegislativeMember,
+    });
   } catch (error) {
     res.status(500);
     throw new Error(error);
@@ -92,8 +116,18 @@ const createLegislativeMember = asyncHandler(async (req, res) => {
 // @access  Public
 const getALLLegislativeMembers = asyncHandler(async (req, res) => {
   try {
+    let { perPage, perLimit, ...id } = req.query;
+
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
     // get all legislative members
-    const legislativeMembers = await LegislativeMember.find();
+    const legislativeMembers = await RajyapalMember.find(id)
+      .limit(pageOptions.limit)
+      .skip(pageOptions.page * pageOptions.limit)
+      .exec();
 
     // check if legislative members exist
     if (!legislativeMembers) {
@@ -119,7 +153,7 @@ const getALLLegislativeMembers = asyncHandler(async (req, res) => {
 // @access  Public
 const getActiveLegislativeMember = asyncHandler(async (req, res) => {
   try {
-    const getActive = await LegislativeMember.find({
+    const getActive = await RajyapalMember.find({
       $and: [
         {
           isActive: true,
@@ -149,7 +183,7 @@ const getActiveLegislativeMember = asyncHandler(async (req, res) => {
 // @access  Public
 const getCurrentLegislativeMember = asyncHandler(async (req, res) => {
   try {
-    const getCurrent = await LegislativeMember.findOne({
+    const getCurrent = await RajyapalMember.findOne({
       isCurrent: true,
     }).exec();
 
@@ -176,7 +210,7 @@ const getLegislativeMemberById = asyncHandler(async (req, res) => {
     const id = req.params.id;
 
     // get legislative member by id
-    const legislativeMember = await LegislativeMember.findById(id);
+    const legislativeMember = await RajyapalMember.findById(id);
 
     // check if legislative member exist
     if (!legislativeMember) {
@@ -202,6 +236,8 @@ const getLegislativeMemberById = asyncHandler(async (req, res) => {
 const updateLegislativeMember = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
+    let userId = res.locals.userInfo;
+    let { banner, documents } = req.files;
 
     data.marathi = JSON.parse(data.marathi);
     data.english = JSON.parse(data.english);
@@ -210,17 +246,16 @@ const updateLegislativeMember = asyncHandler(async (req, res) => {
     // data.documents = data.documents.map((doc) => JSON.parse(doc));
 
     // check if rajyapal exists
-    const rajyapalExists = await LegislativeMember.findById(req.params.id);
+    const rajyapalExists = await RajyapalMember.findById(req.params.id);
     if (!rajyapalExists) {
       res.status(400);
       throw new Error("No rajypal found for the existing the id.");
     }
 
-    let { banner, documents } = req.files;
-
     // add image to data
     data.image = banner ? banner[0] : rajyapalExists.image;
 
+    // add speeches doc to specific speech
     let newSpeeches = [];
     let countOfDocument = 0;
     for (let i = 0; i < data.speeches.length; i++) {
@@ -239,8 +274,15 @@ const updateLegislativeMember = asyncHandler(async (req, res) => {
       // console.log(object.values, "check");
       newSpeeches.push(object);
     }
-
     data.speeches = newSpeeches;
+
+    // check if user exists and add
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.updatedBy = userId.id;
 
     // // validate data
     // const { error } = updateRajyapalMemberValidation(data);
@@ -249,36 +291,37 @@ const updateLegislativeMember = asyncHandler(async (req, res) => {
     //   throw new Error(error.details[0].message);
     // }
 
-    // update legislative member by id
-    const updatedLegislativeMember = await LegislativeMember.findByIdAndUpdate(
-      req.params.id,
-      data,
-      { new: true, runValidators: true }
-    );
+    // // notify others
+    // let notificationData = {
+    //   name: "Rajyapal",
+    //   marathi: {
+    //     message: "राजपाल अपडेट झाले!",
+    //   },
+    //   english: {
+    //     message: "Rajyapal updated!",
+    //   },
+    // };
+    // await createNotificationFormat(notificationData, res);
 
-    // check if legislative member exist
-    if (!updatedLegislativeMember) {
-      res.status(404);
-      throw new Error("No legislative member found");
-    }
-
-    let notificationData = {
-      name: "Rajyapal",
-      marathi: {
-        message: "राजपाल अपडेट झाले!",
-      },
-      english: {
-        message: "Rajyapal updated!",
-      },
+    // create a pending req to accept
+    let pendingData = {
+      modelId: rajyapalExists._id,
+      modelName: "RajyapalMember",
+      action: "Update",
+      data_object: data,
     };
-
-    await createNotificationFormat(notificationData, res);
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to update RajyapalMember`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
 
     // send response
     res.status(200).json({
       success: true,
-      message: "Successfully updated legislative member",
-      data: updatedLegislativeMember,
+      message: "Legislative member update request forwaded!",
+      data: rajyapalExists,
     });
   } catch (error) {
     res.status(500);
@@ -291,22 +334,41 @@ const updateLegislativeMember = asyncHandler(async (req, res) => {
 // @access  Private/Admin
 const deleteLegislativeMember = asyncHandler(async (req, res) => {
   try {
-    const id = req.params.id;
+    let id = req.params.id;
+    let userId = res.locals.userInfo;
 
-    // delete legislative member by id
-    const legislativeMember = await LegislativeMember.findByIdAndDelete(id);
+    // check if user exists
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
 
     // check if legislative member exist
+    const legislativeMember = await RajyapalMember.findById(id);
     if (!legislativeMember) {
       res.status(404);
       throw new Error("No legislative member found");
     }
 
+    // create a pending req to accept
+    let pendingData = {
+      modelId: legislativeMember._id,
+      modelName: "RajyapalMember",
+      action: "Delete",
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to delete RajyapalMember`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
+
     // send response
     res.status(204).json({
       success: true,
       message: "Successfully deleted legislative member",
-      data: legislativeMember,
+      data: {},
     });
   } catch (error) {
     res.status(500);

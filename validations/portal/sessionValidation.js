@@ -37,6 +37,7 @@ const createSessionCalendarValidation = (data) => {
           document: imageValidation.required().label("Document is required"),
         })
       ),
+      createdBy: joi.string().required().label("Created by is required"),
     });
   // );
 
@@ -72,6 +73,8 @@ const updateSessionCalendarValidation = (data) => {
           })
           .unknown(true)
       ),
+      createdBy: joi.string().required().label("Created by is required"),
+      updatedBy: joi.string().required().label("Updated by is required"),
     })
     .unknown(true);
 
