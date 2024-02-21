@@ -1,6 +1,8 @@
 const asyncHandler = require("express-async-handler");
 
 const VidhanParishad = require("../../models/portals/vidhanParishad");
+const User = require("../../models/portals/userModel");
+
 const {
   createVidhanParishadValidation,
   updateVidhanParishadValidation,
@@ -9,6 +11,7 @@ const {
 const {
   createNotificationFormat,
 } = require("../../controllers/extras/notification.controllers");
+const { createPending } = require("../reports/pending.controllers");
 
 // @desc    Create a vidhanParishad
 // @route   POST /api/parishad
@@ -16,8 +19,7 @@ const {
 const createVidhanParishad = asyncHandler(async (req, res) => {
   try {
     let data = req.body.data;
-    data = JSON.parse(data);
-
+    let userId = res.locals.userInfo;
     let {
       banner_image,
       profile,
@@ -25,6 +27,8 @@ const createVidhanParishad = asyncHandler(async (req, res) => {
       publication_docs_en,
       publication_docs_mr,
     } = req.files;
+
+    data = JSON.parse(data);
 
     // add images to the file
     data.banner_image = banner_image[0];
@@ -41,6 +45,14 @@ const createVidhanParishad = asyncHandler(async (req, res) => {
       element.marathi.document = publication_docs_mr[index];
     });
 
+    // check if user exists and then add it
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.createdBy = userId.id;
+
     // validate data & files
     const { error } = createVidhanParishadValidation(data);
     if (error) {
@@ -48,32 +60,40 @@ const createVidhanParishad = asyncHandler(async (req, res) => {
       throw new Error(error.details[0].message, error);
     }
 
-    console.log("data");
-
     // create vidhanParishad
     const vidhanParishad = await VidhanParishad.create(data);
-
     if (!vidhanParishad) {
       res.status(400);
-      throw new Error(
-        "Something went wrong while creating the VidhanParishad."
-      );
+      throw new Error("Failed to create VidhanParishad.");
     }
 
-    let notificationData = {
-      name: "VidhanParishad",
-      marathi: {
-        message: "नवी विधानपरिषद जोडले!",
-      },
-      english: {
-        message: "New VidhanParishad added!",
-      },
-    };
+    // notify others
+    // let notificationData = {
+    //   name: "VidhanParishad",
+    //   marathi: {
+    //     message: "नवी विधानपरिषद जोडले!",
+    //   },
+    //   english: {
+    //     message: "New VidhanParishad added!",
+    //   },
+    // };
+    // await createNotificationFormat(notificationData, res);
 
-    await createNotificationFormat(notificationData, res);
+    // create a pending req to accept
+    let pendingData = {
+      modelId: vidhanParishad._id,
+      modelName: "VidhanParishad",
+      action: "Create",
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to create VidhanParishad`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
 
     res.status(201).json({
-      message: "VidhanParishad created successfully.",
+      message: "VidhanParishad create request forwaded!",
       data: vidhanParishad,
       success: true,
     });
@@ -88,13 +108,21 @@ const createVidhanParishad = asyncHandler(async (req, res) => {
 // @access  Public
 const getVidhanParishads = asyncHandler(async (req, res) => {
   try {
-    const vidhanParishads = await VidhanParishad.find();
+    let { perPage, perLimit, ...id } = req.query;
+
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    const vidhanParishads = await VidhanParishad.find(id)
+      .limit(pageOptions.limit)
+      .skip(pageOptions.page * pageOptions.limit)
+      .exec();
 
     if (!vidhanParishads) {
       res.status(400);
-      throw new Error(
-        "Something went wrong while getting the VidhanParishads."
-      );
+      throw new Error("No VidhanParishads found.");
     }
 
     res.status(200).json({
@@ -157,20 +185,9 @@ const getVidhanParishadById = asyncHandler(async (req, res) => {
 // @access  Admin
 const updateVidhanParishad = asyncHandler(async (req, res) => {
   try {
-    let id = req.params.id;
     let data = req.body.data;
-
-    data = JSON.parse(data);
-
-    console.log(data);
-
-    // check if vidhanParishad exists
-    const vidhanParishadExists = await VidhanParishad.findById(id);
-    if (!vidhanParishadExists) {
-      res.status(400);
-      throw new Error("VidhanParishad not found.");
-    }
-
+    let userId = res.locals.userInfo;
+    let id = req.params.id;
     let {
       banner_image,
       profile,
@@ -178,6 +195,15 @@ const updateVidhanParishad = asyncHandler(async (req, res) => {
       publication_docs_en,
       publication_docs_mr,
     } = req.files;
+
+    data = JSON.parse(data);
+
+    // check if vidhanParishad exists
+    const vidhanParishadExists = await VidhanParishad.findById(id);
+    if (!vidhanParishadExists) {
+      res.status(400);
+      throw new Error("VidhanParishad not found.");
+    }
 
     // if new banner_image available, then update files
     if (banner_image) {
@@ -188,6 +214,14 @@ const updateVidhanParishad = asyncHandler(async (req, res) => {
     if (profile) {
       data.structure_profile = profile[0];
     }
+
+    // check if user exists and add
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.updatedBy = userId.id;
 
     // if new legislative profiles exists, add all files to it's specified position
     let countImg = 0;
@@ -226,35 +260,36 @@ const updateVidhanParishad = asyncHandler(async (req, res) => {
       throw new Error(error.details[0].message, error);
     }
 
-    // update vidhanParishad
-    const vidhanParishad = await VidhanParishad.findByIdAndUpdate(id, data, {
-      new: true,
-      runValidators: true,
-    });
+    // // notify others
+    // let notificationData = {
+    //   name: "VidhanParishad",
+    //   marathi: {
+    //     message: "विधानपरिषद अपडेट झाले!",
+    //   },
+    //   english: {
+    //     message: "VidhanParishad updated!",
+    //   },
+    // };
+    // await createNotificationFormat(notificationData, res);
 
-    if (!vidhanParishad) {
-      res.status(400);
-      throw new Error(
-        "Something went wrong while updating the VidhanParishad."
-      );
-    }
-
-    let notificationData = {
-      name: "VidhanParishad",
-      marathi: {
-        message: "विधानपरिषद अपडेट झाले!",
-      },
-      english: {
-        message: "VidhanParishad updated!",
-      },
+    // create a pending req to accept
+    let pendingData = {
+      modelId: vidhanParishadExists._id,
+      modelName: "VidhanParishad",
+      action: "Update",
+      data_object: data,
     };
-
-    await createNotificationFormat(notificationData, res);
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to update VidhanParishad`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
 
     res.status(200).json({
-      message: "VidhanParishad updated successfully.",
+      message: "VidhanParishad update request forwaded!",
       success: true,
-      data: vidhanParishad,
+      data: vidhanParishadExists,
     });
   } catch (error) {
     res.status(500);
@@ -267,16 +302,34 @@ const updateVidhanParishad = asyncHandler(async (req, res) => {
 // @access  Admin
 const deleteVidhanParishad = asyncHandler(async (req, res) => {
   try {
-    const vidhanParishad = await VidhanParishad.findByIdAndDelete(
-      req.params.id
-    );
+    let userId = res.locals.userInfo;
 
+    // check if user exists
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+
+    //  check if parishad exists
+    const vidhanParishad = await VidhanParishad.findById(req.params.id);
     if (!vidhanParishad) {
       res.status(400);
-      throw new Error(
-        "Something went wrong while deleting the VidhanParishad."
-      );
+      throw new Error("No VidhanParishad found.");
     }
+
+    // create a pending req to accept
+    let pendingData = {
+      modelId: vidhanParishad._id,
+      modelName: "VidhanParishad",
+      action: "Delete",
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to delete VidhanParishad`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
 
     res.status(204).json({
       success: true,

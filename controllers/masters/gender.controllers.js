@@ -8,7 +8,7 @@ const {
 } = require("../../validations/master/genderValidation");
 
 // @desc    Create a Gender
-// @route   /api/gender/
+// @route   /api/v1/gender/
 // @access  Admin
 const createGender = asyncHandler(async (req, res) => {
   try {

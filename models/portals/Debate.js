@@ -74,6 +74,17 @@ const debateSchema = new mongoose.Schema(
     ministry_name: {
       type: String,
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    status: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending",
+    },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   {
     timestamps: true,

@@ -1,6 +1,8 @@
 const asyncHandler = require("express-async-handler");
 
-const MemberLegislative = require("../../models/portals/memberLegislative");
+const Member = require("../../models/portals/Member");
+const User = require("../../models/portals/userModel");
+
 const {
   createMemberValidation,
   updateMemberValidation,
@@ -9,28 +11,35 @@ const {
 const {
   createNotificationFormat,
 } = require("../../controllers/extras/notification.controllers");
+const { createPending } = require("../reports/pending.controllers");
 
-// @desc    Create new MemberLegislative
+// @desc    Create new Member
 // @route   POST /api/member/
 // @access  Admin
 const createMember = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
+    let userId = res.locals.userInfo;
+    let profile = req.file;
 
     data.basic_info = JSON.parse(data.basic_info);
     data.political_journey = JSON.parse(data.political_journey);
     data.election_data = JSON.parse(data.election_data);
 
-    let profile = req.file;
-
-    // check if profile is available
+    // check if profile is available and then add
     if (!profile) {
       res.status(400);
       throw new Error("Please upload a profile");
     }
-
-    // add the profile to the image
     data.basic_info.profile = profile;
+
+    // check if user exists and then add it
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.createdBy = userId.id;
 
     // validate the data
     const { error } = createMemberValidation(data);
@@ -39,45 +48,65 @@ const createMember = asyncHandler(async (req, res) => {
       throw new Error(error.details[0].message);
     }
 
-    console.log(data);
-
     // create a new legislative members
-    const memberLegislative = await MemberLegislative.create(data);
-
-    if (memberLegislative) {
-      let notificationData = {
-        name: "LegislativeMember",
-        marathi: {
-          message: "विधानपरिषद सदस्य जोडले!",
-        },
-        english: {
-          message: "New Legislative Member added!",
-        },
-      };
-
-      await createNotificationFormat(notificationData, res);
-
-      res.status(201).json({
-        success: true,
-        message: "Legislative Member created successfully",
-        data: memberLegislative,
-      });
-    } else {
+    const member = await Member.create(data);
+    if (!member) {
       res.status(400);
-      throw new Error("Invalid legislative members data");
+      throw new Error("Failed to create a member");
     }
+
+    // notify others
+    // let notificationData = {
+    //   name: "LegislativeMember",
+    //   marathi: {
+    //     message: "विधानपरिषद सदस्य जोडले!",
+    //   },
+    //   english: {
+    //     message: "New Legislative Member added!",
+    //   },
+    // };
+    // await createNotificationFormat(notificationData, res);
+
+    // create a pending req to accept
+    let pendingData = {
+      modelId: member._id,
+      modelName: "Member",
+      action: "Create",
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to create Member`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
+
+    res.status(201).json({
+      success: true,
+      message: "Member create request forwaded!",
+      data: member,
+    });
   } catch (error) {
     res.status(500);
     throw new Error(error);
   }
 });
 
-// @desc    Get all MemberLegislative
+// @desc    Get all Member
 // @route   GET /api/member/
 // @access  Public
 const getAllMember = asyncHandler(async (req, res) => {
   try {
-    const members = await MemberLegislative.find({});
+    let { perPage, perLimit, ...id } = req.query;
+
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    const members = await Member.find(id)
+      .limit(pageOptions.limit)
+      .skip(pageOptions.page * pageOptions.limit)
+      .exec();
 
     // check if members exists
     if (!members) {
@@ -85,9 +114,10 @@ const getAllMember = asyncHandler(async (req, res) => {
       throw new Error("No members found");
     }
 
+    // send response
     res.status(200).json({
       success: true,
-      message: "All the legislative members fetched successfully",
+      message: "All the members fetched successfully",
       data: members,
     });
   } catch (error) {
@@ -96,7 +126,7 @@ const getAllMember = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get MemberLegislative based on house
+// @desc    Get Member based on house
 // @route   GET /api/member/house?id=""
 // @access  Public
 const getMemberHouse = asyncHandler(async (req, res) => {
@@ -105,7 +135,7 @@ const getMemberHouse = asyncHandler(async (req, res) => {
 
     console.log(req.query);
 
-    const members = await MemberLegislative.find({
+    const members = await Member.find({
       "basic_info.house": query,
     });
 
@@ -126,7 +156,7 @@ const getMemberHouse = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get MemberLegislative based on query
+// @desc    Get Member based on query
 // @route   GET /api/member/search?id=""
 // @access  Public
 const getMemberSearch = asyncHandler(async (req, res) => {
@@ -138,7 +168,7 @@ const getMemberSearch = asyncHandler(async (req, res) => {
 
     // Create a regex pattern that allows any characters between the name parts
     const regexPattern = escapedSearch.split(/\s+/).join(".*");
-    const members = await MemberLegislative.find({
+    const members = await Member.find({
       $expr: {
         $regexMatch: {
           input: { $concat: ["$basic_info.name", " ", "$basic_info.surname"] },
@@ -165,12 +195,12 @@ const getMemberSearch = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Get single MemberLegislative
+// @desc    Get single Member
 // @route   GET /api/member/:id
 // @access  Public
 const getMember = asyncHandler(async (req, res) => {
   try {
-    const member = await MemberLegislative.findById(req.params.id);
+    const member = await Member.findById(req.params.id);
 
     member.political_journey.sort((a, b) => {
       return new Date(b.date) - new Date(a.date);
@@ -193,27 +223,33 @@ const getMember = asyncHandler(async (req, res) => {
   }
 });
 
-// @desc    Update single MemberLegislative
+// @desc    Update single Member
 // @route   PUT /api/member/:id
 // @access  Admin
 const updateMember = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
+    let userId = res.locals.userInfo;
+    let profile = req.file;
 
     data.basic_info = JSON.parse(data.basic_info);
     data.political_journey = JSON.parse(data.political_journey);
     data.election_data = JSON.parse(data.election_data);
 
-    console.log(data);
-
-    let profile = req.file;
-
     // check if member exists
-    const memberExists = await MemberLegislative.findById(req.params.id);
+    const memberExists = await Member.findById(req.params.id);
     if (!memberExists) {
       res.status(401);
       throw new Error("No member found");
     }
+
+    // check if user exists and add
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.updatedBy = userId.id;
 
     // add the profile to the image
     data.basic_info.profile =
@@ -228,61 +264,81 @@ const updateMember = asyncHandler(async (req, res) => {
     //   throw new Error(error.details[0].message);
     // }
 
-    // create a new legislative members
-    const memberLegislative = await MemberLegislative.findByIdAndUpdate(
-      req.params.id,
-      data,
-      {
-        runValidators: true,
-        new: true,
-      }
-    );
+    // // notify others
+    // let notificationData = {
+    //   name: "LegislativeMember",
+    //   marathi: {
+    //     message: "विधानपरिषद सदस्य अपडेट झाले!",
+    //   },
+    //   english: {
+    //     message: "Legislative Member Updated!",
+    //   },
+    // };
+    // await createNotificationFormat(notificationData, res);
 
-    if (memberLegislative) {
-      let notificationData = {
-        name: "LegislativeMember",
-        marathi: {
-          message: "विधानपरिषद सदस्य अपडेट झाले!",
-        },
-        english: {
-          message: "Legislative Member Updated!",
-        },
-      };
+    // create a pending req to accept
+    let pendingData = {
+      modelId: memberExists._id,
+      modelName: "Member",
+      action: "Update",
+      data_object: data,
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to update Member`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
 
-      await createNotificationFormat(notificationData, res);
-
-      res.status(200).json({
-        success: true,
-        message: "Legislative Member created successfully",
-        data: memberLegislative,
-      });
-    } else {
-      res.status(400);
-      throw new Error("Invalid legislative members data");
-    }
+    res.status(200).json({
+      success: true,
+      message: "Legislative Member created successfully",
+      data: memberExists,
+    });
   } catch (error) {
     res.status(500);
     throw new Error(error);
   }
 });
 
-// @desc    Delete single MemberLegislative
+// @desc    Delete single Member
 // @route   DELETE /api/member/:id
 // @access  Admin
 const deleteMember = asyncHandler(async (req, res) => {
   try {
-    const member = await MemberLegislative.findByIdAndDelete(req.params.id);
+    let userId = res.locals.userInfo;
 
-    // check if member exists
-    if (!member) {
+    // check if user exists
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
       res.status(400);
-      throw new Error("No member found");
+      throw new Error("Failed to find a user.");
     }
+
+    // check if member is present
+    const memberExists = await Member.findById(req.params.id);
+    if (!memberExists) {
+      res.status(404);
+      throw new Error("member not found");
+    }
+
+    // create a pending req to accept
+    let pendingData = {
+      modelId: memberExists._id,
+      modelName: "Member",
+      action: "Delete",
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to delete Member`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
 
     res.status(204).json({
       success: true,
-      message: "The legislative member deleted successfully",
-      data: member,
+      message: "Member delete request forwaded!",
+      data: {},
     });
   } catch (error) {
     res.status(500);

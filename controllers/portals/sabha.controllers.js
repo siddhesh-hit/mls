@@ -1,6 +1,8 @@
 const asyncHandler = require("express-async-handler");
 
 const VidhanSabha = require("../../models/portals/vidhanSabha");
+const User = require("../../models/portals/userModel");
+
 const {
   createVidhanSabhaValidation,
   updateVidhanSabhaValidation,
@@ -9,6 +11,7 @@ const {
 const {
   createNotificationFormat,
 } = require("../../controllers/extras/notification.controllers");
+const { createPending } = require("../reports/pending.controllers");
 
 // @desc    Create a vidhanSabha
 // @route   POST /api/sabha
@@ -16,10 +19,7 @@ const {
 const createVidhanSabha = asyncHandler(async (req, res) => {
   try {
     let data = req.body.data;
-    data = JSON.parse(data);
-
-    // console.log(req.files);
-
+    let userId = res.locals.userInfo;
     let {
       banner_image,
       profile,
@@ -27,6 +27,8 @@ const createVidhanSabha = asyncHandler(async (req, res) => {
       publication_docs_en,
       publication_docs_mr,
     } = req.files;
+
+    data = JSON.parse(data);
 
     // add images to the file
     data.banner_image = banner_image[0];
@@ -43,6 +45,14 @@ const createVidhanSabha = asyncHandler(async (req, res) => {
       element.marathi.document = publication_docs_mr[index];
     });
 
+    // check if user exists and then add it
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.createdBy = userId.id;
+
     // validate data & files
     const { error } = createVidhanSabhaValidation(data);
     if (error) {
@@ -52,23 +62,35 @@ const createVidhanSabha = asyncHandler(async (req, res) => {
 
     // create vidhanSabha
     const vidhanSabha = await VidhanSabha.create(data);
-
     if (!vidhanSabha) {
       res.status(400);
       throw new Error("Something went wrong while creating the vidhanSabha.");
     }
 
-    let notificationData = {
-      name: "VidhanSabha",
-      marathi: {
-        message: "नवी विधानसभा जोडले!",
-      },
-      english: {
-        message: "New VidhanSabha added!",
-      },
-    };
+    // // notify others
+    // let notificationData = {
+    //   name: "VidhanSabha",
+    //   marathi: {
+    //     message: "नवी विधानसभा जोडले!",
+    //   },
+    //   english: {
+    //     message: "New VidhanSabha added!",
+    //   },
+    // };
+    // await createNotificationFormat(notificationData, res);
 
-    await createNotificationFormat(notificationData, res);
+    // create a pending req to accept
+    let pendingData = {
+      modelId: vidhanSabha._id,
+      modelName: "VidhanSabha",
+      action: "Create",
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to create VidhanSabha`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
 
     res.status(201).json({
       message: "VidhanSabha created successfully.",
@@ -86,11 +108,22 @@ const createVidhanSabha = asyncHandler(async (req, res) => {
 // @access  Public
 const getVidhanSabhas = asyncHandler(async (req, res) => {
   try {
-    const vidhanSabhas = await VidhanSabha.find();
+    let { perPage, perLimit, ...id } = req.query;
 
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    const vidhanSabhas = await VidhanSabha.find(id)
+      .limit(pageOptions.limit)
+      .skip(pageOptions.page * pageOptions.limit)
+      .exec();
+
+    // check if sabha exists
     if (!vidhanSabhas) {
       res.status(400);
-      throw new Error("Something went wrong while getting the vidhanSabhas.");
+      throw new Error("No vidhanSabhas found.");
     }
 
     res.status(200).json({
@@ -155,6 +188,14 @@ const updateVidhanSabha = asyncHandler(async (req, res) => {
   try {
     let id = req.params.id;
     let data = req.body.data;
+    let userId = res.locals.userInfo;
+    let {
+      banner_image,
+      profile,
+      legislative_profile,
+      publication_docs_en,
+      publication_docs_mr,
+    } = req.files;
 
     data = JSON.parse(data);
 
@@ -165,13 +206,13 @@ const updateVidhanSabha = asyncHandler(async (req, res) => {
       throw new Error("VidhanSabha not found.");
     }
 
-    let {
-      banner_image,
-      profile,
-      legislative_profile,
-      publication_docs_en,
-      publication_docs_mr,
-    } = req.files;
+    // check if user exists and add
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.updatedBy = userId.id;
 
     // if new banner_image available, then update files
     if (banner_image) {
@@ -220,33 +261,36 @@ const updateVidhanSabha = asyncHandler(async (req, res) => {
       throw new Error(error.details[0].message, error);
     }
 
-    // update vidhanSabha
-    const vidhanSabha = await VidhanSabha.findByIdAndUpdate(id, data, {
-      new: true,
-      runValidators: true,
-    });
+    // // notify others
+    // let notificationData = {
+    //   name: "VidhanSabha",
+    //   marathi: {
+    //     message: "विधानसभा अपडेट झाले!",
+    //   },
+    //   english: {
+    //     message: "VidhanSabha updated!",
+    //   },
+    // };
+    // await createNotificationFormat(notificationData, res);
 
-    if (!vidhanSabha) {
-      res.status(400);
-      throw new Error("Something went wrong while updating the vidhanSabha.");
-    }
-
-    let notificationData = {
-      name: "VidhanSabha",
-      marathi: {
-        message: "विधानसभा अपडेट झाले!",
-      },
-      english: {
-        message: "VidhanSabha updated!",
-      },
+    // create a pending req to accept
+    let pendingData = {
+      modelId: vidhanSabhaExists._id,
+      modelName: "VidhanSabha",
+      action: "Update",
+      data_object: data,
     };
-
-    await createNotificationFormat(notificationData, res);
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to update VidhanSabha`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
 
     res.status(200).json({
       message: "VidhanSabha updated successfully.",
       success: true,
-      data: vidhanSabha,
+      data: vidhanSabhaExists,
     });
   } catch (error) {
     res.status(500);
@@ -259,13 +303,36 @@ const updateVidhanSabha = asyncHandler(async (req, res) => {
 // @access  Admin
 const deleteVidhanSabha = asyncHandler(async (req, res) => {
   try {
-    const vidhanSabha = await VidhanSabha.findByIdAndDelete(req.params.id);
+    let userId = res.locals.userInfo;
 
-    if (!vidhanSabha) {
+    // check if user exists
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
       res.status(400);
-      throw new Error("Something went wrong while deleting the vidhanSabha.");
+      throw new Error("Failed to find a user.");
     }
 
+    // check if sabha exists
+    const vidhanSabha = await VidhanSabha.findById(req.params.id);
+    if (!vidhanSabha) {
+      res.status(400);
+      throw new Error("No vidhanSabha found.");
+    }
+
+    // create a pending req to accept
+    let pendingData = {
+      modelId: vidhanSabha._id,
+      modelName: "VidhanSabha",
+      action: "Delete",
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to delete VidhanSabha`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
+
+    // send response
     res.status(204).json({
       success: true,
       message: "VidhanSabha deleted successfully.",

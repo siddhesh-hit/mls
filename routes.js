@@ -30,6 +30,11 @@ const navigationRoutes = require("./routes/masters/navigation.routes");
 const visitRoute = require("./routes/extras/visit.routes");
 const notificationRoute = require("./routes/extras/notification.routes");
 
+const pendingRoutes = require("./routes/reports/pending.routes");
+const auditRoutes = require("./routes/reports/audit.routes");
+const archiveRoutes = require("./routes/reports/archive.routes");
+const resetRoutes = require("./routes/reports/resethead.routes");
+
 // defining the routes
 router.use("/user", userRoutes);
 router.use("/sabha", sabhaRoutes);
@@ -58,5 +63,10 @@ router.use("/navigation", navigationRoutes);
 
 router.use("/visit", visitRoute);
 router.use("/notification", notificationRoute);
+
+router.use("/pending", pendingRoutes);
+router.use("/audit", auditRoutes);
+router.use("/archive", archiveRoutes);
+router.use("/reset", resetRoutes);
 
 module.exports = router;

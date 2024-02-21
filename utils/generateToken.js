@@ -6,8 +6,6 @@ const RefreshToken = require("../models/portals/refreshToken");
 
 // generateToken function
 const accessToken = (user) => {
-  console.log(user);
-
   const token = jwt.sign(
     {
       id: user._id,

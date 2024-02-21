@@ -22,18 +22,17 @@ const faqSchema = new mongoose.Schema(
         required: true,
       },
     },
-    isUpdated: {
-      type: Boolean,
-      default: false,
-    },
-    isAccepted: {
-      type: Boolean,
-      default: false,
-    },
     isActive: {
       type: Boolean,
       default: false,
     },
+    status: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending",
+    },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   {
     timestamps: true,

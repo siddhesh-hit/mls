@@ -11,6 +11,7 @@ const createMinisterValidation = (data) => {
     member_name: joi.string().required().label("Member name is required"),
     designation: joi.string().required().label("Designation is required"),
     ministry: joi.string().required().label("Ministry is required"),
+    createdBy: joi.string().required().label("Created by is required"),
   });
   return schema.validate(data);
 };
@@ -29,8 +30,8 @@ const updateMinisterValidation = (data) => {
       ministry: joi.string().required().label("Ministry is required"),
       _id: joi.any().optional(),
       isActive: joi.boolean().required(),
-      isAccepted: joi.boolean().required(),
-      isUpdated: joi.boolean().required(),
+      createdBy: joi.string().required().label("Created by is required"),
+      updatedBy: joi.string().required().label("Updated by is required"),
     })
     .unknown(true);
   return schema.validate(data);

@@ -8,7 +8,7 @@ const {
 } = require("../../validations/master/constituencyValidation");
 
 // @desc    Create a Constituency
-// @route   /api/constituency/
+// @route   /api/v1/constituency/
 // @access  Admin
 const createConstituency = asyncHandler(async (req, res) => {
   try {

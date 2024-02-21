@@ -8,7 +8,7 @@ const {
 } = require("../../validations/master/assemblyValidation");
 
 // @desc    Create a assembly
-// @route   /api/assembly/
+// @route   /api/v1/assembly/
 // @access  Admin
 const createAssembly = asyncHandler(async (req, res) => {
   try {

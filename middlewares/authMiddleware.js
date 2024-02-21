@@ -53,6 +53,8 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
       throw new Error("Not an user in the database");
     }
 
+    res.locals.userInfo = decoded;
+
     req.user = decoded;
     next();
 

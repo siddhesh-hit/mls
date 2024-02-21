@@ -63,6 +63,7 @@ const createRajyapalMemberValidation = (data) => {
         ),
       })
     ),
+    createdBy: joi.string().required().label("Created by is required"),
   });
 
   return schema.validate(data);

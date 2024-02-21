@@ -89,6 +89,7 @@ const createVidhanSabhaValidation = (data) => {
         }),
       })
     ),
+    createdBy: joi.string().required().label("Created by is required"),
   });
   return schema.validate(data);
 };
@@ -217,6 +218,8 @@ const updateVidhanSabhaValidation = (data) => {
           })
           .unknown(true)
       ),
+      createdBy: joi.string().required().label("Created by is required"),
+      updatedBy: joi.string().required().label("Updated by is required"),
     })
     .unknown(true);
   return schema.validate(data);

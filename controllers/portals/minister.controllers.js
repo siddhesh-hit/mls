@@ -1,17 +1,21 @@
 const asyncHandler = require("express-async-handler");
 
 const Minister = require("../../models/portals/Minister");
+const User = require("../../models/portals/userModel");
+
 const {
   createMinisterValidation,
   updateMinisterValidation,
 } = require("../../validations/portal/ministerValidation");
+const { createPending } = require("../reports/pending.controllers");
 
 // @desc    Create a ministers
-// @route   /api/minister/
+// @route   /api/v1/minister/
 // @access  Admin
 const createMinister = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
+    let userId = res.locals.userInfo;
 
     // validate the data
     const { error } = createMinisterValidation(data);
@@ -19,7 +23,14 @@ const createMinister = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error(error);
     }
-    console.log(data);
+
+    // check if user exists and then add it
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.createdBy = userId.id;
 
     // check if chief minister exists
     if (data.ministry_type === "Chief Minister") {
@@ -47,12 +58,12 @@ const createMinister = asyncHandler(async (req, res) => {
 
     // create minister
     const minister = await Minister.create(data);
-
     if (!minister) {
       res.status(400);
-      throw new Error("Something went wrong while creating the Minister.");
+      throw new Error("Failed to create minister.");
     }
 
+    // notify others
     // let notificationData = {
     //   name: "Minister",
     //   marathi: {
@@ -62,11 +73,23 @@ const createMinister = asyncHandler(async (req, res) => {
     //     message: "New Minister added!",
     //   },
     // };
-
     // await createNotificationFormat(notificationData, res);
 
+    // create a pending req to accept
+    let pendingData = {
+      modelId: minister._id,
+      modelName: "Minister",
+      action: "Create",
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to create Minister`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
+
     res.status(201).json({
-      message: "Minister created successfully.",
+      message: "Minister create request forwaded.",
       data: minister,
       success: true,
     });
@@ -77,15 +100,26 @@ const createMinister = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get all ministers
-// @route   /api/minister/
+// @route   /api/v1/minister/
 // @access  Admin
 const getMinister = asyncHandler(async (req, res) => {
   try {
-    const ministers = await Minister.find();
+    let { perPage, perLimit, ...id } = req.query;
 
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    const ministers = await Minister.find(id)
+      .limit(pageOptions.limit)
+      .skip(pageOptions.page * pageOptions.limit)
+      .exec();
+
+    // check if any present
     if (!ministers) {
       res.status(400);
-      throw new Error("Something went wrong while getting the ministers.");
+      throw new Error("No ministers found.");
     }
 
     res.status(200).json({
@@ -100,16 +134,14 @@ const getMinister = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get a ministers
-// @route   /api/minister/:id
+// @route   /api/v1/minister/:id
 // @access  Admin
 const getAMinister = asyncHandler(async (req, res) => {
   try {
-    console.log(req.params.id);
     const minister = await Minister.findById(req.params.id);
-
     if (!minister) {
       res.status(400);
-      throw new Error("Something went wrong while getting the minister.");
+      throw new Error("No minister found.");
     }
 
     res.status(200).json({
@@ -124,11 +156,12 @@ const getAMinister = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update a ministers
-// @route   /api/minister/:id
+// @route   /api/v1/minister/:id
 // @access  Admin
 const updateMinister = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
+    let userId = res.locals.userInfo;
 
     // check if ministry exists
     const existMinister = await Minister.findById(req.params.id);
@@ -143,6 +176,14 @@ const updateMinister = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error(error.details[0].message, error);
     }
+
+    // check if user exists and add
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.updatedBy = userId.id;
 
     // check if chief minister exists
     if (data.ministry_type === "Chief Minister") {
@@ -168,17 +209,7 @@ const updateMinister = asyncHandler(async (req, res) => {
       }
     }
 
-    // create minister
-    const minister = await Minister.findByIdAndUpdate(req.params.id, data, {
-      runValidators: true,
-      new: true,
-    });
-
-    if (!minister) {
-      res.status(400);
-      throw new Error("Something went wrong while updating the Minister.");
-    }
-
+    // notify others
     // let notificationData = {
     //   name: "Minister",
     //   marathi: {
@@ -188,12 +219,25 @@ const updateMinister = asyncHandler(async (req, res) => {
     //     message: "New Minister added!",
     //   },
     // };
-
     // await createNotificationFormat(notificationData, res);
 
+    // create a pending req to accept
+    let pendingData = {
+      modelId: existMinister._id,
+      modelName: "Minister",
+      action: "Update",
+      data_object: data,
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to update Minister`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
+
     res.status(200).json({
-      message: "Minister updated successfully.",
-      data: minister,
+      message: "Minister update request forwaded!",
+      data: existMinister,
       success: true,
     });
   } catch (error) {
@@ -203,19 +247,41 @@ const updateMinister = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete a ministers
-// @route   /api/minister/:id
+// @route   /api/v1/minister/:id
 // @access  Admin
 const deleteMinister = asyncHandler(async (req, res) => {
   try {
-    const minister = await Minister.findByIdAndDelete(req.params.id);
+    let userId = res.locals.userInfo;
 
+    // check if user exists
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+
+    // check if minister exists
+    const minister = await Minister.findById(req.params.id);
     if (!minister) {
       res.status(400);
       throw new Error("Something went wrong while getting the minister.");
     }
 
+    // create a pending req to accept
+    let pendingData = {
+      modelId: minister._id,
+      modelName: "Minister",
+      action: "Delete",
+    };
+    let notificationMsg = {
+      name: `${checkUser.full_name} wants to delete Minister`,
+      marathi: { message: "!" },
+      english: { message: "!" },
+    };
+    await createPending(pendingData, notificationMsg, res);
+
     res.status(204).json({
-      message: "Minister deleted successfully.",
+      message: "Minister delete request forwaded!",
       data: {},
       success: true,
     });

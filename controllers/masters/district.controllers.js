@@ -8,7 +8,7 @@ const {
 } = require("../../validations/master/districtValidation");
 
 // @desc    Create a District
-// @route   /api/district/
+// @route   /api/v1/district/
 // @access  Admin
 const createDistrict = asyncHandler(async (req, res) => {
   try {

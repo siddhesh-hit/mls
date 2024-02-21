@@ -5,7 +5,7 @@ const Navigation = require("../../models/masters/Navigation");
 const User = require("../../models/portals/userModel");
 
 // @desc    Create a RequestAccess
-// @route   /api/request/
+// @route   /api/v1/request/
 // @access  Admin
 const createRequestAccess = asyncHandler(async (req, res) => {
   try {
@@ -47,7 +47,7 @@ const createRequestAccess = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get all RequestAccess
-// @route   /api/request/
+// @route   /api/v1/request/
 // @access  Admin
 const getAllRequestAccess = asyncHandler(async (req, res) => {
   try {
@@ -73,7 +73,7 @@ const getAllRequestAccess = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get a RequestAccess
-// @route   /api/request/:id
+// @route   /api/v1/request/:id
 // @access  Admin
 const getRequestAccess = asyncHandler(async (req, res) => {
   try {
@@ -99,7 +99,7 @@ const getRequestAccess = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update a RequestAccess
-// @route   /api/request/:id
+// @route   /api/v1/request/:id
 // @access  Admin
 const updateRequestAccess = asyncHandler(async (req, res) => {
   try {
@@ -145,7 +145,7 @@ const updateRequestAccess = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete a RequestAccess
-// @route   /api/request/:id
+// @route   /api/v1/request/:id
 // @access  Admin
 const deleteRequestAccess = asyncHandler(async (req, res) => {
   try {

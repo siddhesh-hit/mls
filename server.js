@@ -4,10 +4,10 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const cron = require("node-cron");
 const logger = require("morgan");
-const os = require("os");
-const cluster = require("cluster");
 const fs = require("fs");
 const path = require("path");
+const os = require("os");
+const cluster = require("cluster");
 
 // internal modules
 const connectDB = require("./config/db.config");
@@ -27,6 +27,9 @@ const corsConfig = {
 };
 app.use(cors(corsConfig));
 app.options("*", cors(corsConfig));
+
+// to allow and catch ip behind proxy
+app.set("trust proxy", true);
 
 // parse the data
 app.use(express.json());
@@ -78,7 +81,7 @@ app.get("/back", (req, res) => {
 });
 
 // defining the routes
-app.use("/v1/api", routes);
+app.use("/api/v1", routes);
 
 // static files
 app.use("/images", express.static("./images"));
@@ -90,16 +93,36 @@ app.use(errorHandler);
 
 // server configuration
 const PORT = process.env.PORT || 8484;
-connectDB()
-  .then(() => {
-    console.log(`MongoDB is connected at MLS.`);
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
+const numCPUs = os.cpus().length;
+
+if (cluster.isPrimary) {
+  console.log(`Primary ${process.pid} is running`);
+
+  // Fork workers.
+  for (let i = 0; i < numCPUs; i++) {
+    cluster.fork();
+  }
+
+  cluster.on("exit", (worker, code, signal) => {
+    console.log(`worker ${worker.process.pid} died`);
+    cluster.fork();
   });
+} else {
+  // Workers can share any TCP connection
+  // In this case it is an HTTP server
+  connectDB()
+    .then(() => {
+      console.log(`MongoDB is connected at MLS.`);
+      app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+      });
+    })
+    .catch((err) => {
+      console.error("Error connecting to MongoDB:", err);
+    });
+
+  // console.log(`Worker ${process.pid} started`);
+}
 
 // // cronjob for data dump
 // cron.schedule("0 0 * * *", () => {
@@ -112,13 +135,3 @@ const proNam = process;
 
 // export the app
 module.exports = app;
-
-var name = "sidd";
-
-// function sayHello() {
-//   console.log(name);
-//   var name = "oksy ssidd";
-//   console.log("update", name);
-// }
-
-// sayHello();

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const imageSchema = require("./imageSchema");
 
-const legislativeMember = new mongoose.Schema(
+const rajyapalMemberSchema = new mongoose.Schema(
   {
     marathi: {
       name: {
@@ -75,11 +75,7 @@ const legislativeMember = new mongoose.Schema(
         ],
       },
     ],
-    isUpdated: {
-      type: Boolean,
-      default: false,
-    },
-    isAccepted: {
+    isCurrent: {
       type: Boolean,
       default: false,
     },
@@ -87,19 +83,19 @@ const legislativeMember = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    isCurrent: {
-      type: Boolean,
-      default: false,
+    status: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending",
     },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   {
     timestamps: true,
   }
 );
 
-const LegislativeMember = mongoose.model(
-  "LegislativeMember",
-  legislativeMember
-);
+const RajyapalMember = mongoose.model("RajyapalMember", rajyapalMemberSchema);
 
-module.exports = LegislativeMember;
+module.exports = RajyapalMember;
