@@ -48,7 +48,7 @@ const userModel = new mongoose.Schema(
     email_otp: {
       type: String,
     },
-    user_verfied: {
+    user_verified: {
       type: Boolean,
       default: false,
     },
