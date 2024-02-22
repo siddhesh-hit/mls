@@ -469,7 +469,7 @@ const forgotUser = asyncHandler(async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Reset password link sent successfully",
-      data: ` ${process.env.CLIENT_URL}/resetPassword/${access_token}`,
+      data: ` ${process.env.PROD_CLIENT_URL}/resetPassword/${access_token}`,
     });
   } catch (error) {
     res.status(501);
