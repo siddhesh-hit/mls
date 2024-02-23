@@ -994,21 +994,21 @@ const updateRoleTask = asyncHandler(async (req, res) => {
       throw new Error("Failed to update role");
     }
 
-    // generate access token and refresh token
-    const access_token = await accessToken(user);
-    const refresh_token = await refreshToken(user);
+    // // generate access token and refresh token
+    // const access_token = await accessToken(user);
+    // const refresh_token = await refreshToken(user);
 
-    // set cookies
-    res.cookie("accessToken", access_token, {
-      httpOnly: true, // set true if the client does not need to read it via JavaScript
-      secure: true, // set to false if not using https
-      sameSite: "None",
-    });
-    res.cookie("refreshToken", refresh_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-    });
+    // // set cookies
+    // res.cookie("accessToken", access_token, {
+    //   httpOnly: true, // set true if the client does not need to read it via JavaScript
+    //   secure: true, // set to false if not using https
+    //   sameSite: "None",
+    // });
+    // res.cookie("refreshToken", refresh_token, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: "None",
+    // });
 
     res.status(200).json({
       success: true,

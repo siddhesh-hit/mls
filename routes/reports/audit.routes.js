@@ -18,9 +18,9 @@ const {
 router
   .route("/")
   .get(
-    // authMiddleware,
-    // checkRoleMiddleware(["SuperAdmin", "Admin"]),
-    // hasPermission("read"),
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("read"),
     getAllAudit
   )
   .post(createAudit);
@@ -35,7 +35,7 @@ router
   )
   .put(
     authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "ContentCreator"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
     hasPermission("update"),
     updateAudit
   )
