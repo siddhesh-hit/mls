@@ -7,20 +7,18 @@ const User = require("../../models/portals/userModel");
 const { createPending } = require("../reports/pending.controllers");
 
 const imageValidate = (data) => {
-  const schema = joi.object({
-    gallery_image: joi
-      .object({
-        fieldname: joi.string().required(),
-        originalname: joi.string().required(),
-        encoding: joi.string().required(),
-        mimetype: joi.string().required(),
-        destination: joi.string().required(),
-        filename: joi.string().required(),
-        path: joi.string().required(),
-        size: joi.number().required(),
-      })
-      .required(),
-  });
+  const schema = joi
+    .object({
+      fieldname: joi.string().required(),
+      originalname: joi.string().required(),
+      encoding: joi.string().required(),
+      mimetype: joi.string().required(),
+      destination: joi.string().required(),
+      filename: joi.string().required(),
+      path: joi.string().required(),
+      size: joi.number().required(),
+    })
+    .optional();
   return schema.validate(data);
 };
 
@@ -29,7 +27,9 @@ const imageValidate = (data) => {
 // @access  Admin
 const createMandalGallery = asyncHandler(async (req, res) => {
   try {
-    let files = req.files;
+    let files = req.files.gallery_image[0];
+
+    let userId = res.locals.userInfo;
 
     // check if file is present
     if (!files) {
@@ -44,6 +44,13 @@ const createMandalGallery = asyncHandler(async (req, res) => {
       throw new Error(error.details[0].message);
     }
 
+    // check if user exists and add
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+
     // let galleries = [];
     // for (let i = 0; i < files.gallery_image.length; i++) {
     //   const gallery = await MandalGallery.create(files.gallery_image[i]);
@@ -54,8 +61,10 @@ const createMandalGallery = asyncHandler(async (req, res) => {
     //   galleries.push(gallery);
     // }
 
+    files.createdBy = userId.id;
+
     // create mandal gallery
-    const gallery = await MandalGallery.create(files.gallery_image);
+    const gallery = await MandalGallery.create(files);
     if (!gallery) {
       res.status(400);
       throw new Error("Failed to create Vidhan Mandal gallery");
@@ -181,6 +190,9 @@ const updateMandalGallery = asyncHandler(async (req, res) => {
     // }
 
     // create a pending req to accept
+
+    file.gallery_image.createdBy = userId.id;
+
     let pendingData = {
       modelId: galleryExists._id,
       modelName: "MandalGallery",

@@ -87,13 +87,13 @@ app.use(logging);
 // defining the routes
 app.use("/api/v1", routes);
 
-// error handler
-app.use(notFound);
-app.use(errorHandler);
-
 // static files
 app.use("/images", express.static("./images"));
 app.use("/exports", express.static("./exports"));
+
+// error handler
+app.use(notFound);
+app.use(errorHandler);
 
 // server configuration
 const PORT = process.env.PORT || 8484;

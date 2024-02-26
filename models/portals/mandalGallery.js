@@ -10,6 +10,17 @@ const mandalGallerySchema = new mongoose.Schema(
     filename: String,
     path: String,
     size: Number,
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
+    status: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending",
+    },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );

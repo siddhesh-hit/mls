@@ -73,8 +73,8 @@ const updateSessionCalendarValidation = (data) => {
           })
           .unknown(true)
       ),
-      createdBy: joi.string().required().label("Created by is required"),
-      updatedBy: joi.string().required().label("Updated by is required"),
+      createdBy: joi.string().optional().label("Created by is required"),
+      updatedBy: joi.string().optional().label("Updated by is required"),
     })
     .unknown(true);
 
