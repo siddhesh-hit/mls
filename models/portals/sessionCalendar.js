@@ -3,17 +3,10 @@ const ImageSchema = require("./imageSchema");
 
 const sessionCalendarSchema = new mongoose.Schema(
   {
-    marathi: {
-      session: {
-        type: String,
-        required: true,
-      },
-    },
-    english: {
-      session: {
-        type: String,
-        required: true,
-      },
+    session: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Session",
+      required: true,
     },
     topic_name: {
       type: String,

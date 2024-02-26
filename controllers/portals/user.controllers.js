@@ -2,7 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const asyncHandler = require("express-async-handler");
 const cookieParser = require("cookie-parser");
-const jwt = require("jsonwebtoken")
+const jwt = require("jsonwebtoken");
+
 const User = require("../../models/portals/userModel");
 const RefreshToken = require("../../models/portals/refreshToken");
 const Notification = require("../../models/extras/Notification");
@@ -42,7 +43,7 @@ const registerUserPhone = asyncHandler(async (req, res) => {
 
     const user = await User.findOne({ phone_number });
     if (user) {
-      if (user.user_verfied) {
+      if (user.user_verified) {
         res.status(400);
         throw new Error("User already exists");
       } else {
@@ -86,7 +87,7 @@ const verifyUserPhone = asyncHandler(async (req, res) => {
     }
 
     user.phone_otp = "";
-    user.user_verfied = true;
+    user.user_verified = true;
     await user.save();
 
     res.status(201).json({
@@ -125,7 +126,7 @@ const registerUserEmail = asyncHandler(async (req, res) => {
     // check if email already exists
     let user = await User.findOne({ email });
     if (user) {
-      if (user.user_verfied) {
+      if (user.user_verified) {
         res.status(400);
         throw new Error("User already exists");
       } else {
@@ -134,9 +135,10 @@ const registerUserEmail = asyncHandler(async (req, res) => {
     }
 
     // generate otp and send email
-    // const otp = otpGenerator();
-    // otpEmailGenerator(email, otp);
-    const otp = 1234;
+    const otp = otpGenerator();
+    console.log(otp);
+    otpEmailGenerator(email, otp);
+
     // create new user
     const newUser = await User.create({
       ...data,
@@ -177,7 +179,7 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
     }
 
     user.email_otp = "";
-    user.user_verfied = true;
+    user.user_verified = true;
 
     const role_task = await Role_Task.create({
       userId: user._id,
@@ -203,6 +205,22 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
     user.notificationId = notification._id;
     await user.save();
 
+    // generate access token and refresh token
+    const access_token = await accessToken(user);
+    const refresh_token = await refreshToken(user);
+
+    // set cookies
+    res.cookie("accessToken", access_token, {
+      httpOnly: true, // set true if the client does not need to read it via JavaScript
+      secure: true, // set to false if not using https
+      sameSite: "None",
+    });
+    res.cookie("refreshToken", refresh_token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    });
+
     res.status(201).json({
       success: true,
       message: "User verified successfully",
@@ -217,7 +235,7 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
 // @desc    Login user using phone
 // @route   POST /api/user/loginPhone
 // @access  Public
-const loginUserPhone = asyncHandler(async (req, res) => { });
+const loginUserPhone = asyncHandler(async (req, res) => {});
 
 // @desc    Login user using email
 // @route   POST /api/user/loginEmail
@@ -239,7 +257,7 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       "role permission taskName"
     );
     // .select(
-    //   "_id full_name user_verfied email phone_number gender date_of_birth user_image"
+    //   "_id full_name user_verified email phone_number gender date_of_birth user_image"
     // );
     // houses department designation
 
@@ -247,9 +265,9 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("User does not exists");
     }
-
+    console.log(user);
     // check if user is verified
-    if (!user.user_verfied) {
+    if (!user.user_verified) {
       res.status(400);
       throw new Error("User not verified");
     }
@@ -277,6 +295,7 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       user_image: user.user_image,
       notificationId: user.notificationId,
       role_taskId: user.role_taskId,
+      user_verified: user.user_verified,
     };
 
     // set cookies
@@ -308,7 +327,7 @@ const loginUserEmail = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
   try {
     // Parse cookies using cookie-parser
-    cookieParserMiddleware(req, res, () => { });
+    cookieParserMiddleware(req, res, () => {});
 
     const refresh_token = req.cookies.refreshToken;
     const access_token = req.cookies.accessToken;
@@ -383,10 +402,10 @@ const inviteUser = asyncHandler(async (req, res) => {
     }
 
     // send invitation email
-    const resEmail = emailInviteUser(data.email, password);
+    emailInviteUser(data.email, password);
 
     // register user
-    const user = await User.create({ ...data, user_verfied: true });
+    const user = await User.create({ ...data, user_verified: true });
     if (!user) {
       res.status(400);
       throw new Error("User not registered");
@@ -450,7 +469,7 @@ const forgotUser = asyncHandler(async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Reset password link sent successfully",
-      data: ` ${process.env.CLIENT_URL}/resetPassword/${access_token}`
+      data: ` ${process.env.PROD_CLIENT_URL}/resetPassword/${access_token}`,
     });
   } catch (error) {
     res.status(501);
@@ -507,7 +526,7 @@ const resetUser = asyncHandler(async (req, res) => {
       user_image: checkUser.user_image,
       notificationId: checkUser.notificationId,
       role_taskId: checkUser.role_taskId,
-      user_verfied: checkUser.user_verfied
+      user_verified: checkUser.user_verified,
     };
 
     // set cookies
@@ -529,10 +548,10 @@ const resetUser = asyncHandler(async (req, res) => {
     });
   } catch (error) {
     // An error occurred during JWT verification
-    if (error.name === 'TokenExpiredError') {
+    if (error.name === "TokenExpiredError") {
       res.status(403);
       throw new Error("Session Is Expired");
-    } else if (error.name === 'JsonWebTokenError') {
+    } else if (error.name === "JsonWebTokenError") {
       res.status(403);
       throw new Error("Not an authorized token.");
     }
@@ -673,7 +692,7 @@ const regenerateAccessToken = asyncHandler(async (req, res) => {
   try {
     // check if access token exists
 
-    cookieParserMiddleware(req, res, () => { });
+    cookieParserMiddleware(req, res, () => {});
 
     const accessOldToken = req.cookies.accessToken;
     const refreshOldToken = req.cookies.refreshToken;
@@ -975,21 +994,21 @@ const updateRoleTask = asyncHandler(async (req, res) => {
       throw new Error("Failed to update role");
     }
 
-    // generate access token and refresh token
-    const access_token = await accessToken(user);
-    const refresh_token = await refreshToken(user);
+    // // generate access token and refresh token
+    // const access_token = await accessToken(user);
+    // const refresh_token = await refreshToken(user);
 
-    // set cookies
-    res.cookie("accessToken", access_token, {
-      httpOnly: true, // set true if the client does not need to read it via JavaScript
-      secure: true, // set to false if not using https
-      sameSite: "None",
-    });
-    res.cookie("refreshToken", refresh_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-    });
+    // // set cookies
+    // res.cookie("accessToken", access_token, {
+    //   httpOnly: true, // set true if the client does not need to read it via JavaScript
+    //   secure: true, // set to false if not using https
+    //   sameSite: "None",
+    // });
+    // res.cookie("refreshToken", refresh_token, {
+    //   httpOnly: true,
+    //   secure: true,
+    //   sameSite: "None",
+    // });
 
     res.status(200).json({
       success: true,

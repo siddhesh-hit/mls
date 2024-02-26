@@ -12,6 +12,7 @@ const cluster = require("cluster");
 // internal modules
 const connectDB = require("./config/db.config");
 const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
+const { logging } = require("./middlewares/logMiddleware");
 const routes = require("./routes");
 // const main = require("./services/dumpDatabase");
 
@@ -80,16 +81,19 @@ app.get("/back", (req, res) => {
   });
 });
 
+// middleware to track user audit
+app.use(logging);
+
 // defining the routes
 app.use("/api/v1", routes);
-
-// static files
-app.use("/images", express.static("./images"));
-app.use("/exports", express.static("./exports"));
 
 // error handler
 app.use(notFound);
 app.use(errorHandler);
+
+// static files
+app.use("/images", express.static("./images"));
+app.use("/exports", express.static("./exports"));
 
 // server configuration
 const PORT = process.env.PORT || 8484;

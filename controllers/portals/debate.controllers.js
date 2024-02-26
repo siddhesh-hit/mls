@@ -352,8 +352,6 @@ const getDebateFullSearch = asyncHandler(async (req, res) => {
       let key = arrayOfQuery[i];
       let value = queries[arrayOfQuery[i]];
 
-      // if(t)
-
       if (key === "volume" || key === "kramank") {
         let engArr = value.split("");
         let newMarArr;
@@ -370,7 +368,8 @@ const getDebateFullSearch = asyncHandler(async (req, res) => {
         let data = newMarArr.join("");
         value = data;
       }
-      if (value) {
+
+      if (value && key !== "topic") {
         value = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         let obj = {
           [key]: new RegExp(`.*${value}.*`, "i"),
@@ -378,8 +377,22 @@ const getDebateFullSearch = asyncHandler(async (req, res) => {
 
         andMatchStage.push(obj);
       }
+
+      if (key === "topic") {
+        value = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        let or = {
+          $or: [
+            { topic: new RegExp(`.*${value}.*`, "i") },
+            { speaker: new RegExp(`.*${value}.*`, "i") },
+            { keywords: new RegExp(`.*${value}.*`, "i") },
+            { members_name: new RegExp(`.*${value}.*`, "i") },
+            { date: new RegExp(`.*${value}.*`, "i") },
+          ],
+        };
+
+        andMatchStage.push(or);
+      }
     }
-    console.log(andMatchStage);
 
     let debates;
     if (andMatchStage.length > 0) {
@@ -404,7 +417,6 @@ const getDebateFullSearch = asyncHandler(async (req, res) => {
         },
       ]);
     } else {
-      // No queries provided, return all debates
       debates = await Debate.aggregate([
         {
           $facet: {

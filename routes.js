@@ -26,6 +26,8 @@ const districtRoutes = require("./routes/masters/district.routes");
 const genderRoutes = require("./routes/masters/gender.routes");
 const partyRoutes = require("./routes/masters/party.routes");
 const navigationRoutes = require("./routes/masters/navigation.routes");
+const sessionFieldRoutes = require("./routes/masters/session.routes");
+const designationRoutes = require("./routes/masters/designation.routes");
 
 const visitRoute = require("./routes/extras/visit.routes");
 const notificationRoute = require("./routes/extras/notification.routes");
@@ -60,6 +62,8 @@ router.use("/district", districtRoutes);
 router.use("/gender", genderRoutes);
 router.use("/party", partyRoutes);
 router.use("/navigation", navigationRoutes);
+router.use("/sessionField", sessionFieldRoutes);
+router.use("/designation", designationRoutes);
 
 router.use("/visit", visitRoute);
 router.use("/notification", notificationRoute);
