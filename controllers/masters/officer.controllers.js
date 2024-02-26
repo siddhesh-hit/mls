@@ -1,12 +1,12 @@
 const asyncHandler = require("express-async-handler");
 
-const Designation = require("../../models/masters/Designation");
+const PresidingOfficer = require("../../models/masters/PresidingOfficer");
 const User = require("../../models/portals/userModel");
 
 // @desc    Create a session
-// @path    POST /api/designation/
+// @path    POST /api/officer/
 // @access  Public
-const createDesignation = asyncHandler(async (req, res) => {
+const createPresidingOfficer = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
     let userId = res.locals.userInfo;
@@ -26,15 +26,15 @@ const createDesignation = asyncHandler(async (req, res) => {
     data.createdBy = userId.id;
 
     // create an entry
-    const designation = await Designation.create(data);
-    if (!designation) {
+    const presidingOfficer = await PresidingOfficer.create(data);
+    if (!presidingOfficer) {
       res.status(400);
-      throw new Error("Failed to create a Designation");
+      throw new Error("Failed to create a PresidingOfficer");
     }
 
     res.status(201).json({
-      data: designation,
-      message: "Designation created!",
+      data: presidingOfficer,
+      message: "PresidingOfficer created!",
       success: true,
     });
   } catch (error) {
@@ -44,9 +44,9 @@ const createDesignation = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get all session
-// @path    GET /api/designation/
+// @path    GET /api/officer/
 // @access  Public
-const getDesignations = asyncHandler(async (req, res) => {
+const getPresidingOfficers = asyncHandler(async (req, res) => {
   try {
     let { perPage, perLimit, ...id } = req.query;
 
@@ -55,21 +55,21 @@ const getDesignations = asyncHandler(async (req, res) => {
       limit: parseInt(perLimit, 10) || 10,
     };
 
-    const designation = await Designation.find(id)
+    const presidingOfficer = await PresidingOfficer.find(id)
       .limit(pageOptions.limit)
       .skip(pageOptions.page * pageOptions.limit)
       .exec();
 
-    // check if Ddesignation exists
-    if (!designation) {
+    // check if DPresidingOfficer exists
+    if (!presidingOfficer) {
       res.status(404);
-      throw new Error("No designations found");
+      throw new Error("No PresidingOfficers found");
     }
 
     // send response
     res.status(200).json({
-      message: "Designations fetched successfully",
-      data: designation,
+      message: "PresidingOfficers fetched successfully",
+      data: presidingOfficer,
       success: true,
     });
   } catch (error) {
@@ -79,19 +79,20 @@ const getDesignations = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get a session
-// @path    GET /api/designation/:id
+// @path    GET /api/officer/:id
 // @access  Public
-const getDesignation = asyncHandler(async (req, res) => {
+const getPresidingOfficer = asyncHandler(async (req, res) => {
   try {
     // check whether exists and send res
-    const designation = await Designation.findById(req.params.id);
-    if (!designation) {
+    const presidingOfficer = await PresidingOfficer.findById(req.params.id);
+    if (!presidingOfficer) {
       res.status(400);
-      throw new Error("No designation found for provided id.");
+      throw new Error("No PresidingOfficer found for provided id.");
     }
+
     res.status(200).json({
-      message: "Designation fetched successfully.",
-      data: designation,
+      message: "PresidingOfficer fetched successfully.",
+      data: presidingOfficer,
       success: true,
     });
   } catch (error) {
@@ -101,9 +102,9 @@ const getDesignation = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update a session
-// @path    PUT /api/designation/:id
+// @path    PUT /api/officer/:id
 // @access  Public
-const updateDesignation = asyncHandler(async (req, res) => {
+const updatePresidingOfficer = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
     let userId = res.locals.userInfo;
@@ -114,11 +115,13 @@ const updateDesignation = asyncHandler(async (req, res) => {
       throw new Error("Field data properly.");
     }
 
-    // check if Designation exists
-    const checkDesignation = await Designation.findById(req.params.id);
-    if (!checkDesignation) {
+    // check if PresidingOfficer exists
+    const checkPresidingOfficer = await PresidingOfficer.findById(
+      req.params.id
+    );
+    if (!checkPresidingOfficer) {
       res.status(400);
-      throw new Error("Failed to find a Designation.");
+      throw new Error("Failed to find a PresidingOfficer.");
     }
 
     // check if user exists and then add it
@@ -130,19 +133,19 @@ const updateDesignation = asyncHandler(async (req, res) => {
     data.updatedBy = userId.id;
 
     // create an entry
-    const designation = await Designation.findByIdAndUpdate(
+    const presidingOfficer = await PresidingOfficer.findByIdAndUpdate(
       req.params.id,
       data,
       { runValidators: true, new: true }
     );
-    if (!designation) {
+    if (!presidingOfficer) {
       res.status(400);
-      throw new Error("Failed to update a Designation");
+      throw new Error("Failed to update a session field");
     }
 
     res.status(200).json({
-      data: designation,
-      message: "Designation updated!",
+      data: presidingOfficer,
+      message: "PresidingOfficer updated!",
       success: true,
     });
   } catch (error) {
@@ -152,19 +155,21 @@ const updateDesignation = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete a session
-// @path    DELETE /api/designation/:id
+// @path    DELETE /api/officer/:id
 // @access  Public
-const deleteDesignation = asyncHandler(async (req, res) => {
+const deletePresidingOfficer = asyncHandler(async (req, res) => {
   try {
     // check whether exists and send res
-    const designation = await Designation.findByIdAndDelete(req.params.id);
-    if (!designation) {
+    const presidingOfficer = await PresidingOfficer.findByIdAndDelete(
+      req.params.id
+    );
+    if (!presidingOfficer) {
       res.status(400);
-      throw new Error("No designation found for provided id.");
+      throw new Error("No PresidingOfficer found for provided id.");
     }
 
     res.status(204).json({
-      message: "Designation deleted!",
+      message: "PresidingOfficer deleted!",
       data: {},
       success: true,
     });
@@ -175,9 +180,9 @@ const deleteDesignation = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  createDesignation,
-  getDesignation,
-  getDesignations,
-  updateDesignation,
-  deleteDesignation,
+  createPresidingOfficer,
+  getPresidingOfficer,
+  getPresidingOfficers,
+  updatePresidingOfficer,
+  deletePresidingOfficer,
 };
