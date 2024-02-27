@@ -560,14 +560,59 @@ const resetUser = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Reset user password via admin
+// @route   PUT /api/user/resetAdmin/:id
+// @access  Public
+const resetUserViaAdmin = asyncHandler(async (req, res) => {
+  try {
+    let data = req.body;
+    console.log("check");
+
+    // check if user exists
+    const checkUser = await User.findById(req.params.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("User does not exists");
+    }
+
+    // update password
+    checkUser.password = data.password;
+    await checkUser.save();
+
+    let userData = {
+      full_name: checkUser.full_name,
+      email: checkUser.email,
+      houses: checkUser.houses,
+      department: checkUser.department,
+      designation: checkUser.designation,
+      phone_number: checkUser.phone_number,
+      gender: checkUser.gender,
+      user_image: checkUser.user_image,
+      notificationId: checkUser.notificationId,
+      role_taskId: checkUser.role_taskId,
+      user_verified: checkUser.user_verified,
+    };
+
+    res.status(200).json({
+      success: true,
+      message: "User logged in successfully",
+      data: userData,
+    });
+  } catch (error) {
+    res.status(501);
+    throw new Error(error);
+  }
+});
+
 // @desc    Get all users
 // @route   GET /api/user
 // @access  Admin
 const getUsers = asyncHandler(async (req, res) => {
   try {
-    const users = await User.find({}).select(
-      "_id full_name houses department designation email phone_number gender date_of_birth user_image"
-    );
+    const users = await User.find({})
+      .select()
+      .populate("notificationId")
+      .populate("role_taskId");
     if (!users) {
       res.status(400);
       throw new Error("No users found");
@@ -589,9 +634,12 @@ const getUsers = asyncHandler(async (req, res) => {
 // @access  Public
 const getUserById = asyncHandler(async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select(
-      "_id full_name houses department designation email phone_number gender date_of_birth user_image"
+    const user = await User.findById(req.params.id, {
+      isBlocked: false,
+    }).select(
+      "_id full_name houses department designation email phone_number gender date_of_birth user_image isBlocked"
     );
+
     if (!user) {
       res.status(400);
       throw new Error("User not found");
@@ -1035,6 +1083,7 @@ module.exports = {
   inviteUser,
   forgotUser,
   resetUser,
+  resetUserViaAdmin,
   getUsers,
   getUserById,
   updateUser,

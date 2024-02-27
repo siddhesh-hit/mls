@@ -12,6 +12,7 @@ const {
   inviteUser,
   forgotUser,
   resetUser,
+  resetUserViaAdmin,
   getUsers,
   getUserById,
   updateUser,
@@ -59,6 +60,14 @@ router.post("/loginEmail", loginUserEmail);
 router.post("/logout", authMiddleware, logoutUser);
 router.post("/forgot", forgotUser);
 router.post("/reset", resetUser);
+router.put(
+  "/resetAdmin/:id",
+  authMiddleware,
+  checkRoleMiddleware(["SuperAdmin"]),
+  hasPermission("update"),
+  resetUserViaAdmin
+);
+
 router.post(
   "/invite",
   authMiddleware,

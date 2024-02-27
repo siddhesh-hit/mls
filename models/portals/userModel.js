@@ -60,6 +60,10 @@ const userModel = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Role_Task",
     },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
