@@ -33,6 +33,7 @@ const createLibrary = asyncHandler(async (req, res) => {
 
     // add the image to the data
     data.banner = banner[0];
+    data.createdBy = userId.id;
 
     // validate request body
     const { error } = createLibraryValidation(data);
@@ -47,7 +48,6 @@ const createLibrary = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Failed to find a user.");
     }
-    data.createdBy = userId.id;
 
     // create new library
     const library = await Library.create(data);

@@ -98,6 +98,8 @@ const getAllMember = asyncHandler(async (req, res) => {
   try {
     let { perPage, perLimit, ...id } = req.query;
 
+    console.log(id);
+
     const pageOptions = {
       page: parseInt(perPage, 10) || 0,
       limit: parseInt(perLimit, 10) || 10,

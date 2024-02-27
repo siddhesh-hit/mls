@@ -31,6 +31,7 @@ const designationRoutes = require("./routes/masters/designation.routes");
 
 const visitRoute = require("./routes/extras/visit.routes");
 const notificationRoute = require("./routes/extras/notification.routes");
+const contactRoute = require("./routes/extras/contact.routes");
 
 const pendingRoutes = require("./routes/reports/pending.routes");
 const auditRoutes = require("./routes/reports/audit.routes");
@@ -67,6 +68,7 @@ router.use("/designation", designationRoutes);
 
 router.use("/visit", visitRoute);
 router.use("/notification", notificationRoute);
+router.use("/contact", contactRoute);
 
 router.use("/pending", pendingRoutes);
 router.use("/audit", auditRoutes);

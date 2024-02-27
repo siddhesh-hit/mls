@@ -1,12 +1,12 @@
 const asyncHandler = require("express-async-handler");
 
-const Designation = require("../../models/masters/Designation");
+const LegislationPosition = require("../../models/masters/LegislationPosition");
 const User = require("../../models/portals/userModel");
 
 // @desc    Create a session
-// @path    POST /api/designation/
+// @path    POST /api/position/
 // @access  Public
-const createDesignation = asyncHandler(async (req, res) => {
+const createLegislationPosition = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
     let userId = res.locals.userInfo;
@@ -26,15 +26,15 @@ const createDesignation = asyncHandler(async (req, res) => {
     data.createdBy = userId.id;
 
     // create an entry
-    const designation = await Designation.create(data);
-    if (!designation) {
+    const legislationPosition = await LegislationPosition.create(data);
+    if (!legislationPosition) {
       res.status(400);
-      throw new Error("Failed to create a Designation");
+      throw new Error("Failed to create a LegislationPosition");
     }
 
     res.status(201).json({
-      data: designation,
-      message: "Designation created!",
+      data: legislationPosition,
+      message: "LegislationPosition created!",
       success: true,
     });
   } catch (error) {
@@ -44,9 +44,9 @@ const createDesignation = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get all session
-// @path    GET /api/designation/
+// @path    GET /api/position/
 // @access  Public
-const getDesignations = asyncHandler(async (req, res) => {
+const getLegislationPositions = asyncHandler(async (req, res) => {
   try {
     let { perPage, perLimit, ...id } = req.query;
 
@@ -55,21 +55,21 @@ const getDesignations = asyncHandler(async (req, res) => {
       limit: parseInt(perLimit, 10) || 10,
     };
 
-    const designation = await Designation.find(id)
+    const legislationPosition = await LegislationPosition.find(id)
       .limit(pageOptions.limit)
       .skip(pageOptions.page * pageOptions.limit)
       .exec();
 
-    // check if Ddesignation exists
-    if (!designation) {
+    // check if LegislationPosition exists
+    if (!legislationPosition) {
       res.status(404);
-      throw new Error("No designations found");
+      throw new Error("No LegislationPositions found");
     }
 
     // send response
     res.status(200).json({
-      message: "Designations fetched successfully",
-      data: designation,
+      message: "LegislationPositions fetched successfully",
+      data: legislationPosition,
       success: true,
     });
   } catch (error) {
@@ -79,19 +79,22 @@ const getDesignations = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get a session
-// @path    GET /api/designation/:id
+// @path    GET /api/position/:id
 // @access  Public
-const getDesignation = asyncHandler(async (req, res) => {
+const getLegislationPosition = asyncHandler(async (req, res) => {
   try {
     // check whether exists and send res
-    const designation = await Designation.findById(req.params.id);
-    if (!designation) {
+    const legislationPosition = await LegislationPosition.findById(
+      req.params.id
+    );
+    if (!legislationPosition) {
       res.status(400);
-      throw new Error("No designation found for provided id.");
+      throw new Error("No LegislationPosition found for provided id.");
     }
+
     res.status(200).json({
-      message: "Designation fetched successfully.",
-      data: designation,
+      message: "LegislationPosition fetched successfully.",
+      data: legislationPosition,
       success: true,
     });
   } catch (error) {
@@ -101,9 +104,9 @@ const getDesignation = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update a session
-// @path    PUT /api/designation/:id
+// @path    PUT /api/position/:id
 // @access  Public
-const updateDesignation = asyncHandler(async (req, res) => {
+const updateLegislationPosition = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
     let userId = res.locals.userInfo;
@@ -114,11 +117,13 @@ const updateDesignation = asyncHandler(async (req, res) => {
       throw new Error("Field data properly.");
     }
 
-    // check if Designation exists
-    const checkDesignation = await Designation.findById(req.params.id);
-    if (!checkDesignation) {
+    // check if LegislationPosition exists
+    const checkLegislationPosition = await LegislationPosition.findById(
+      req.params.id
+    );
+    if (!checkLegislationPosition) {
       res.status(400);
-      throw new Error("Failed to find a Designation.");
+      throw new Error("Failed to find a LegislationPosition.");
     }
 
     // check if user exists and then add it
@@ -130,19 +135,19 @@ const updateDesignation = asyncHandler(async (req, res) => {
     data.updatedBy = userId.id;
 
     // create an entry
-    const designation = await Designation.findByIdAndUpdate(
+    const legislationPosition = await LegislationPosition.findByIdAndUpdate(
       req.params.id,
       data,
       { runValidators: true, new: true }
     );
-    if (!designation) {
+    if (!legislationPosition) {
       res.status(400);
-      throw new Error("Failed to update a Designation");
+      throw new Error("Failed to update a session field");
     }
 
     res.status(200).json({
-      data: designation,
-      message: "Designation updated!",
+      data: legislationPosition,
+      message: "LegislationPosition updated!",
       success: true,
     });
   } catch (error) {
@@ -152,19 +157,21 @@ const updateDesignation = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete a session
-// @path    DELETE /api/designation/:id
+// @path    DELETE /api/position/:id
 // @access  Public
-const deleteDesignation = asyncHandler(async (req, res) => {
+const deleteLegislationPosition = asyncHandler(async (req, res) => {
   try {
     // check whether exists and send res
-    const designation = await Designation.findByIdAndDelete(req.params.id);
-    if (!designation) {
+    const legislationPosition = await LegislationPosition.findByIdAndDelete(
+      req.params.id
+    );
+    if (!legislationPosition) {
       res.status(400);
-      throw new Error("No designation found for provided id.");
+      throw new Error("No LegislationPosition found for provided id.");
     }
 
     res.status(204).json({
-      message: "Designation deleted!",
+      message: "LegislationPosition deleted!",
       data: {},
       success: true,
     });
@@ -175,9 +182,9 @@ const deleteDesignation = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  createDesignation,
-  getDesignation,
-  getDesignations,
-  updateDesignation,
-  deleteDesignation,
+  createLegislationPosition,
+  getLegislationPosition,
+  getLegislationPositions,
+  updateLegislationPosition,
+  deleteLegislationPosition,
 };
