@@ -21,7 +21,7 @@ const {
 router.put(
   "/updatePost/:id",
   authMiddleware,
-  checkRoleMiddleware(["SuperAdmin", "ContentCreator"]),
+  checkRoleMiddleware(["SuperAdmin", "Reviewer"]),
   hasPermission("update"),
   updatePendingCreate
 );
@@ -29,7 +29,7 @@ router.put(
 router.put(
   "/updatePut/:id",
   authMiddleware,
-  checkRoleMiddleware(["SuperAdmin", "ContentCreator"]),
+  checkRoleMiddleware(["SuperAdmin", "Reviewer"]),
   hasPermission("update"),
   updatePendingUpdate
 );
@@ -37,7 +37,7 @@ router.put(
 router.put(
   "/updateDel/:id",
   authMiddleware,
-  checkRoleMiddleware(["SuperAdmin", "ContentCreator"]),
+  checkRoleMiddleware(["SuperAdmin", "Reviewer"]),
   hasPermission("update"),
   updatePendingDelete
 );
