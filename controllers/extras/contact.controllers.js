@@ -13,13 +13,20 @@ const createContact = asyncHandler(async (req, res) => {
     let data = req.body;
     let userId = res.locals.userInfo;
 
+    console.log(data);
+
     // validate
     if (
-      !data.address ||
-      !(data.telephone?.length > 0) ||
-      !(data.fax?.length > 0) ||
-      !data.email ||
-      !data.map_url
+      !data.marathi.address ||
+      !data.marathi.telephone ||
+      !data.marathi.fax ||
+      !data.marathi.email ||
+      !data.marathi.map_url ||
+      !data.english.address ||
+      !data.english.telephone ||
+      !data.english.fax ||
+      !data.english.email ||
+      !data.english.map_url
     ) {
       res.status(400);
       throw new Error("Field data properly.");
@@ -131,11 +138,16 @@ const updateContact = asyncHandler(async (req, res) => {
 
     // validate
     if (
-      !data.address ||
-      !(data.telephone?.length > 0) ||
-      !(data.fax?.length > 0) ||
-      !data.email ||
-      !data.map_url
+      !data.marathi.address ||
+      !data.marathi.telephone ||
+      !data.marathi.fax ||
+      !data.marathi.email ||
+      !data.marathi.map_url ||
+      !data.english.address ||
+      !data.english.telephone ||
+      !data.english.fax ||
+      !data.english.email ||
+      !data.english.map_url
     ) {
       res.status(400);
       throw new Error("Field data properly.");

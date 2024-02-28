@@ -9,7 +9,8 @@ const {
   getMember,
   updateMember,
   deleteMember,
-  getAllMemberDetails, getDebateFilterOption
+  getAllMemberDetails,
+  getDebateFilterOption,
 } = require("../../controllers/portals/member.controllers");
 const {
   authMiddleware,

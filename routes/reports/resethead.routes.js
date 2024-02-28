@@ -6,6 +6,7 @@ const {
   getSingleResetHead,
   updateResetHead,
   deleteResetHead,
+  retrieveResetHead,
 } = require("../../controllers/reports/resethead.controllers");
 
 const {
@@ -15,6 +16,14 @@ const {
 } = require("../../middlewares/authMiddleware");
 
 // routes
+router.post(
+  "/retrieve",
+  authMiddleware,
+  checkRoleMiddleware(["SuperAdmin"]),
+  hasPermission("create"),
+  retrieveResetHead
+);
+
 router
   .route("/")
   .get(

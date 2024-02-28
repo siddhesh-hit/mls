@@ -3,7 +3,7 @@ const asyncHandler = require("express-async-handler");
 const Member = require("../../models/portals/Member");
 const User = require("../../models/portals/userModel");
 const propertyNames = Object.keys(User.schema.obj);
-console.log(propertyNames);
+// console.log(propertyNames);
 const {
   createMemberValidation,
   updateMemberValidation,
@@ -134,10 +134,10 @@ const getAllMember = asyncHandler(async (req, res) => {
 const getAllMemberDetails = asyncHandler(async (req, res) => {
   try {
     let { perPage, perLimit } = req.query;
-    let obj = {}
+    let obj = {};
 
     if (req.query.name) {
-      obj["basic_info.name"] = req.query.name
+      obj["basic_info.name"] = req.query.name;
     }
     if (req.query.party) {
       obj["basic_info.party"] = req.query.party;
@@ -159,7 +159,7 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
     if (req.query.house) {
       obj["basic_info.house"] = req.query.house;
     }
-    console.log("query", obj)
+    console.log("query", obj);
 
     const pageOptions = {
       page: parseInt(perPage, 10) || 0,
@@ -184,7 +184,7 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
       data: members,
     });
   } catch (error) {
-    console.log("error", error)
+    console.log("error", error);
     res.status(500);
     throw new Error(error);
   }
@@ -233,7 +233,6 @@ const getDebateFilterOption = asyncHandler(async (req, res) => {
     throw new Error("Server error: " + error);
   }
 });
-
 
 // @desc    Get Member based on house
 // @route   GET /api/member/house?id=""
@@ -457,7 +456,9 @@ const deleteMember = asyncHandler(async (req, res) => {
 
 module.exports = {
   createMember,
-  getAllMember, getAllMemberDetails, getDebateFilterOption,
+  getAllMember,
+  getAllMemberDetails,
+  getDebateFilterOption,
   getMemberHouse,
   getMemberSearch,
   getMember,
