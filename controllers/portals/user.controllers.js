@@ -3,6 +3,7 @@ const path = require("path");
 const asyncHandler = require("express-async-handler");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const User = require("../../models/portals/userModel");
 const RefreshToken = require("../../models/portals/refreshToken");
@@ -274,7 +275,6 @@ const loginUserEmail = asyncHandler(async (req, res) => {
 
     // check if password is correct
     const isMatch = await user.matchPassword(password);
-
     if (!isMatch) {
       res.status(400);
       throw new Error("Invalid credentials");
@@ -283,6 +283,15 @@ const loginUserEmail = asyncHandler(async (req, res) => {
     // generate access token and refresh token
     const access_token = await accessToken(user);
     const refresh_token = await refreshToken(user);
+
+    let checkRefreshToken = await RefreshToken.findOne({ userId: user._id });
+    if (!checkRefreshToken) {
+      res.status(400);
+      throw new Error("No refresh token");
+    }
+
+    checkRefreshToken.refreshToken = refresh_token;
+    await checkRefreshToken.save();
 
     let userData = {
       full_name: user.full_name,
@@ -298,23 +307,24 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       user_verified: user.user_verified,
     };
 
-    // set cookies
-    res.cookie("accessToken", access_token, {
-      httpOnly: true, // set true if the client does not need to read it via JavaScript
-      secure: true, // set to false if not using https
-      sameSite: "None",
-    });
-    res.cookie("refreshToken", refresh_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "User logged in successfully",
-      data: userData,
-    });
+    // set cookies & send res
+    res
+      .status(200)
+      .cookie("accessToken", access_token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+      })
+      .cookie("refreshToken", refresh_token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+      })
+      .json({
+        success: true,
+        message: "User logged in successfully",
+        data: userData,
+      });
   } catch (error) {
     res.status(501);
     throw new Error(error);
@@ -738,23 +748,21 @@ const deleteUser = asyncHandler(async (req, res) => {
 // @access  Public
 const regenerateAccessToken = asyncHandler(async (req, res) => {
   try {
-    // check if access token exists
-
     cookieParserMiddleware(req, res, () => {});
+    console.log(req.cookies);
+    // check if Refresh token is valid
+    const refreshToken = req.cookies.refreshToken;
 
-    const accessOldToken = req.cookies.accessToken;
-    const refreshOldToken = req.cookies.refreshToken;
-
-    if (!accessOldToken) {
-      res.status(400);
-      throw new Error("Access token not found");
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
+    if (!decoded) {
+      res.status(401);
+      throw new Error("Not an authorized token");
     }
 
-    // check if access token is valid
+    // check if refreshtoken exists
     const checkStoredToken = await RefreshToken.findOne({
-      refreshToken: refreshOldToken,
+      refreshToken: refreshToken,
     });
-
     if (!checkStoredToken) {
       res.status(400);
       throw new Error("Refresh token not found");
@@ -771,19 +779,19 @@ const regenerateAccessToken = asyncHandler(async (req, res) => {
     }
 
     // generate new access token save it
-    const access_token = accessToken(user);
+    const access_token = await accessToken(user);
 
-    // set new cookies
-    res.cookie("accessToken", access_token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "None",
-    });
-
-    res.status(201).json({
-      success: true,
-      message: "Access token generated successfully",
-    });
+    res
+      .status(200)
+      .cookie("accessToken", access_token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "None",
+      })
+      .json({
+        success: true,
+        message: "Access token generated successfully",
+      });
   } catch (error) {
     res.status(501);
     throw new Error(error);

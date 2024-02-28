@@ -28,22 +28,27 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
     // console.log(access_token, "==============================>");
     // console.log(refresh_token, "==============================>");
 
-    if (!refresh_token) {
+    if (!access_token) {
       res.status(401);
-      throw new Error("Not authorized users");
+      throw new Error("No token ");
     }
 
-    const decoded = jwt.verify(refresh_token, process.env.JWT_REFRESH_SECRET);
-    if (!decoded) {
-      res.status(403);
-      throw new Error("Not an authorized token");
+    if (!refresh_token) {
+      res.status(401);
+      throw new Error("No token ");
     }
 
     const decoded1 = jwt.verify(access_token, process.env.JWT_ACCESS_SECRET);
 
     if (!decoded1) {
-      res.status(403);
+      res.status(401);
       throw new Error("Not an authorized token.");
+    }
+
+    const decoded = jwt.verify(refresh_token, process.env.JWT_REFRESH_SECRET);
+    if (!decoded) {
+      res.status(401);
+      throw new Error("Not an authorized token");
     }
 
     // if (decoded1.exp > date) {
@@ -57,11 +62,6 @@ const authMiddleware = asyncHandler(async (req, res, next) => {
 
     req.user = decoded;
     next();
-
-    // } else {
-    //   res.status(402);
-    //   throw new Error("Access token is expired.");
-    // }
   } catch (error) {
     res.status(401);
     throw new Error("Not authorized, no token. " + error);
