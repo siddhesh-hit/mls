@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 
 const ResetHead = require("../../models/reports/ResetHead");
+const { default: mongoose } = require("mongoose");
 
 // @desc    Create a ResetHead
 // @route   POST /api/v1/reset/
@@ -141,10 +142,77 @@ const deleteResetHead = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Retrieve the ResetHead
+// @route   POST  /api/v1/reset/retrieve
+// @access  SuperAdmin
+const retrieveResetHead = asyncHandler(async (req, res) => {
+  try {
+    let id = req.body.id;
+    if (!id) {
+      res.status(400);
+      throw new Error("Id not provided");
+    }
+
+    // check if resetHead exists or not
+    let resetHead = await ResetHead.findById(id);
+    if (!resetHead) {
+      res.status(400);
+      throw new Error("No entries for provided entry found");
+    }
+
+    let modelName = resetHead.modelName,
+      modelId = resetHead.modelId;
+
+    // retrieve the mongoose model dynamically
+    let Model = mongoose.model(modelName);
+
+    // check if model with model id exists
+    let checkModelExists = await Model.findById(modelId);
+
+    // if exists then update it
+    if (checkModelExists) {
+      let updatedModelData = await Model.findByIdAndUpdate(
+        modelId,
+        resetHead.data_object,
+        { runValidators: true, new: true }
+      );
+
+      if (!updatedModelData) {
+        res.status(400);
+        throw new Error("Failed to update the model");
+      }
+
+      res.status(200).json({
+        message: `${modelName} update reverted!`,
+        data: updatedModelData,
+        success: true,
+      });
+    } else {
+      // else create it
+      let createModelData = await Model.create(resetHead.data_object);
+
+      if (!createModelData) {
+        res.status(400);
+        throw new Error("Failed to update the model");
+      }
+
+      res.status(200).json({
+        message: `${modelName} create reverted!`,
+        data: createModelData,
+        success: true,
+      });
+    }
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error: " + error);
+  }
+});
+
 module.exports = {
   createResetHead,
   getAllResetHead,
   getSingleResetHead,
   updateResetHead,
   deleteResetHead,
+  retrieveResetHead,
 };

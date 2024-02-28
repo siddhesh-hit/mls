@@ -2,22 +2,43 @@ const mongoose = require("mongoose");
 
 const contactSchema = new mongoose.Schema(
   {
-    address: { type: String, required: true },
-    telephone: {
-      type: Array,
-      required: true,
+    marathi: {
+      address: { type: String, required: true },
+      telephone: {
+        type: String,
+        required: true,
+      },
+      fax: {
+        type: String,
+        required: true,
+      },
+      email: {
+        type: String,
+        contactrequired: true,
+      },
+      map_url: {
+        type: String,
+        required: true,
+      },
     },
-    fax: {
-      type: Array,
-      required: true,
-    },
-    email: {
-      type: String,
-      contactrequired: true,
-    },
-    map_url: {
-      type: String,
-      required: true,
+    english: {
+      address: { type: String, required: true },
+      telephone: {
+        type: String,
+        required: true,
+      },
+      fax: {
+        type: String,
+        required: true,
+      },
+      email: {
+        type: String,
+        contactrequired: true,
+      },
+      map_url: {
+        type: String,
+        required: true,
+      },
     },
     isActive: {
       type: Boolean,

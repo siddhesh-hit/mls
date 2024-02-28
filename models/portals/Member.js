@@ -121,8 +121,8 @@ const memberSchema = new mongoose.Schema(
   }
 );
 
-delete mongoose.models.LegislativeMember;
-delete mongoose.modelNames.LegislativeMember;
+// delete mongoose.models.LegislativeMember;
+// delete mongoose.modelNames.LegislativeMember;
 
 const Member = mongoose.model("Member", memberSchema);
 
