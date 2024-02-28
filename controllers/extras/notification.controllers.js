@@ -144,7 +144,7 @@ const getAllNotification = asyncHandler(async (req, res) => {
 // @access  Public
 const getNotification = asyncHandler(async (req, res) => {
   try {
-    const notifications = await Notification.findById(req.params.id);
+    const notifications = await Notification.findById(req.params.id).populate("global");
 
     if (!notifications) {
       res.status(400);

@@ -236,7 +236,7 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
 // @desc    Login user using phone
 // @route   POST /api/user/loginPhone
 // @access  Public
-const loginUserPhone = asyncHandler(async (req, res) => {});
+const loginUserPhone = asyncHandler(async (req, res) => { });
 
 // @desc    Login user using email
 // @route   POST /api/user/loginEmail
@@ -255,7 +255,8 @@ const loginUserEmail = asyncHandler(async (req, res) => {
     // check if user exists
     const user = await User.findOne({ email }).populate(
       "role_taskId",
-      "role permission taskName"
+      "role permission taskName",
+
     );
     // .select(
     //   "_id full_name user_verified email phone_number gender date_of_birth user_image"
@@ -305,6 +306,7 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       notificationId: user.notificationId,
       role_taskId: user.role_taskId,
       user_verified: user.user_verified,
+      _id: user._id,
     };
 
     // set cookies & send res
@@ -337,7 +339,7 @@ const loginUserEmail = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
   try {
     // Parse cookies using cookie-parser
-    cookieParserMiddleware(req, res, () => {});
+    cookieParserMiddleware(req, res, () => { });
 
     const refresh_token = req.cookies.refreshToken;
     const access_token = req.cookies.accessToken;
@@ -748,7 +750,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 // @access  Public
 const regenerateAccessToken = asyncHandler(async (req, res) => {
   try {
-    cookieParserMiddleware(req, res, () => {});
+    cookieParserMiddleware(req, res, () => { });
     console.log(req.cookies);
     // check if Refresh token is valid
     const refreshToken = req.cookies.refreshToken;
