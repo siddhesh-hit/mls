@@ -9,6 +9,7 @@ const {
   getMember,
   updateMember,
   deleteMember,
+  getAllMemberDetails, getDebateFilterOption
 } = require("../../controllers/portals/member.controllers");
 const {
   authMiddleware,
@@ -36,10 +37,21 @@ const upload = multer({
 // routes
 router.get("/house", getMemberHouse);
 router.get("/search", getMemberSearch);
+router.get("/option", getDebateFilterOption);
 
 router
   .route("/")
   .get(getAllMember)
+  .post(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("create"),
+    upload.single("profile"),
+    createMember
+  );
+router
+  .route("/memberdetails")
+  .get(getAllMemberDetails)
   .post(
     authMiddleware,
     checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),

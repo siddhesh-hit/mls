@@ -2,7 +2,8 @@ const asyncHandler = require("express-async-handler");
 
 const Member = require("../../models/portals/Member");
 const User = require("../../models/portals/userModel");
-
+const propertyNames = Object.keys(User.schema.obj);
+console.log(propertyNames);
 const {
   createMemberValidation,
   updateMemberValidation,
@@ -127,6 +128,112 @@ const getAllMember = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+// @debsc get all members details According to Options With search And Advaned filter
+// @route GET /api/member/memberdetails
+// @access Public
+const getAllMemberDetails = asyncHandler(async (req, res) => {
+  try {
+    let { perPage, perLimit } = req.query;
+    let obj = {}
+
+    if (req.query.name) {
+      obj["basic_info.name"] = req.query.name
+    }
+    if (req.query.party) {
+      obj["basic_info.party"] = req.query.party;
+    }
+
+    if (req.query.constituency) {
+      obj["basic_info.constituency"] = req.query.constituency;
+    }
+    if (req.query.surname) {
+      obj["basic_info.surname"] = req.query.surname;
+    }
+    if (req.query.district) {
+      obj["basic_info.district"] = req.query.district;
+    }
+    if (req.query.gender) {
+      obj["basic_info.gender"] = req.query.gender;
+    }
+
+    if (req.query.house) {
+      obj["basic_info.house"] = req.query.house;
+    }
+    console.log("query", obj)
+
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    const members = await Member.find(obj)
+      .limit(pageOptions.limit)
+      .skip(pageOptions.page * pageOptions.limit)
+      .exec();
+
+    // check if members exists
+    if (!members) {
+      res.status(400);
+      throw new Error("No members found");
+    }
+
+    // send response
+    res.status(200).json({
+      success: true,
+      message: "All the members fetched successfully",
+      data: members,
+    });
+  } catch (error) {
+    console.log("error", error)
+    res.status(500);
+    throw new Error(error);
+  }
+});
+// @desc    Get all Member Options
+// @route   GET /api/member/option
+// @access  Public
+
+const getDebateFilterOption = asyncHandler(async (req, res) => {
+  try {
+    let query = req.query.id;
+
+    const debates = await Member.find().distinct(query);
+    if (!debates) {
+      res.status(400);
+      throw new Error("No fields for query: " + query);
+    }
+    // let debateSet = new Set();
+
+    let newDebates = [];
+    debates.map((item) => {
+      // item = item.replace(/\s/g, "");
+      // debateSet.add(item);
+      // if (item && item !== null && item !== undefined) {
+      //   return item;
+      // }
+
+      if (item) {
+        newDebates.push(item);
+      }
+    });
+
+    // console.log(newDebates);
+    newDebates.sort();
+
+    // console.log(newDebates);
+
+    res.status(200).json({
+      success: true,
+      message: "Debates fetched successfully",
+      // data: Array.from(debateSet).sort(),
+      data: newDebates,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error: " + error);
+  }
+});
+
 
 // @desc    Get Member based on house
 // @route   GET /api/member/house?id=""
@@ -350,7 +457,7 @@ const deleteMember = asyncHandler(async (req, res) => {
 
 module.exports = {
   createMember,
-  getAllMember,
+  getAllMember, getAllMemberDetails, getDebateFilterOption,
   getMemberHouse,
   getMemberSearch,
   getMember,
