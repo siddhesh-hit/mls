@@ -75,6 +75,7 @@ const createMandalGallery = asyncHandler(async (req, res) => {
       modelId: gallery._id,
       modelName: "MandalGallery",
       action: "Create",
+      data_object: gallery,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to create MandalGallery`,
@@ -244,6 +245,7 @@ const deleteMandalGallery = asyncHandler(async (req, res) => {
       modelId: galleryExists._id,
       modelName: "MandalGallery",
       action: "Delete",
+      data_object: galleryExists,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to delete MandalGallery`,

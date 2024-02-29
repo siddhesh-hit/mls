@@ -15,8 +15,10 @@ const ministerSchema = new mongoose.Schema(
       required: true,
     },
     designation: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Designation",
+      // type: mongoose.Schema.Types.ObjectId,
+      // ref: "Designation",
+      type: String,
+      required: true,
     },
     ministry: {
       type: String,
