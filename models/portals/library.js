@@ -23,7 +23,7 @@ const librarySchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["Pending", "Approved", "Rejected"],
+    enum: ["Pending", "Approved", "Rejected", "Archived"],
     default: "Pending",
   },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

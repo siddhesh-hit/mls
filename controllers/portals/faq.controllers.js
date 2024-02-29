@@ -66,6 +66,7 @@ const createFAQ = asyncHandler(async (req, res) => {
       modelId: faq._id,
       modelName: "Faq",
       action: "Create",
+      data_object: faq,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to create FAQ`,
@@ -267,6 +268,7 @@ const deleteFAQById = asyncHandler(async (req, res) => {
       modelId: faqExists._id,
       modelName: "Faq",
       action: "Delete",
+      data_object: faqExists,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to delete FAQ`,

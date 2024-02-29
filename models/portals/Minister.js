@@ -15,8 +15,10 @@ const ministerSchema = new mongoose.Schema(
       required: true,
     },
     designation: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Designation",
+      // type: mongoose.Schema.Types.ObjectId,
+      // ref: "Designation",
+      type: String,
+      required: true,
     },
     ministry: {
       type: String,
@@ -32,7 +34,7 @@ const ministerSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Pending", "Approved", "Rejected"],
+      enum: ["Pending", "Approved", "Rejected", "Archived"],
       default: "Pending",
     },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

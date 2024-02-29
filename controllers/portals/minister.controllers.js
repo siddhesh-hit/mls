@@ -80,6 +80,7 @@ const createMinister = asyncHandler(async (req, res) => {
       modelId: minister._id,
       modelName: "Minister",
       action: "Create",
+      data_object: minister,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to create Minister`,
@@ -272,6 +273,7 @@ const deleteMinister = asyncHandler(async (req, res) => {
       modelId: minister._id,
       modelName: "Minister",
       action: "Delete",
+      data_object: minister,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to delete Minister`,

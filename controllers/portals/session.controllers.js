@@ -74,6 +74,7 @@ const createSession = asyncHandler(async (req, res) => {
       modelId: sessionCalendar._id,
       modelName: "SessionCalendar",
       action: "Create",
+      data_object: sessionCalendar,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to create SessionCalendar`,
@@ -267,6 +268,7 @@ const deleteSession = asyncHandler(async (req, res) => {
       modelId: sessionCalendar._id,
       modelName: "SessionCalendar",
       action: "Delete",
+      data_object: sessionCalendar,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to delete SessionCalendar`,

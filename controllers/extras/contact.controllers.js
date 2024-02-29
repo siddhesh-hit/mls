@@ -52,6 +52,7 @@ const createContact = asyncHandler(async (req, res) => {
       modelId: contact._id,
       modelName: "ContactUs",
       action: "Create",
+      data_object: contact,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to create Contact`,
@@ -219,6 +220,7 @@ const deleteContact = asyncHandler(async (req, res) => {
       modelId: checkContact._id,
       modelName: "ContactUs",
       action: "Delete",
+      data_object: checkContact,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to delete contact`,
