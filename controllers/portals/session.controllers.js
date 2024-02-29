@@ -105,7 +105,17 @@ const getAllSession = asyncHandler(async (req, res) => {
       limit: parseInt(perLimit, 10) || 10,
     };
 
-    const sessionCalendar = await SessionCalendar.find(id)
+    const newCheck = {}
+    Object.keys(id).forEach((ele) => {
+      console.log(id[ele])
+      if (id[ele]) {
+        newCheck[ele] = id[ele]
+      }
+    })
+
+    console.log(newCheck, "newCheck")
+
+    const sessionCalendar = await SessionCalendar.find(newCheck)
       .limit(pageOptions.limit)
       .skip(pageOptions.page * pageOptions.limit)
       .exec();
@@ -275,11 +285,30 @@ const deleteSession = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+const getSessionFilterOptions = asyncHandler(async (req, res) => {
+  try {
+    const id = req.query.id;
+    let filterOptions = await SessionCalendar.find().distinct(id);
+    if (!filterOptions) {
+      res.status(400);
+      throw new Error("No filter options found.");
+    }
+    res.status(200).json({
+      message: "Filter options fetched successfully.",
+      data: filterOptions,
+      success: true,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error(error);
+  }
+}
+);
 
 module.exports = {
   createSession,
   getAllSession,
   getSession,
   updateSession,
-  deleteSession,
+  deleteSession, getSessionFilterOptions
 };

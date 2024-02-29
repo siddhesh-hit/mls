@@ -130,7 +130,9 @@ const updateSEO = async (req, res) => {
         throw new Error('Failed to update SEO entry');
     }
 }
-
+// @desc    Delete SEO entry by id
+// @route   DELETE /api/seo/:id
+// @access  Private
 
 const DeleteById = async (req, res) => {
     try {
