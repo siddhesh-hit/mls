@@ -11,7 +11,7 @@ const cluster = require("cluster");
 
 // internal modules
 const connectDB = require("./config/db.config");
-const { notFound, errorHandler } = require("./middlewares/errorMiddleware");
+const { notFound, errorHandler, DuplicateError } = require("./middlewares/errorMiddleware");
 const { logging } = require("./middlewares/logMiddleware");
 const routes = require("./routes");
 // const main = require("./services/dumpDatabase");
@@ -94,6 +94,7 @@ app.use("/exports", express.static("./exports"));
 // error handler
 app.use(notFound);
 app.use(errorHandler);
+app.use(DuplicateError);
 
 // server configuration
 const PORT = process.env.PORT || 8484;
