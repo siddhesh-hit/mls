@@ -1,11 +1,46 @@
-const SeoController = require('../../controllers/extras/seo.controllers');
-const router = require('express').Router();
-const { authMiddleware, checkRoleMiddleware, hasPermission } = require('../../middlewares/authMiddleware');
+const router = require("express").Router();
 
-router.get('/page', SeoController.getSEOByPage)
-router.route('/').post(authMiddleware, checkRoleMiddleware(['SuperAdmin', 'Admin', 'ContentCreator']), hasPermission('create'), SeoController.createSEO).get(SeoController.getAllSEO);
+const {
+  createSEO,
+  getAllSEO,
+  getSEOById,
+  getSEOByPage,
+  updateSEO,
+  DeleteById,
+} = require("../../controllers/extras/seo.controllers");
 
-router.route("/:id").get(SeoController.getSEOById).put(authMiddleware, checkRoleMiddleware(['SuperAdmin', 'Admin', 'ContentCreator']), hasPermission('update'), SeoController.updateSEO).delete(authMiddleware, checkRoleMiddleware(['SuperAdmin', 'Admin']), hasPermission('delete'), SeoController.DeleteById);
+const {
+  authMiddleware,
+  checkRoleMiddleware,
+  hasPermission,
+} = require("../../middlewares/authMiddleware");
 
+// routes
+router.get("/page", getSEOByPage);
+router
+  .route("/")
+  .post(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("create"),
+    createSEO
+  )
+  .get(getAllSEO);
+
+router
+  .route("/:id")
+  .get(getSEOById)
+  .put(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
+    hasPermission("update"),
+    updateSEO
+  )
+  .delete(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),
+    hasPermission("delete"),
+    DeleteById
+  );
 
 module.exports = router;
