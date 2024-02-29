@@ -6,7 +6,7 @@ const {
   getAllSession,
   getSession,
   updateSession,
-  deleteSession,
+  deleteSession, getSessionFilterOptions
 } = require("../../controllers/portals/session.controllers");
 
 const {
@@ -33,6 +33,7 @@ const upload = multer({
 });
 
 // routes
+router.get("/option", getSessionFilterOptions);
 router
   .route("/")
   .get(getAllSession)
