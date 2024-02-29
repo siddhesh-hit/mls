@@ -39,7 +39,7 @@ const pendingRoutes = require("./routes/reports/pending.routes");
 const auditRoutes = require("./routes/reports/audit.routes");
 const archiveRoutes = require("./routes/reports/archive.routes");
 const resetRoutes = require("./routes/reports/resethead.routes");
-const SeoRoutes = require("./routes/extras/seo.routes");
+const seoRoutes = require("./routes/extras/seo.routes");
 
 // defining the routes
 router.use("/user", userRoutes);
@@ -79,6 +79,6 @@ router.use("/pending", pendingRoutes);
 router.use("/audit", auditRoutes);
 router.use("/archive", archiveRoutes);
 router.use("/reset", resetRoutes);
-router.use("/seo", SeoRoutes);
+router.use("/seo", seoRoutes);
 
 module.exports = router;
