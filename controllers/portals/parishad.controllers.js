@@ -84,6 +84,7 @@ const createVidhanParishad = asyncHandler(async (req, res) => {
       modelId: vidhanParishad._id,
       modelName: "VidhanParishad",
       action: "Create",
+      data_object: vidhanParishad,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to create VidhanParishad`,
@@ -323,6 +324,7 @@ const deleteVidhanParishad = asyncHandler(async (req, res) => {
       modelId: vidhanParishad._id,
       modelName: "VidhanParishad",
       action: "Delete",
+      data_object: vidhanParishad,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to delete VidhanParishad`,

@@ -54,6 +54,7 @@ const createDebate = asyncHandler(async (req, res) => {
       modelId: debate._id,
       modelName: "Debate",
       action: "Create",
+      data_object: debate,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to create Debate`,
@@ -534,6 +535,7 @@ const deleteDebateById = asyncHandler(async (req, res) => {
       modelId: req.params.id,
       modelName: "Debate",
       action: "Delete",
+      data_object: debateExists,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to delete debate.`,

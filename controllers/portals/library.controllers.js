@@ -73,6 +73,7 @@ const createLibrary = asyncHandler(async (req, res) => {
       modelId: library._id,
       modelName: "Library",
       action: "Create",
+      data_object: library,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to create Library`,
@@ -278,6 +279,7 @@ const deleteLibrary = asyncHandler(async (req, res) => {
       modelId: libraryExists._id,
       modelName: "Library",
       action: "Delete",
+      data_object: libraryExists,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to delete Library`,

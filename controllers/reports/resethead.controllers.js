@@ -182,6 +182,9 @@ const retrieveResetHead = asyncHandler(async (req, res) => {
         throw new Error("Failed to update the model");
       }
 
+      resetHead.isReverted++;
+      await resetHead.save();
+
       res.status(200).json({
         message: `${modelName} update reverted!`,
         data: updatedModelData,

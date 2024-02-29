@@ -73,6 +73,7 @@ const createMember = asyncHandler(async (req, res) => {
       modelId: member._id,
       modelName: "Member",
       action: "Create",
+      data_object: member,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to create Member`,
@@ -435,6 +436,7 @@ const deleteMember = asyncHandler(async (req, res) => {
       modelId: memberExists._id,
       modelName: "Member",
       action: "Delete",
+      data_object: memberExists,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to delete Member`,

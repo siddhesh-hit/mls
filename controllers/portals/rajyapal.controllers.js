@@ -92,6 +92,7 @@ const createLegislativeMember = asyncHandler(async (req, res) => {
       modelId: newLegislativeMember._id,
       modelName: "RajyapalMember",
       action: "Create",
+      data_object: newLegislativeMember,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to create RajyapalMember`,
@@ -356,6 +357,7 @@ const deleteLegislativeMember = asyncHandler(async (req, res) => {
       modelId: legislativeMember._id,
       modelName: "RajyapalMember",
       action: "Delete",
+      data_object: legislativeMember,
     };
     let notificationMsg = {
       name: `${checkUser.full_name} wants to delete RajyapalMember`,

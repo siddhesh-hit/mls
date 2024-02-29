@@ -1,9 +1,10 @@
 const asyncHandler = require("express-async-handler");
 
 const Archive = require("../../models/reports/Archive");
+const User = require("../../models/portals/userModel");
+const { default: mongoose } = require("mongoose");
 
-// @desc    Create a Archive
-// @route   POST /api/v1/archive/
+// @desc    Custom Create a Archive
 // @access  SuperAdmin
 const createArchive = asyncHandler(async (data, res) => {
   try {
@@ -25,6 +26,60 @@ const createArchive = asyncHandler(async (data, res) => {
       data: archive,
       message: "Archieve created successfully.",
     };
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error: " + error);
+  }
+});
+
+// @desc    Create a Archive
+// @route   POST /api/v1/archive/
+// @access  SuperAdmin
+const createArchiveApi = asyncHandler(async (req, res) => {
+  try {
+    let data = req.body;
+    let userId = res.locals.userInfo;
+
+    if (!data) {
+      res.status(400);
+      throw new Error("Fill each data properly");
+    }
+
+    // check if user exists and then add it
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.operation_by = userId.id;
+
+    // get the model
+    const Model = mongoose.model(data.modelName);
+
+    // check if model data exists
+    const checkModel = await Model.findById(data.modelId);
+    if (!checkModel) {
+      res.status(400);
+      throw new Error(
+        "Failed to find the data for provided id in the provided model"
+      );
+    }
+
+    checkModel.status = "Archived";
+    await checkModel.save();
+
+    // create an entry in archive
+    const archive = await Archive.create(data);
+    if (!archive) {
+      res.status(400);
+      throw new Error("Failed to create an entry in archive");
+    }
+
+    res.status(200).json({
+      success: true,
+      data: archive,
+      message: "Archieve created successfully.",
+    });
   } catch (error) {
     res.status(500);
     throw new Error("Server error: " + error);
@@ -93,6 +148,9 @@ const getSingleArchive = asyncHandler(async (req, res) => {
 const updateArchive = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
+    console.log(req.params.id);
+
+    // console.log(data, "here");
 
     if (!data) {
       res.status(400);
@@ -100,10 +158,29 @@ const updateArchive = asyncHandler(async (req, res) => {
     }
 
     let checkArchive = await Archive.findById(req.params.id);
-    if (checkArchive) {
+    if (!checkArchive) {
       res.status(400);
       throw new Error("No archive found for provided id.");
     }
+
+    // get the model
+    const Model = mongoose.model(data.modelName);
+
+    console.log(data.modelName, data.modelId);
+    // check if model data exists
+    const checkModel = await Model.findById(data.modelId);
+    if (!checkModel) {
+      res.status(400);
+      throw new Error(
+        "Failed to find the data for provided id in the provided model"
+      );
+    }
+
+    checkModel.status = data?.data_object?.status;
+    await checkModel.save();
+
+    data.isReverted = true;
+    data.revertedCount = data.revertedCount++;
 
     const archive = await Archive.findByIdAndUpdate(req.params.id, data, {
       runValidators: true,
@@ -150,6 +227,7 @@ const deleteArchive = asyncHandler(async (req, res) => {
 
 module.exports = {
   createArchive,
+  createArchiveApi,
   getAllArchive,
   getSingleArchive,
   updateArchive,

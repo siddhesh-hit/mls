@@ -2,6 +2,7 @@ const router = require("express").Router();
 
 const {
   createArchive,
+  createArchiveApi,
   getAllArchive,
   getSingleArchive,
   updateArchive,
@@ -27,7 +28,7 @@ router
     authMiddleware,
     checkRoleMiddleware(["SuperAdmin"]),
     hasPermission("create"),
-    createArchive
+    createArchiveApi
   );
 
 router
