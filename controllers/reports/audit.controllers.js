@@ -40,6 +40,9 @@ const getAllAudit = asyncHandler(async (req, res) => {
       skip: parseInt(perPage, 10) || 0,
       limit: parseInt(perLimit, 10) || 10,
     };
+    // console.time("mongooseOperation");
+
+    let count = await AuditTrail.countDocuments({});
 
     let audits = await AuditTrail.find(id)
       .populate("userId", "full_name")
@@ -47,6 +50,13 @@ const getAllAudit = asyncHandler(async (req, res) => {
       .skip(pageOptions.limit * pageOptions.skip)
       .limit(pageOptions.limit)
       .exec();
+
+    // if (id.userId === "true") {
+    //   id.userId = { $ne: null };
+    // }
+    // if (id.userId === "false") {
+    //   id.userId = { $eq: null };
+    // }
 
     if (!audits) {
       res.status(400);
@@ -56,6 +66,7 @@ const getAllAudit = asyncHandler(async (req, res) => {
     res.status(200).json({
       data: audits,
       success: true,
+      count,
       message: "Audit trail fetched successfully!",
     });
   } catch (error) {

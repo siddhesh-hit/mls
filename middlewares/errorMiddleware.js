@@ -21,15 +21,17 @@ const errorHandler = (err, req, res, next) => {
   });
 };
 const DuplicateError = (error) => {
-  if (error.name === 'ValidationError') {
+  if (error.name === "ValidationError") {
     const validationErrors = {};
 
     // Extract and format Mongoose validation errors
     for (const field in error.errors) {
       validationErrors[field] = error.errors[field].message;
     }
-    return Object.keys(validationErrors).length > 0 ? Object.values(validationErrors) : {};
+    return Object.keys(validationErrors).length > 0
+      ? Object.values(validationErrors)
+      : {};
   }
-}
+};
 
 module.exports = { notFound, errorHandler, DuplicateError };
