@@ -1,17 +1,31 @@
 const asyncHandler = require("express-async-handler");
 const { DuplicateError } = require("../../middlewares/errorMiddleware");
 const SEO = require("../../models/extras/Seo");
+const User = require("../../models/portals/userModel");
 
 // @desc    Create SEO entry
 // @route   Get /api/v1/seo/
 // @access  Admin
 const createSEO = asyncHandler(async (req, res) => {
   try {
-    if (req.body.keywords) {
-      req.body.keywords = req.body.keywords.split(",");
+    let data = req.body;
+    let userId = res.locals.userInfo;
+
+    // check if data is present
+    if (!data) {
+      res.status(400);
+      throw new Error("Please provide data");
     }
 
-    const seo = await SEO.create(req.body);
+    // check if user exists and then add it
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.createdBy = userId.id;
+
+    const seo = await SEO.create(data);
     if (!seo) {
       res.status(400);
       throw new Error("Failed to create SEO entry");
@@ -34,7 +48,18 @@ const createSEO = asyncHandler(async (req, res) => {
 // @access  Admin
 const getAllSEO = asyncHandler(async (req, res) => {
   try {
-    const seoEntries = await SEO.find();
+    let { perPage, perLimit, ...id } = req.query;
+
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    const seoEntries = await SEO.find(id)
+      .limit(pageOptions.limit)
+      .skip(pageOptions.page * pageOptions.limit)
+      .exec();
+
     if (!seoEntries) {
       res.status(200).json({
         message: "SEO entry not found",
@@ -59,7 +84,6 @@ const getAllSEO = asyncHandler(async (req, res) => {
 // @access  Public
 const getSEOByPage = asyncHandler(async (req, res) => {
   try {
-    console.log("query>>>>>>", req.query);
     const page = req.query.page;
     const seoEntry = await SEO.aggregate([
       {
@@ -115,16 +139,33 @@ const getSEOById = asyncHandler(async (req, res) => {
 // @access  Admin
 const updateSEO = asyncHandler(async (req, res) => {
   try {
-    const id = req.params.id;
+    let data = req.body;
+    let id = req.params.id;
+    let userId = res.locals.userInfo;
 
-    if (req.body.keywords) {
-      req.body.keywords = req.body.keywords.split(",");
+    // check if data is present
+    if (!data) {
+      res.status(400);
+      throw new Error("Please provide data");
     }
-    const seoEntry = await SEO.findByIdAndUpdate(id, req.body, { new: true });
+
+    // check if user exists and add
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.updatedBy = userId.id;
+
+    const seoEntry = await SEO.findByIdAndUpdate(id, data, {
+      new: true,
+      runValidators: true,
+    });
     if (!seoEntry) {
       res.status(400);
       throw new Error("SEO entry not found");
     }
+
     res.status(200).json({
       message: "SEO entry updated successfully",
       data: seoEntry,
