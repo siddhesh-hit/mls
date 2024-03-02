@@ -45,6 +45,7 @@ const getAllResetHead = asyncHandler(async (req, res) => {
     let resetHead = await ResetHead.find(id)
       .limit(pageOptions.limit)
       .skip(pageOptions.page * pageOptions.limit)
+      .sort({ performed_on: -1 })
       .exec();
 
     if (!resetHead) {
