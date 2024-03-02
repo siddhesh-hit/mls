@@ -42,21 +42,20 @@ const getAllAudit = asyncHandler(async (req, res) => {
     };
     // console.time("mongooseOperation");
 
-    let count = await AuditTrail.countDocuments({});
+    if (id.userId === "true") {
+      id.userId = { $ne: null };
+    }
+    if (id.userId === "false") {
+      id.userId = { $eq: null };
+    }
 
+    let count = await AuditTrail.countDocuments(id);
     let audits = await AuditTrail.find(id)
       .populate("userId", "full_name")
       .sort({ createdAt: -1 })
       .skip(pageOptions.limit * pageOptions.skip)
       .limit(pageOptions.limit)
       .exec();
-
-    // if (id.userId === "true") {
-    //   id.userId = { $ne: null };
-    // }
-    // if (id.userId === "false") {
-    //   id.userId = { $eq: null };
-    // }
 
     if (!audits) {
       res.status(400);

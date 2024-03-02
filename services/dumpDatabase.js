@@ -82,3 +82,89 @@ async function main() {
 }
 
 module.exports = main;
+
+// const { MongoClient } = require("mongodb");
+// const { Client } = require("pg");
+
+// // mongodb connection
+// const mongoDb =
+//   "mongodb://sidd:siddhesh123@128.140.104.241:27017/postgresDump?authSource=admin";
+// const mongoDbName = "postgresDump";
+// const mongoClient = new MongoClient(mongoDb);
+
+// // postgres connection
+// const postgresClient = new Client({
+//   user: "hit",
+//   host: "103.112.121.125",
+//   database: "sdms",
+//   password: "Hit@#$2024",
+//   port: 5432,
+// });
+
+// async function getTableName(table) {
+//   try {
+//     const res = await postgresClient.query(
+//       `SELECT * FROM ${table} WHERE schemaname = \'public\' ORDER BY tablename ASC`
+//     );
+//     return res.rows.map((item) => item.tablename);
+//   } catch (error) {
+//     return error;
+//   }
+// }
+
+// // store in mongodb with conditions
+// async function importToMongoDb(item, data) {
+//   const db = mongoClient.db(mongoDbName);
+//   const collection = db.collection(item);
+
+//   // if (collection) {
+//   //   data.filter(async (entry) => {
+//   //     let yesterday = new Date(
+//   //       new Date().setDate(new Date().getDate() - 1)
+//   //     ).getTime();
+//   //     let itemCreate = new Date(entry.created_at).getTime();
+
+//   //   });
+//   // }
+//   await collection.insertMany(data);
+// }
+
+// // fetch data from pg n send to mongo
+// async function exportPgImportToMongo() {
+//   console.time("dbsave"); // Start the timer here
+//   let tables = await getTableName(`pg_catalog.pg_tables`);
+
+//   await Promise.all(
+//     tables?.map(async (item) => {
+//       if (item === "document_dataexcels") {
+//         return;
+//       }
+//       const res = await postgresClient.query(`SELECT * FROM ${item}`);
+//       const data = res?.rows;
+
+//       console.log(`Exporting table: ${item}`);
+
+//       if (data && data.length > 0) {
+//         await importToMongoDb(item, data);
+//       } else {
+//         console.log(`No data in table - ${item}`);
+//       }
+//     })
+//   );
+
+//   console.log("Done exporting the database");
+//   console.timeEnd("dbsave"); // Stop the timer here
+// }
+
+// // running both
+// async function main() {
+//   await postgresClient.connect();
+//   await mongoClient.connect();
+//   console.log("Connected to pg & mongo");
+// }
+
+// main()
+//   .then(async () => {
+//     exportPgImportToMongo();
+//   })
+//   .catch((err) => console.log(err));
