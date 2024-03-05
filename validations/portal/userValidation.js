@@ -34,6 +34,7 @@ const registerEmailValidate = (data) => {
     date_of_birth: joi.date().required(),
     designation: joi.string(),
     user_image: imageValidation.optional(),
+    interest_area: joi.string().optional(),
   });
   return schema.validate(data);
 };
@@ -69,6 +70,7 @@ const updateUserValidate = (data) => {
       date_of_birth: joi.date().required(),
       designation: joi.string(),
       user_image: imageValidation.required(),
+      interest_area: joi.string().optional(),
     })
     .unknown(true);
 
