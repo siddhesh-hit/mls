@@ -29,7 +29,13 @@ const logging = asyncHandler(async (req, res, next) => {
   // to capture the res message
   res.on("finish", async () => {
     try {
-      const refresh_token = req?.cookies?.refreshToken;
+      const nonSecurePaths = ["/loginEmail"];
+      if (nonSecurePaths.includes(req.path)) return next();
+
+      // console.log(res);
+
+      const refresh_token =
+        req?.cookies?.refreshToken || res.req.cookies.refreshToken;
       let decoded, user;
 
       // Handle token verification
@@ -50,7 +56,7 @@ const logging = asyncHandler(async (req, res, next) => {
 
       if (responseMes) {
         await AuditTrail.create({
-          userIp: res.ip,
+          userIp: req.ip,
           userId: user ? user._id : null,
           endPoints: req.originalUrl,
           method: req.method,

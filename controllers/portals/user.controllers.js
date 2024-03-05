@@ -9,6 +9,7 @@ const User = require("../../models/portals/userModel");
 const RefreshToken = require("../../models/portals/refreshToken");
 const Notification = require("../../models/extras/Notification");
 const Role_Task = require("../../models/portals/Role_Task");
+const AuditTrail = require("../../models/reports/AuditTrail");
 
 const {
   loginEmailValidate,
@@ -302,6 +303,18 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       user_verified: user.user_verified,
       _id: user._id,
     };
+
+    await AuditTrail.create({
+      userIp: req.ip,
+      userId: user._id,
+      endPoints: req.originalUrl,
+      method: req.method,
+      query: req.query,
+      message: "User logged in successfully",
+      userAgent: req.get("User-Agent"),
+      clientSide: req.get("origin"),
+      statusCode: res.statusCode,
+    });
 
     // set cookies & send res
     res
