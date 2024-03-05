@@ -35,27 +35,39 @@ const createAudit = asyncHandler(async (req, res) => {
 const getAllAudit = asyncHandler(async (req, res) => {
   try {
     let { perPage, perLimit, ...id } = req.query;
-
+    console.log(id);
     const pageOptions = {
-      skip: parseInt(perPage, 10) || 0,
+      page: parseInt(perPage, 10) || 0,
       limit: parseInt(perLimit, 10) || 10,
     };
-    // console.time("mongooseOperation");
+    let matchedQuery = {};
 
-    if (id.userId === "true") {
-      id.userId = { $ne: null };
-    }
-    if (id.userId === "false") {
-      id.userId = { $eq: null };
+    if (id.message) {
+      matchedQuery["message"] = new RegExp(`.*${id.message}.*`, "i");
     }
 
-    let count = await AuditTrail.countDocuments(id);
-    let audits = await AuditTrail.find(id)
-      .populate("userId", "full_name")
-      .sort({ createdAt: -1 })
-      .skip(pageOptions.limit * pageOptions.skip)
-      .limit(pageOptions.limit)
-      .exec();
+    if (id.userId === "user") {
+      matchedQuery["userId"] = { $ne: null };
+    }
+
+    if (id.userId === "guest") {
+      matchedQuery["userId"] = { $eq: null };
+    }
+
+    let audits = await AuditTrail.aggregate([
+      {
+        $match: matchedQuery,
+      },
+      {
+        $facet: {
+          audit: [
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [{ $count: "count" }],
+        },
+      },
+    ]);
 
     if (!audits) {
       res.status(400);
@@ -63,9 +75,9 @@ const getAllAudit = asyncHandler(async (req, res) => {
     }
 
     res.status(200).json({
-      data: audits,
+      data: audits[0].audit || [],
       success: true,
-      count,
+      count: audits[0].totalCount[0]?.count || 0,
       message: "Audit trail fetched successfully!",
     });
   } catch (error) {

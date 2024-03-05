@@ -34,12 +34,13 @@ const positionRoutes = require("./routes/masters/position.routes");
 const visitRoute = require("./routes/extras/visit.routes");
 const notificationRoute = require("./routes/extras/notification.routes");
 const contactRoute = require("./routes/extras/contact.routes");
+const seoRoutes = require("./routes/extras/seo.routes");
 
 const pendingRoutes = require("./routes/reports/pending.routes");
 const auditRoutes = require("./routes/reports/audit.routes");
 const archiveRoutes = require("./routes/reports/archive.routes");
 const resetRoutes = require("./routes/reports/resethead.routes");
-const seoRoutes = require("./routes/extras/seo.routes");
+const exportRoutes = require("./routes/reports/export.routes");
 
 // defining the routes
 router.use("/user", userRoutes);
@@ -74,11 +75,12 @@ router.use("/position", positionRoutes);
 router.use("/visit", visitRoute);
 router.use("/notification", notificationRoute);
 router.use("/contact", contactRoute);
+router.use("/seo", seoRoutes);
 
 router.use("/pending", pendingRoutes);
 router.use("/audit", auditRoutes);
 router.use("/archive", archiveRoutes);
 router.use("/reset", resetRoutes);
-router.use("/seo", seoRoutes);
+router.use("/export", exportRoutes);
 
 module.exports = router;

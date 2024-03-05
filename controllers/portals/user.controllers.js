@@ -9,6 +9,7 @@ const User = require("../../models/portals/userModel");
 const RefreshToken = require("../../models/portals/refreshToken");
 const Notification = require("../../models/extras/Notification");
 const Role_Task = require("../../models/portals/Role_Task");
+const AuditTrail = require("../../models/reports/AuditTrail");
 
 const {
   loginEmailValidate,
@@ -236,7 +237,7 @@ const verifyUserEmail = asyncHandler(async (req, res) => {
 // @desc    Login user using phone
 // @route   POST /api/user/loginPhone
 // @access  Public
-const loginUserPhone = asyncHandler(async (req, res) => { });
+const loginUserPhone = asyncHandler(async (req, res) => {});
 
 // @desc    Login user using email
 // @route   POST /api/user/loginEmail
@@ -255,19 +256,13 @@ const loginUserEmail = asyncHandler(async (req, res) => {
     // check if user exists
     const user = await User.findOne({ email }).populate(
       "role_taskId",
-      "role permission taskName",
-
+      "role permission taskName"
     );
-    // .select(
-    //   "_id full_name user_verified email phone_number gender date_of_birth user_image"
-    // );
-    // houses department designation
 
     if (!user) {
       res.status(400);
       throw new Error("User does not exists");
     }
-    console.log(user);
     // check if user is verified
     if (!user.user_verified) {
       res.status(400);
@@ -309,6 +304,18 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       _id: user._id,
     };
 
+    await AuditTrail.create({
+      userIp: req.ip,
+      userId: user._id,
+      endPoints: req.originalUrl,
+      method: req.method,
+      query: req.query,
+      message: "User logged in successfully",
+      userAgent: req.get("User-Agent"),
+      clientSide: req.get("origin"),
+      statusCode: res.statusCode,
+    });
+
     // set cookies & send res
     res
       .status(200)
@@ -328,7 +335,7 @@ const loginUserEmail = asyncHandler(async (req, res) => {
         data: userData,
       });
   } catch (error) {
-    res.status(501);
+    res.status(500);
     throw new Error(error);
   }
 });
@@ -339,7 +346,7 @@ const loginUserEmail = asyncHandler(async (req, res) => {
 const logoutUser = asyncHandler(async (req, res) => {
   try {
     // Parse cookies using cookie-parser
-    cookieParserMiddleware(req, res, () => { });
+    cookieParserMiddleware(req, res, () => {});
 
     const refresh_token = req.cookies.refreshToken;
     const access_token = req.cookies.accessToken;
@@ -750,7 +757,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 // @access  Public
 const regenerateAccessToken = asyncHandler(async (req, res) => {
   try {
-    cookieParserMiddleware(req, res, () => { });
+    cookieParserMiddleware(req, res, () => {});
     console.log(req.cookies);
     // check if Refresh token is valid
     const refreshToken = req.cookies.refreshToken;

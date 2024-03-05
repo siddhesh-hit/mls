@@ -72,10 +72,34 @@ const getAllRequest = asyncHandler(async (req, res) => {
       limit: parseInt(perLimit, 10) || 10,
     };
 
-    let pending = await Pending.find(id)
-      .limit(pageOptions.limit)
-      .skip(pageOptions.page * pageOptions.limit)
-      .exec();
+    let matchedQuery = {};
+
+    if (id.isPending) {
+      matchedQuery["isPending"] = true;
+    }
+    if (id.action) {
+      matchedQuery["action"] = { $eq: id.action };
+    }
+    if (id.modelName) {
+      matchedQuery["modelName"] = new RegExp(`.*${id.modelName}.*`, "i");
+    }
+
+    console.log(matchedQuery);
+
+    let pending = await Pending.aggregate([
+      {
+        $match: matchedQuery,
+      },
+      {
+        $facet: {
+          pending: [
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [{ $count: "count" }],
+        },
+      },
+    ]);
 
     if (!pending) {
       res.status(400);
@@ -84,7 +108,8 @@ const getAllRequest = asyncHandler(async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: pending,
+      data: pending[0].pending || [],
+      count: pending[0].totalCount[0]?.count || 0,
       message: "Pending entries fetched successfully.",
     });
   } catch (error) {

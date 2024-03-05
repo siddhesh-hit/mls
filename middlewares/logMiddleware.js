@@ -18,7 +18,7 @@ const logging = asyncHandler(async (req, res, next) => {
 
   let responseMes;
 
-  // capture res n capture msg
+  // capture res and capture msg
   const originalJson = res.json;
   res.json = function (data) {
     responseMes = data.message;
@@ -29,19 +29,38 @@ const logging = asyncHandler(async (req, res, next) => {
   // to capture the res message
   res.on("finish", async () => {
     try {
-      const refresh_token = req?.cookies?.refreshToken;
+      const nonSecurePaths = ["/loginEmail"];
+      if (nonSecurePaths.includes(req.path)) return next();
+
+      // console.log(res);
+
+      const refresh_token =
+        req?.cookies?.refreshToken || res.req.cookies.refreshToken;
       let decoded, user;
+
+      // Handle token verification
       if (refresh_token) {
-        decoded = jwt.verify(refresh_token, process.env.JWT_REFRESH_SECRET);
-        user = await User.findById(decoded.id).select("-password");
+        try {
+          decoded = jwt.verify(refresh_token, process.env.JWT_REFRESH_SECRET);
+          user = await User.findById(decoded.id).select("-password");
+        } catch (err) {
+          if (err instanceof jwt.TokenExpiredError) {
+            // console.error("Token expired:", err);
+          } else if (err instanceof jwt.JsonWebTokenError) {
+            // console.error("Invalid token:", err);
+          } else {
+            // console.error("Error verifying token:", err);
+          }
+        }
       }
 
       if (responseMes) {
         await AuditTrail.create({
-          userIp: res.ip,
+          userIp: req.ip,
           userId: user ? user._id : null,
           endPoints: req.originalUrl,
           method: req.method,
+          query: req.query,
           message: responseMes,
           userAgent: req.get("User-Agent"),
           clientSide: req.get("origin"),

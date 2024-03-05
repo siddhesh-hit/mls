@@ -92,7 +92,7 @@ const getSEOByPage = asyncHandler(async (req, res) => {
         },
       },
     ]);
-    if (seoEntry.length === 0) {
+    if (!seoEntry) {
       res.status(200).json({
         message: "SEO entry not found",
         data: [],
@@ -106,7 +106,6 @@ const getSEOByPage = asyncHandler(async (req, res) => {
       success: true,
     });
   } catch (error) {
-    console.log(error);
     res.status(500);
     throw new Error("Failed to fetch SEO entry");
   }
