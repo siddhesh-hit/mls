@@ -931,31 +931,59 @@ const getUserRoleTasks = asyncHandler(async (req, res) => {
 // @access  Admin
 const getRoleTasks = asyncHandler(async (req, res) => {
   try {
-    const users = await Role_Task.find({})
-      .populate(
-        "userId",
-        "full_name email department designation houses phone_number gender date_of_birth user_image"
-      )
-      .select(
-        "_id role permission taskName activity isBlocked createdAt updatedAt full_name email department designation houses phone_number gender date_of_birth user_image"
-      );
-    if (!users || users.length === 0) {
-      // Check if users array is empty
-      res.status(400);
-      throw new Error("No users found");
+    let { perPage, perLimit, ...id } = req.query;
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    // define the query in a format
+    let matchedQuery = {};
+    if (id["userId.full_name"]) {
+      matchedQuery["userId.full_name"] = {
+        $regex: id["userId.full_name"],
+        $options: "i",
+      };
     }
+
+    // aggregate to user table to get user info
+    let users = await Role_Task.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userId",
+        },
+      },
+      {
+        $unwind: {
+          path: "$userId",
+        },
+      },
+      {
+        $match: matchedQuery,
+      },
+      {
+        $facet: {
+          roles: [
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [{ $count: "count" }],
+        },
+      },
+    ]);
 
     res.status(200).json({
       success: true,
       message: "Role & Task fetched successfully",
-      data: users,
+      data: users[0]?.roles || [],
+      count: users[0]?.totalCount[0].count || 0,
     });
   } catch (error) {
-    console.error("Error:", error);
-    res.status(501).json({
-      success: false,
-      message: "Internal server error",
-    });
+    res.status(500);
+    throw new Error("Internal server error " + error);
   }
 });
 

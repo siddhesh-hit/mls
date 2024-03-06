@@ -21,6 +21,14 @@ const createFAQ = asyncHandler(async (req, res) => {
     let data = req.body;
     let userId = res.locals.userInfo;
 
+    // check if user exists and then add it
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.createdBy = userId.id;
+
     // check if data is present
     if (!data) {
       res.status(400);
@@ -33,14 +41,6 @@ const createFAQ = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error(error.details[0].message);
     }
-
-    // check if user exists and then add it
-    const checkUser = await User.findById(userId.id);
-    if (!checkUser) {
-      res.status(400);
-      throw new Error("Failed to find a user.");
-    }
-    data.createdBy = userId.id;
 
     // create a new FAQ
     const faq = await Faq.create(data);

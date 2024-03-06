@@ -80,8 +80,8 @@ const getAllAudit = asyncHandler(async (req, res) => {
     }
 
     res.status(200).json({
-      data: auditPopulate || [],
       success: true,
+      data: auditPopulate || [],
       count: audits[0].totalCount[0]?.count || 0,
       message: "Audit trail fetched successfully!",
     });
