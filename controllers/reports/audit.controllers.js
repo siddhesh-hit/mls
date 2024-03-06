@@ -61,6 +61,7 @@ const getAllAudit = asyncHandler(async (req, res) => {
       {
         $facet: {
           audit: [
+            { $sort: { createdAt: -1 } },
             { $skip: pageOptions.page * pageOptions.limit },
             { $limit: pageOptions.limit },
           ],
@@ -69,14 +70,18 @@ const getAllAudit = asyncHandler(async (req, res) => {
       },
     ]);
 
+    let auditPopulate = await AuditTrail.populate(audits[0].audit, {
+      path: "userId",
+    });
+
     if (!audits) {
       res.status(400);
       throw new Error("No audit trails found.");
     }
 
     res.status(200).json({
-      data: audits[0].audit || [],
       success: true,
+      data: auditPopulate || [],
       count: audits[0].totalCount[0]?.count || 0,
       message: "Audit trail fetched successfully!",
     });

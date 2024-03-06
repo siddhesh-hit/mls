@@ -93,6 +93,7 @@ const getAllRequest = asyncHandler(async (req, res) => {
       {
         $facet: {
           pending: [
+            { $sort: { createdAt: -1 } },
             { $skip: pageOptions.page * pageOptions.limit },
             { $limit: pageOptions.limit },
           ],
