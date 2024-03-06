@@ -1,9 +1,10 @@
 const asyncHandler = require("express-async-handler");
 
 const Department = require("../../models/masters/Department");
+const User = require("../../models/portals/userModel");
 
 // @desc    Create a Department
-// @route   POST    /api/v1/department/
+// @route   POST   /api/v1/department/
 // @access  Admin
 const createDepartment = asyncHandler(async (req, res) => {
   try {
@@ -43,15 +44,15 @@ const createDepartment = asyncHandler(async (req, res) => {
 });
 
 // @desc    Create a Department
-// @route   GET     /api/v1/department/
+// @route   GET   /api/v1/department/
 // @access  Admin
 const getDepartments = asyncHandler(async (req, res) => {
   try {
     let { perPage, perLimit, ...id } = req.query;
 
     const pageOptions = {
-      page: parseInt(perPage) || 0,
-      limit: parseInt(perLimit) || 10,
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
     };
 
     // filter the query
@@ -65,19 +66,26 @@ const getDepartments = asyncHandler(async (req, res) => {
       {
         $facet: {
           dep: [
-            { $skip: pageOptions.limit * pageOptions.limit },
+            { $skip: pageOptions.page * pageOptions.limit },
             { $limit: pageOptions.limit },
           ],
           totalCount: [{ $count: "count" }],
         },
       },
+      {
+        $unwind: {
+          path: "$totalCount",
+        },
+      },
     ]);
+
+    console.log(departments);
 
     res.status(200).json({
       success: true,
       message: "Fetched all department!",
-      data: departments[0].dep || [],
-      count: dep[0].totalCount[0].count || 0,
+      data: departments[0]?.dep || [],
+      count: departments[0].totalCount?.count || 0,
     });
   } catch (error) {
     res.status(500);
@@ -86,7 +94,7 @@ const getDepartments = asyncHandler(async (req, res) => {
 });
 
 // @desc    Create a Department
-// @route   GET     /api/v1/department/
+// @route   GET   /api/v1/department/:id
 // @access  Admin
 const getDepartment = asyncHandler(async (req, res) => {
   try {
@@ -109,7 +117,7 @@ const getDepartment = asyncHandler(async (req, res) => {
 });
 
 // @desc    Create a Department
-// @route   PUT     /api/v1/department/
+// @route   PUT   /api/v1/department/:id
 // @access  Admin
 const updateDepartment = asyncHandler(async (req, res) => {
   try {
@@ -153,7 +161,7 @@ const updateDepartment = asyncHandler(async (req, res) => {
 });
 
 // @desc    Create a Department
-// @route   DELETE  /api/v1/department/
+// @route   DELETE   /api/v1/department/:id
 // @access  Admin
 const deleteDepartment = asyncHandler(async (req, res) => {
   try {
