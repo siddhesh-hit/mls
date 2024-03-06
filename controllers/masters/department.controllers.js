@@ -72,20 +72,18 @@ const getDepartments = asyncHandler(async (req, res) => {
           totalCount: [{ $count: "count" }],
         },
       },
-      {
-        $unwind: {
-          path: "$totalCount",
-        },
-      },
     ]);
 
-    console.log(departments);
+    // populate the document with ref
+    let populateDepartment = await Department.populate(departments[0]?.dep, {
+      path: "designation",
+    });
 
     res.status(200).json({
       success: true,
       message: "Fetched all department!",
-      data: departments[0]?.dep || [],
-      count: departments[0].totalCount?.count || 0,
+      data: populateDepartment || [],
+      count: departments[0]?.totalCount[0]?.count || 0,
     });
   } catch (error) {
     res.status(500);

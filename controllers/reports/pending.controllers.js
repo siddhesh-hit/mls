@@ -34,7 +34,7 @@ const createPending = asyncHandler(async (data, notificationMsg, res) => {
         if (
           item.user_verfied &&
           (item.role_taskId.role === "SuperAdmin" ||
-            item.role_taskId.role === "Reviewer")
+            item.role_taskId.role === "ContentCreator")
         ) {
           const checkNotify = await Notification.findById(
             item.notificationId._id

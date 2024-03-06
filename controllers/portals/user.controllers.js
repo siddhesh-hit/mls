@@ -628,10 +628,57 @@ const resetUserViaAdmin = asyncHandler(async (req, res) => {
 // @access  Admin
 const getUsers = asyncHandler(async (req, res) => {
   try {
-    const users = await User.find({})
-      .select()
-      .populate("notificationId")
-      .populate("role_taskId");
+    let { perPage, perLimit, ...id } = req.query;
+
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    // filter the query
+    let matchedQuery = {};
+    if (id["role_taskId.role"]) {
+      matchedQuery["role_taskId.role"] = {
+        $regex: id["role_taskId.role"],
+        $options: "i",
+      };
+    }
+    if (id.full_name) {
+      matchedQuery["full_name"] = {
+        $regex: id["full_name"],
+        $options: "i",
+      };
+    }
+
+    // aggregate the result based on query
+    let users = await User.aggregate([
+      {
+        $lookup: {
+          from: "role_tasks",
+          localField: "role_taskId",
+          foreignField: "_id",
+          as: "role_taskId",
+        },
+      },
+      {
+        $match: matchedQuery,
+      },
+      {
+        $facet: {
+          user: [
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [{ $count: "count" }],
+        },
+      },
+    ]);
+
+    // populate notification and role task
+    let populateUser = await User.populate(users[0].user, {
+      path: "notificationId",
+    });
+
     if (!users) {
       res.status(400);
       throw new Error("No users found");
@@ -640,7 +687,8 @@ const getUsers = asyncHandler(async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Users fetched successfully",
-      data: users,
+      data: populateUser || [],
+      count: users[0]?.totalCount[0]?.count || 0,
     });
   } catch (error) {
     res.status(501);
