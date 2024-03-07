@@ -6,6 +6,8 @@ const {
   getDebateById,
   getHouseDebates,
   getMemberDebateSearch,
+  getpostDebateFullSearch,
+  getpostAllDebates,
   getDebateFullSearch,
   updateDebateById,
   deleteDebateById,
@@ -20,10 +22,14 @@ const {
 } = require("../../middlewares/authMiddleware");
 
 // routes
+
 router.get("/houses", getHouseDebates);
 router.get("/search", getDebateSearch);
 router.get("/member", getMemberDebateSearch);
 router.get("/fields", getDebateFullSearch);
+router.get("/postgresFields", getpostDebateFullSearch);
+
+router.get("/postgres", getpostAllDebates);
 
 // options
 router.get("/option", getDebateFilterOption);

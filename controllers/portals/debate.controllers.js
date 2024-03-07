@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 
 const Debate = require("../../models/portals/Debate");
+const PostgresDebate = require("../../models/portals/PostgresDebate");
 const User = require("../../models/portals/userModel");
 
 const {
@@ -141,6 +142,82 @@ const getAllDebates = asyncHandler(async (req, res) => {
     // send response
     res.status(200).json({
       message: "Debates fetched successfully",
+      success: true,
+      data: debate[0]?.debate || [],
+      count: debate[0]?.totalCount[0]?.count || [],
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error(error);
+  }
+});
+
+// @desc    Get all Debates
+// @route   GET /api/debate/postgres
+// @access  Public
+const getpostAllDebates = asyncHandler(async (req, res) => {
+  try {
+    let { perPage, perLimit, session, house, speaker, keywords } = req.query;
+
+    console.log(req.query);
+
+    // search = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    const matchConditions = {};
+    if (session) {
+      session = session.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      matchConditions["session"] = new RegExp(`.*${session}.*`, "i");
+    }
+    if (house) {
+      house = house.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      matchConditions["house"] = new RegExp(`.*${house}.*`, "i");
+    }
+    if (speaker) {
+      speaker = speaker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      matchConditions["speaker"] = new RegExp(`.*${speaker}.*`, "i");
+    }
+    if (keywords) {
+      keywords = keywords.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      matchConditions["keywords"] = new RegExp(`.*${keywords}.*`, "i");
+    }
+
+    // const debate = await Debate.find(obj)
+    //   .limit(pageOptions.limit)
+    //   .skip(pageOptions.page * pageOptions.limit)
+    //   .exec();
+
+    // to look for
+    const data = ["session", "house", "speaker", "keywords"];
+
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    console.log(matchConditions);
+
+    const debate = await PostgresDebate.aggregate([
+      {
+        $match: matchConditions,
+      },
+      {
+        $facet: {
+          debate: [
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [
+            {
+              $count: "count",
+            },
+          ],
+        },
+      },
+    ]);
+
+    // send response
+    res.status(200).json({
+      message: "postgres Debates fetched successfully",
       success: true,
       data: debate[0]?.debate || [],
       count: debate[0]?.totalCount[0]?.count || [],
@@ -448,6 +525,134 @@ const getDebateFullSearch = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get Debate based on multiple query
+// @route   GET /api/debate/fields?id=""
+// @access  Public
+const getpostDebateFullSearch = asyncHandler(async (req, res) => {
+  try {
+    let { perPage, perLimit, ...queries } = req.query;
+
+    if (!(Object.keys(queries).length > 0)) {
+      throw new Error("Fill query first");
+    }
+
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    // compute the queries in an array for using in and stage
+    let arrayOfQuery = Object.keys(queries);
+    let andMatchStage = [];
+
+    // for (let i = 0; i < arrayOfQuery.length; i++) {
+    //   let key = arrayOfQuery[i];
+    //   let value = queries[arrayOfQuery[i]];
+
+    //   // if (key === "volume" || key === "kramank") {
+    //   //   let engArr = value.split("");
+    //   //   let newMarArr;
+    //   //   if (typeof +engArr[0] === "number") {
+    //   //     newMarArr = engArr.map((item) => {
+    //   //       return item;
+    //   //     });
+    //   //   } else {
+    //   //     newMarArr = engArr.map((item) => {
+    //   //       item = marathiToEnglish[item];
+    //   //       return item;
+    //   //     });
+    //   //   }
+    //   //   let data = newMarArr.join("");
+    //   //   value = data;
+    //   // }
+
+    //   // if (value && key !== "topic") {
+    //   //   value = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    //   //   let obj = {
+    //   //     [key]: new RegExp(`.*${value}.*`, "i"),
+    //   //   };
+
+    //   //   andMatchStage.push(obj);
+    //   // }
+
+    //   if (key === "topic") {
+    //     value = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    //     let or = {
+    //       $or: [
+    //         { topic: new RegExp(`.*${value}.*`, "i") },
+    //         { keywords: new RegExp(`.*${value}.*`, "i") },
+    //       ],
+    //     };
+
+    //     andMatchStage.push(or);
+    //   }
+    // }
+
+    console.log(queries);
+
+    console.log(andMatchStage[0]);
+
+    let debates = await PostgresDebate.aggregate([
+      {
+        $match: {
+          $or: [
+            {
+              topic: { $regex: queries.topic, $options: "i" },
+            },
+            {
+              keywords: { $regex: queries.topic, $options: "i" },
+            },
+          ],
+        },
+      },
+      {
+        $facet: {
+          debate: [
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [
+            {
+              $count: "count",
+            },
+          ],
+        },
+      },
+    ]);
+
+    console.log(debates);
+
+    // } else {
+    //   debates = await Debate.aggregate([
+    //     {
+    //       $facet: {
+    //         debate: [
+    //           { $skip: pageOptions.page * pageOptions.limit },
+    //           { $limit: pageOptions.limit },
+    //         ],
+    //         totalCount: [
+    //           {
+    //             $count: "count",
+    //           },
+    //         ],
+    //       },
+    //     },
+    //   ]);
+    // }
+
+    res.status(200).json({
+      success: true,
+      message: "postgres fields Debates fetched successfully",
+      // data: debates,
+      data: debates[0]?.debate || [],
+      count: debates[0]?.totalCount[0]?.count || 0,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error: " + error);
+  }
+});
+
 // @desc    Update a Debate by ID
 // @route   PUT /api/debate/:id
 // @access  Admin
@@ -645,6 +850,8 @@ module.exports = {
   getHouseDebates,
   getDebateSearch,
   getMemberDebateSearch,
+  getpostAllDebates,
+  getpostDebateFullSearch,
   getDebateFullSearch,
   updateDebateById,
   deleteDebateById,
