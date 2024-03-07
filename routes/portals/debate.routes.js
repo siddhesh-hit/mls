@@ -6,8 +6,6 @@ const {
   getDebateById,
   getHouseDebates,
   getMemberDebateSearch,
-  getpostDebateFullSearch,
-  getpostAllDebates,
   getDebateFullSearch,
   updateDebateById,
   deleteDebateById,
