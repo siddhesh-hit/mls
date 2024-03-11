@@ -16,18 +16,7 @@ const {
 // routes
 router
   .route("/")
-  .get(
-    authMiddleware,
-    checkRoleMiddleware([
-      "SuperAdmin",
-      "Admin",
-      "Reviewer",
-      "ContentCreator",
-      "User",
-    ]),
-    hasPermission("read"),
-    getAllConstituency
-  )
+  .get(getAllConstituency)
   .post(
     authMiddleware,
     checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
