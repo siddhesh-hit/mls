@@ -31,6 +31,7 @@ const navigationRoutes = require("./routes/masters/navigation.routes");
 const sessionFieldRoutes = require("./routes/masters/session.routes");
 const officerRoutes = require("./routes/masters/officer.routes");
 const positionRoutes = require("./routes/masters/position.routes");
+const ministryRoutes = require("./routes/masters/ministry.routes");
 
 const visitRoute = require("./routes/extras/visit.routes");
 const notificationRoute = require("./routes/extras/notification.routes");
@@ -73,6 +74,7 @@ router.use("/navigation", navigationRoutes);
 router.use("/sessionField", sessionFieldRoutes);
 router.use("/officer", officerRoutes);
 router.use("/position", positionRoutes);
+router.use("/ministry", ministryRoutes);
 
 router.use("/visit", visitRoute);
 router.use("/notification", notificationRoute);

@@ -147,7 +147,7 @@ const updateDepartment = asyncHandler(async (req, res) => {
       throw new Error("Failed to update a department!");
     }
 
-    res.status(201).json({
+    res.status(200).json({
       success: true,
       message: "Updated a department!",
       data: updateDep,

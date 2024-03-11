@@ -14,7 +14,6 @@ const createConstituency = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
     console.log(data);
-
     // validate the data
     // const { error } = createConstituencyValidation(data);
     // if (error) {
@@ -28,7 +27,9 @@ const createConstituency = asyncHandler(async (req, res) => {
     // for (let i = 0; i < data.length; i++) {
     //   constituency.push(createdConstituency);
     // }
-
+    if (data.isHouse === "Constituency") {
+      data.assembly.assembly_number = null;
+    }
     const createdConstituency = await Constituency.create(data);
     if (!createConstituency) {
       res.status(403);
@@ -50,7 +51,9 @@ const createConstituency = asyncHandler(async (req, res) => {
 // @access  Public
 const getAllConstituency = asyncHandler(async (req, res) => {
   try {
-    const constituency = await Constituency.find({});
+    const constituency = await Constituency.find({}).populate(
+      "assembly.assembly_number"
+    );
     if (!constituency) {
       res.status(403);
       throw new Error("Couldn't find Constituency.");
@@ -71,7 +74,9 @@ const getAllConstituency = asyncHandler(async (req, res) => {
 // @access  Public
 const getConstituency = asyncHandler(async (req, res) => {
   try {
-    const constituency = await Constituency.findById(req.params.id);
+    const constituency = await Constituency.findById(req.params.id).populate(
+      "assembly.assembly_number"
+    );
     if (!constituency) {
       res.status(403);
       throw new Error("Couldn't find Constituency.");
@@ -94,12 +99,13 @@ const updateConstituency = asyncHandler(async (req, res) => {
   try {
     let data = req.body;
     console.log(data);
-    // validate the data
-    const { error } = updateConstituencyValidation(data);
-    if (error) {
-      res.status(400);
-      throw new Error(error.details[0].message);
-    }
+
+    // // validate the data
+    // const { error } = updateConstituencyValidation(data);
+    // if (error) {
+    //   res.status(400);
+    //   throw new Error(error.details[0].message);
+    // }
 
     // update constituency
     const constituency = await Constituency.findByIdAndUpdate(

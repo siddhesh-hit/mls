@@ -68,6 +68,12 @@ const createMemberValidation = (data) => {
       joi.object({
         date: joi.date().required().label("Date is required."),
         title: joi.string().required().label("Title is required."),
+        presiding: joi.string().required().label("presiding is required."),
+        legislative_position: joi
+          .string()
+          .required()
+          .label("legislative_position is required."),
+        designation: joi.string().required().label("designation is required."),
       })
     ),
     election_data: joi.object({

@@ -129,7 +129,8 @@ const getAllMember = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-// @debsc get all members details According to Options With search And Advaned filter
+
+// @desc get all members details According to Options With search And Advaned filter
 // @route GET /api/member/memberdetails
 // @access Public
 const getAllMemberDetails = asyncHandler(async (req, res) => {
@@ -160,7 +161,6 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
     if (req.query.house) {
       obj["basic_info.house"] = req.query.house;
     }
-    console.log("query", obj);
 
     const pageOptions = {
       page: parseInt(perPage, 10) || 0,
@@ -309,7 +309,20 @@ const getMemberSearch = asyncHandler(async (req, res) => {
 // @access  Public
 const getMember = asyncHandler(async (req, res) => {
   try {
-    const member = await Member.findById(req.params.id);
+    const member = await Member.findById(req.params.id).populate([
+      "basic_info.assembly_number",
+      "basic_info.constituency",
+      "basic_info.party",
+      "basic_info.gender",
+      "basic_info.district",
+      "election_data.constituency",
+      "election_data.member_election_result.party",
+      "election_data.member_election_result.votes",
+      "political_journey.presiding",
+      "political_journey.legislative_position",
+      "political_journey.designation",
+      "political_journey.legislative_position.party",
+    ]);
 
     member.political_journey.sort((a, b) => {
       return new Date(b.date) - new Date(a.date);

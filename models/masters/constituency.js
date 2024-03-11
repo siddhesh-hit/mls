@@ -25,6 +25,7 @@ const constituencySchema = new mongoose.Schema(
       assembly_number: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Assembly",
+        default: null,
       },
       year: {
         type: String,
