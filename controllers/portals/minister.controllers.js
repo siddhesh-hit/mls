@@ -17,13 +17,6 @@ const createMinister = asyncHandler(async (req, res) => {
     let data = req.body;
     let userId = res.locals.userInfo;
 
-    // validate the data
-    const { error } = createMinisterValidation(data);
-    if (error) {
-      res.status(400);
-      throw new Error(error);
-    }
-
     // check if user exists and then add it
     const checkUser = await User.findById(userId.id);
     if (!checkUser) {
@@ -32,29 +25,36 @@ const createMinister = asyncHandler(async (req, res) => {
     }
     data.createdBy = userId.id;
 
-    // check if chief minister exists
-    if (data.ministry_type === "Chief Minister") {
-      const checkMinister = await Minister.find({
-        ministry_type: "Chief Minister",
-      });
-
-      if (checkMinister?.length > 1) {
-        res.status(400);
-        throw new Error("Chief Minister already exists");
-      }
+    // validate the data
+    const { error } = createMinisterValidation(data);
+    if (error) {
+      res.status(400);
+      throw new Error(error);
     }
 
-    // check if two Deputy Chief Minister exists
-    if (data.ministry_type === "Deputy Chief Minister") {
-      const checkMinister = await Minister.find({
-        ministry_type: "Deputy Chief Minister",
-      });
+    // // check if chief minister exists
+    // if (data.ministry_type === "Chief Minister") {
+    //   const checkMinister = await Minister.find({
+    //     ministry_type: "Chief Minister",
+    //   });
 
-      if (checkMinister?.length > 2) {
-        res.status(400);
-        throw new Error("Already two Deputy Chief Minister entry exists");
-      }
-    }
+    //   if (checkMinister?.length > 1) {
+    //     res.status(400);
+    //     throw new Error("Chief Minister already exists");
+    //   }
+    // }
+
+    // // check if two Deputy Chief Minister exists
+    // if (data.ministry_type === "Deputy Chief Minister") {
+    //   const checkMinister = await Minister.find({
+    //     ministry_type: "Deputy Chief Minister",
+    //   });
+
+    //   if (checkMinister?.length > 2) {
+    //     res.status(400);
+    //     throw new Error("Already two Deputy Chief Minister entry exists");
+    //   }
+    // }
 
     // create minister
     const minister = await Minister.create(data);
@@ -139,7 +139,12 @@ const getMinister = asyncHandler(async (req, res) => {
 // @access  Admin
 const getAMinister = asyncHandler(async (req, res) => {
   try {
-    const minister = await Minister.findById(req.params.id);
+    const minister = await Minister.findById(req.params.id).populate([
+      "assembly_number",
+      "member_name",
+      "designation",
+      "ministry_type",
+    ]);
     if (!minister) {
       res.status(400);
       throw new Error("No minister found.");
@@ -164,6 +169,14 @@ const updateMinister = asyncHandler(async (req, res) => {
     let data = req.body;
     let userId = res.locals.userInfo;
 
+    // check if user exists and add
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.updatedBy = userId.id;
+
     // check if ministry exists
     const existMinister = await Minister.findById(req.params.id);
     if (!existMinister) {
@@ -178,37 +191,29 @@ const updateMinister = asyncHandler(async (req, res) => {
       throw new Error(error.details[0].message, error);
     }
 
-    // check if user exists and add
-    const checkUser = await User.findById(userId.id);
-    if (!checkUser) {
-      res.status(400);
-      throw new Error("Failed to find a user.");
-    }
-    data.updatedBy = userId.id;
+    // // check if chief minister exists
+    // if (data.ministry_type === "Chief Minister") {
+    //   const checkMinister = await Minister.find({
+    //     ministry_type: "Chief Minister",
+    //   });
 
-    // check if chief minister exists
-    if (data.ministry_type === "Chief Minister") {
-      const checkMinister = await Minister.find({
-        ministry_type: "Chief Minister",
-      });
+    //   if (checkMinister.length > 1) {
+    //     res.status(400);
+    //     throw new Error("Chief Minister already exists");
+    //   }
+    // }
 
-      if (checkMinister.length > 1) {
-        res.status(400);
-        throw new Error("Chief Minister already exists");
-      }
-    }
+    // // check if two Deputy Chief Minister exists
+    // if (data.ministry_type === "Deputy Chief Minister") {
+    //   const checkMinister = await Minister.find({
+    //     ministry_type: "Deputy Chief Minister",
+    //   });
 
-    // check if two Deputy Chief Minister exists
-    if (data.ministry_type === "Deputy Chief Minister") {
-      const checkMinister = await Minister.find({
-        ministry_type: "Deputy Chief Minister",
-      });
-
-      if (checkMinister.length > 2) {
-        res.status(400);
-        throw new Error("Already two Deputy Chief Minister entry exists");
-      }
-    }
+    //   if (checkMinister.length > 2) {
+    //     res.status(400);
+    //     throw new Error("Already two Deputy Chief Minister entry exists");
+    //   }
+    // }
 
     // notify others
     // let notificationData = {

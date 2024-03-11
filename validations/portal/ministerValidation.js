@@ -3,14 +3,14 @@ const joi = require("joi");
 // Create a new Minister validation
 const createMinisterValidation = (data) => {
   const schema = joi.object({
-    ministry_type: joi.string().required().label("Ministry type is required"),
     assembly_number: joi
       .string()
       .required()
       .label("Assembly number is required"),
+    year: joi.string().required().label("Year is required"),
     member_name: joi.string().required().label("Member name is required"),
     designation: joi.string().required().label("Designation is required"),
-    ministry: joi.string().required().label("Ministry is required"),
+    ministry_type: joi.string().required().label("Ministry type is required"),
     createdBy: joi.string().required().label("Created by is required"),
   });
   return schema.validate(data);
@@ -24,10 +24,10 @@ const updateMinisterValidation = (data) => {
         .string()
         .required()
         .label("Assembly number is required"),
-      ministry_type: joi.string().required().label("Ministry type is required"),
+      year: joi.string().required().label("Year is required"),
       member_name: joi.string().required().label("Member name is required"),
       designation: joi.string().required().label("Designation is required"),
-      ministry: joi.string().required().label("Ministry is required"),
+      ministry_type: joi.string().required().label("Ministry type is required"),
       _id: joi.any().optional(),
       isActive: joi.boolean().required(),
       createdBy: joi.string().optional().label("Created by is required"),

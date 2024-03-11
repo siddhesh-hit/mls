@@ -8,10 +8,10 @@ const constituencySchema = new mongoose.Schema(
       constituency_name: {
         type: String,
       },
-      constituency_number: {
+      constituency_type: {
         type: String,
       },
-      constituency_type: {
+      constituency_subtype: {
         type: String,
       },
       year: {
