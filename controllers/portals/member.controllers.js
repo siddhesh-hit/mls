@@ -33,6 +33,9 @@ const createMember = asyncHandler(async (req, res) => {
       throw new Error("Please upload a profile");
     }
     data.basic_info.profile = profile;
+    if (data.basic_info.house === "Council") {
+      data.basic_info.assembly_number = null;
+    }
 
     // check if user exists and then add it
     const checkUser = await User.findById(userId.id);

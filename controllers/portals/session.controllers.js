@@ -199,6 +199,8 @@ const updateSession = asyncHandler(async (req, res) => {
           : document[docCount++];
     });
 
+    console.log(data);
+
     // validate the data
     const { error } = updateSessionCalendarValidation(data);
     if (error) {

@@ -64,8 +64,39 @@ const createParty = asyncHandler(async (req, res) => {
 // @access  Public
 const getAllParty = asyncHandler(async (req, res) => {
   try {
-    // find all
-    const parties = await Party.find({}).select("marathi english _id");
+    let { perPage, perLimit, ...id } = req.query;
+
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    // filter the query
+    let matchedQuery = {};
+
+    for (key in id) {
+      if (id[key] !== "") {
+        id[key] = id[key].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+        matchedQuery[key] = new RegExp(`.*${id[key]}.*`, "i");
+      }
+    }
+
+    // aggregate on the query and send res
+    let parties = await await Party.aggregate([
+      {
+        $match: matchedQuery,
+      },
+      {
+        $facet: {
+          party: [
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [{ $count: "count" }],
+        },
+      },
+    ]);
 
     if (!parties) {
       res.status(400);
@@ -74,8 +105,9 @@ const getAllParty = asyncHandler(async (req, res) => {
 
     res.status(200).json({
       message: "Party fetched successfully.",
-      data: parties,
       success: true,
+      data: parties[0]?.party || [],
+      count: parties[0]?.totalCount[0]?.count || 0,
     });
   } catch (error) {
     res.status(400);

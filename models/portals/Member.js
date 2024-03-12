@@ -12,6 +12,12 @@ const memberSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "Assembly",
       },
+      constituency_from: {
+        type: String,
+      },
+      constituency_to: {
+        type: String,
+      },
       profile: ImageSchema,
       name: {
         type: String,

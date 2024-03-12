@@ -64,6 +64,14 @@ const getMinistries = asyncHandler(async (req, res) => {
     // filter the query
     let matchedQuery = {};
 
+    for (key in id) {
+      if (id[key] !== "") {
+        id[key] = id[key].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+        matchedQuery[key] = new RegExp(`.*${id[key]}.*`, "i");
+      }
+    }
+
     // aggregate on the query and send res
     let ministries = await Ministry.aggregate([
       {

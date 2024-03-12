@@ -50,15 +50,50 @@ const createConstituency = asyncHandler(async (req, res) => {
 // @access  Public
 const getAllConstituency = asyncHandler(async (req, res) => {
   try {
-    const constituency = await Constituency.find({});
-    if (!constituency) {
+    let { perPage, perLimit, ...id } = req.query;
+
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    // filter the query
+    let matchedQuery = {};
+
+    for (key in id) {
+      if (id[key] !== "") {
+        id[key] = id[key].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+        matchedQuery[key] = new RegExp(`.*${id[key]}.*`, "i");
+      }
+    }
+
+    // aggregate on the query and send res
+    const constituencies = await Constituency.aggregate([
+      {
+        $match: matchedQuery,
+      },
+      {
+        $facet: {
+          asse: [
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [{ $count: "count" }],
+        },
+      },
+    ]);
+
+    if (!constituencies) {
       res.status(403);
       throw new Error("Couldn't find Constituency.");
     }
+
     res.status(200).json({
       message: "Constituency fetched successfully.",
-      data: constituency,
       success: true,
+      data: constituencies[0]?.asse || [],
+      count: constituencies[0]?.totalCount[0]?.count || 0,
     });
   } catch (error) {
     res.status(500);

@@ -28,6 +28,14 @@ const createMemberValidation = (data) => {
           .string()
           .required()
           .label("Constituency is required."),
+        constituency_from: joi
+          .string()
+          .required()
+          .label("Constituency from is required."),
+        constituency_to: joi
+          .string()
+          .required()
+          .label("Constituency to is required."),
         party: joi.string().required().label("Party is required."),
         gender: joi.string().required().label("Gender is required."),
         district: joi.string().required().label("District is required."),
@@ -68,6 +76,15 @@ const createMemberValidation = (data) => {
       joi.object({
         date: joi.date().required().label("Date is required."),
         title: joi.string().required().label("Title is required."),
+        presiding: joi
+          .string()
+          .required()
+          .label("Presiding Officer is required."),
+        legislative_position: joi
+          .string()
+          .required()
+          .label("Legislative Position is required."),
+        designation: joi.string().required().label("Designation is required."),
       })
     ),
     election_data: joi.object({
@@ -110,6 +127,14 @@ const updateMemberValidation = (data) => {
           .string()
           .required()
           .label("Constituency is required."),
+        constituency_from: joi
+          .string()
+          .required()
+          .label("Constituency from is required."),
+        constituency_to: joi
+          .string()
+          .required()
+          .label("Constituency to is required."),
         party: joi.string().required().label("Party is required."),
         gender: joi.string().required().label("Gender is required."),
         district: joi.string().required().label("District is required."),
@@ -131,6 +156,14 @@ const updateMemberValidation = (data) => {
           .string()
           .required()
           .label("Marital Status is required."),
+        constituency_from: joi
+          .string()
+          .required()
+          .label("Constituency from is required."),
+        constituency_to: joi
+          .string()
+          .required()
+          .label("Constituency to is required."),
         children: joi.string().required().label("Children is required."),
         business: joi.string().required().label("Business is required."),
         hobby: joi.string().required().label("Hobby is required."),
@@ -153,6 +186,18 @@ const updateMemberValidation = (data) => {
           date: joi.date().required().label("Date is required."),
           title: joi.string().required().label("Title is required."),
           _id: joi.any(),
+          presiding: joi
+            .string()
+            .required()
+            .label("Presiding Officer is required."),
+          legislative_position: joi
+            .string()
+            .required()
+            .label("Legislative Position is required."),
+          designation: joi
+            .string()
+            .required()
+            .label("Designation is required."),
         })
         .unknown(true)
     ),
