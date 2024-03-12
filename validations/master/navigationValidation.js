@@ -87,9 +87,6 @@ const updateNavigationValidation = (data) => {
             })
             .unknown(true),
           isDropDown: joi.boolean().required(),
-          isActive: joi.boolean().required(),
-          isAccepted: joi.boolean().required(),
-          isUpdated: joi.boolean().required(),
         })
         .unknown(true);
 

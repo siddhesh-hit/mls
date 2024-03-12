@@ -5,7 +5,7 @@ const sessionCalendarSchema = new mongoose.Schema(
   {
     session: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Session",
+      ref: "SessionField",
       required: true,
     },
     topic_name: {

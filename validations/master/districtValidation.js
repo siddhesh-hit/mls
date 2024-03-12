@@ -38,9 +38,6 @@ const updateDistrictValidation = (data) => {
           .required()
           .label("English District is required."),
       }),
-      isActive: joi.boolean().required(),
-      isAccepted: joi.boolean().required(),
-      isUpdated: joi.boolean().required(),
     })
     .unknown(true);
 

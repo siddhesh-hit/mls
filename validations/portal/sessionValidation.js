@@ -20,12 +20,7 @@ const createSessionCalendarValidation = (data) => {
   const schema =
     // joi.array().items(
     joi.object({
-      marathi: joi.object({
-        session: joi.string().optional().label("Marathi session is required"),
-      }),
-      english: joi.object({
-        session: joi.string().optional().label("English session is required"),
-      }),
+      session: joi.string().optional().label("Marathi session is required"),
       topic_name: joi.string().required().label("Topic name is required"),
       houses: joi.string().required().label("Houses is required"),
       year: joi.string().required().label("Year is required"),
@@ -48,16 +43,7 @@ const createSessionCalendarValidation = (data) => {
 const updateSessionCalendarValidation = (data) => {
   const schema = joi
     .object({
-      marathi: joi
-        .object({
-          session: joi.string().optional().label("Marathi session is required"),
-        })
-        .unknown(true),
-      english: joi
-        .object({
-          session: joi.string().optional().label("English session is required"),
-        })
-        .unknown(true),
+      session: joi.string().optional().label("English session is required"),
       _id: joi.any().optional(),
       topic_name: joi.string().required().label("Topic name is required"),
       houses: joi.string().required().label("Houses is required"),

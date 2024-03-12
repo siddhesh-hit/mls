@@ -106,15 +106,14 @@ const getAllSession = asyncHandler(async (req, res) => {
       limit: parseInt(perLimit, 10) || 10,
     };
 
-    const newCheck = {}
+    const newCheck = {};
     Object.keys(id).forEach((ele) => {
-      console.log(id[ele])
       if (id[ele]) {
-        newCheck[ele] = id[ele]
+        newCheck[ele] = id[ele];
       }
-    })
+    });
 
-    console.log(newCheck, "newCheck")
+    console.log(newCheck, "newCheck");
 
     const sessionCalendar = await SessionCalendar.find(newCheck)
       .limit(pageOptions.limit)
@@ -139,11 +138,13 @@ const getAllSession = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get a session calendar
-// @route   GET /api/session/
+// @route   GET /api/session/:id
 // @access  Public
 const getSession = asyncHandler(async (req, res) => {
   try {
-    const sessionCalendar = await SessionCalendar.findById(req.params.id);
+    const sessionCalendar = await SessionCalendar.findById(
+      req.params.id
+    ).populate("session");
 
     if (!sessionCalendar) {
       res.status(400);
@@ -164,7 +165,7 @@ const getSession = asyncHandler(async (req, res) => {
 });
 
 // @desc    Update a session calendar
-// @route   PUT /api/session/
+// @route   PUT /api/session/:id
 // @access  Admin
 const updateSession = asyncHandler(async (req, res) => {
   try {
@@ -180,6 +181,7 @@ const updateSession = asyncHandler(async (req, res) => {
       res.status(400);
       throw new Error("Failed to find a user.");
     }
+    data.updatedBy = userId.id;
 
     // check if session calendar exists
     const sessionExists = await SessionCalendar.findById(req.params.id);
@@ -196,8 +198,6 @@ const updateSession = asyncHandler(async (req, res) => {
           ? ele.document
           : document[docCount++];
     });
-
-    data.updatedBy = userId.id;
 
     // validate the data
     const { error } = updateSessionCalendarValidation(data);
@@ -244,7 +244,7 @@ const updateSession = asyncHandler(async (req, res) => {
 });
 
 // @desc    Delete a session calendar
-// @route   DELETE /api/session/
+// @route   DELETE /api/session/:id
 // @access  Admin
 const deleteSession = asyncHandler(async (req, res) => {
   try {
@@ -287,6 +287,10 @@ const deleteSession = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+
+// @desc    Get all options a session calendar
+// @route   GET /api/session/option
+// @access  Public
 const getSessionFilterOptions = asyncHandler(async (req, res) => {
   try {
     const id = req.query.id;
@@ -304,13 +308,13 @@ const getSessionFilterOptions = asyncHandler(async (req, res) => {
     res.status(500);
     throw new Error(error);
   }
-}
-);
+});
 
 module.exports = {
   createSession,
   getAllSession,
   getSession,
   updateSession,
-  deleteSession, getSessionFilterOptions
+  deleteSession,
+  getSessionFilterOptions,
 };

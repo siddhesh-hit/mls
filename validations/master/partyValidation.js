@@ -75,9 +75,6 @@ const updatePartyValidation = (data) => {
       }),
       party_flag: imageValidation.required(),
       party_symbol: imageValidation.required(),
-      isActive: joi.boolean().required(),
-      isAccepted: joi.boolean().required(),
-      isUpdated: joi.boolean().required(),
     })
     .unknown(true);
   // console.log(data);

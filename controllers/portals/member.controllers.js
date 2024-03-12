@@ -129,6 +129,7 @@ const getAllMember = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+
 // @debsc get all members details According to Options With search And Advaned filter
 // @route GET /api/member/memberdetails
 // @access Public
@@ -190,10 +191,10 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+
 // @desc    Get all Member Options
 // @route   GET /api/member/option
 // @access  Public
-
 const getDebateFilterOption = asyncHandler(async (req, res) => {
   try {
     let query = req.query.id;

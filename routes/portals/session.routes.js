@@ -6,7 +6,8 @@ const {
   getAllSession,
   getSession,
   updateSession,
-  deleteSession, getSessionFilterOptions
+  deleteSession,
+  getSessionFilterOptions,
 } = require("../../controllers/portals/session.controllers");
 
 const {

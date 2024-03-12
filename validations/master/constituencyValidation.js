@@ -92,9 +92,6 @@ const updateConstituencyValidation = (data) => {
           year: joi.string().required().label("Marathi Year is required."),
         })
         .optional(),
-      isActive: joi.boolean().required(),
-      isAccepted: joi.boolean().required(),
-      isUpdated: joi.boolean().required(),
     })
     .unknown(true);
 
