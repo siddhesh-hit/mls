@@ -160,6 +160,20 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
     if (req.query.house) {
       obj["basic_info.house"] = req.query.house;
     }
+    if (req.query.fullname) {
+      // Escape special characters in the search string
+      const escapedSearch = req.query.fullname.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      // Create a regex pattern that allows any characters between the name parts
+      const regexPattern = escapedSearch.split(/\s+/).join(".*");
+      console.log("regexPattern", regexPattern);
+      obj["$expr"] = {
+        " $regexMatch": {
+          "input": { $concat: ["$basic_info.name", " ", "$basic_info.surname"] },
+          "regex": regexPattern,
+          "options": "i",
+        }
+      }
+    }
     console.log("query", obj);
 
     const pageOptions = {
@@ -168,6 +182,7 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
     };
 
     const members = await Member.find(obj)
+      .populate(["basic_info.constituency", "basic_info.district", "basic_info.party", "basic_info.house"])
       .limit(pageOptions.limit)
       .skip(pageOptions.page * pageOptions.limit)
       .exec();
@@ -194,7 +209,7 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
 // @route   GET /api/member/option
 // @access  Public
 
-const getDebateFilterOption = asyncHandler(async (req, res) => {
+const getMemberFilterOption = asyncHandler(async (req, res) => {
   try {
     let query = req.query.id;
 
@@ -309,7 +324,7 @@ const getMemberSearch = asyncHandler(async (req, res) => {
 // @access  Public
 const getMember = asyncHandler(async (req, res) => {
   try {
-    const member = await Member.findById(req.params.id);
+    const member = await Member.findById(req.params.id).populate(["basic_info.constituency", "basic_info.district", "basic_info.party", "basic_info.house", "election_data.member_election_result.party", "election_data.constituency"]);
 
     member.political_journey.sort((a, b) => {
       return new Date(b.date) - new Date(a.date);
@@ -460,7 +475,7 @@ module.exports = {
   createMember,
   getAllMember,
   getAllMemberDetails,
-  getDebateFilterOption,
+  getMemberFilterOption,
   getMemberHouse,
   getMemberSearch,
   getMember,

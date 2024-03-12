@@ -44,7 +44,7 @@ const createDistrict = asyncHandler(async (req, res) => {
 const getAllDistrict = asyncHandler(async (req, res) => {
   try {
     // find district
-    const district = await District.find({});
+    const district = await District.find({}).select("marathi english _id");
     if (!district) {
       res.status(403);
       throw new Error("Couldn't find District.");
