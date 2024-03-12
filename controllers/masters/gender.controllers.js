@@ -44,7 +44,7 @@ const createGender = asyncHandler(async (req, res) => {
 const getAllGender = asyncHandler(async (req, res) => {
   try {
     // find all
-    const genders = await Gender.find({});
+    const genders = await Gender.find({}).select("marathi english _id");
 
     if (!genders) {
       res.status(400);

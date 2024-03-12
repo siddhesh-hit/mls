@@ -36,15 +36,7 @@ const upload = multer({
 router
   .route("/")
   .get(
-    authMiddleware,
-    checkRoleMiddleware([
-      "SuperAdmin",
-      "Admin",
-      "Reviewer",
-      "ContentCreator",
-      "User",
-    ]),
-    hasPermission("read"),
+
     getAllParty
   )
   .post(

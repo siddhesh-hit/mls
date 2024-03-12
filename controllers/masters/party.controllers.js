@@ -65,7 +65,7 @@ const createParty = asyncHandler(async (req, res) => {
 const getAllParty = asyncHandler(async (req, res) => {
   try {
     // find all
-    const parties = await Party.find({});
+    const parties = await Party.find({}).select("marathi english _id");
 
     if (!parties) {
       res.status(400);

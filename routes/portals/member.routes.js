@@ -10,7 +10,7 @@ const {
   updateMember,
   deleteMember,
   getAllMemberDetails,
-  getDebateFilterOption,
+  getMemberFilterOption,
 } = require("../../controllers/portals/member.controllers");
 const {
   authMiddleware,
@@ -38,7 +38,7 @@ const upload = multer({
 // routes
 router.get("/house", getMemberHouse);
 router.get("/search", getMemberSearch);
-router.get("/option", getDebateFilterOption);
+router.get("/option", getMemberFilterOption);
 
 router
   .route("/")
