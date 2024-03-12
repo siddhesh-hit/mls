@@ -10,6 +10,7 @@ const RefreshToken = require("../../models/portals/refreshToken");
 const Notification = require("../../models/extras/Notification");
 const Role_Task = require("../../models/portals/Role_Task");
 const AuditTrail = require("../../models/reports/AuditTrail");
+const UserDocument = require("../../models/extras/UserDocument");
 
 const {
   loginEmailValidate,
@@ -246,6 +247,7 @@ const loginUserEmail = asyncHandler(async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    console.log("check");
     // check validation
     const { error } = loginEmailValidate(req.body);
     if (error) {
@@ -1165,6 +1167,181 @@ const updateRoleTask = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Create a document for users
+// @route   POST /api/user/docs
+// @access  Admin
+const createUserDocs = asyncHandler(async (req, res) => {
+  try {
+    let data = req.body;
+    let userDoc = req.files;
+    let userId = res.locals.userInfo;
+
+    // check if file exists
+    if (!userDoc) {
+      res.status(400);
+      throw new Error("No files provided!");
+    }
+    data.userDoc = userDoc;
+
+    // check if user exists and then add it
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.createdBy = userId.id;
+
+    // check if the member exists for provided files
+    const checkMemberUser = await User.findById(data.userId);
+    if (!checkMemberUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    console.log(data);
+
+    // // create a user docs
+    // const userData = await UserDocument.create(data);
+    // if (!userData) {
+    //   res.status(400);
+    //   throw new Error("Failed to create a user document!");
+    // }
+
+    // res.status(201).json({
+    //   success: true,
+    //   message: "User document registered!",
+    //   data: userData,
+    // });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error : " + error);
+  }
+});
+
+// @desc    Get all document of a specific user
+// @route   GET /api/user/docs/:id
+// @access  Admin
+const getUserDocs = asyncHandler(async (req, res) => {
+  try {
+    let { perPage, perLimit, ...id } = req.query;
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    let matchedQuery = {};
+
+    // filter the query
+    if (id.userId) {
+      matchedQuery["userId"] = id.userId;
+    }
+
+    // aggregate the results
+    let userDocs = await User.aggregate([{}]);
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error : " + error);
+  }
+});
+
+// @desc    Update user document using id
+// @route   PUT /api/user/docs/:id
+// @access  Admin
+const updateUserDocs = asyncHandler(async (req, res) => {
+  try {
+    let data = req.body;
+    let userDoc = req.files;
+    let userId = res.locals.userInfo;
+    let id = req.params.id;
+
+    // check if document exists
+    let docExists = await UserDocument.findById(id);
+    if (!docExists) {
+      res.status(400);
+      throw new Error("No document for provided id!");
+    }
+
+    //  if file exists update it
+    if (userDoc) {
+      docExists.userDoc = userDoc;
+    }
+
+    // check if user exists and then add it
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+    data.updatedBy = userId.id;
+
+    // check if the member exists for provided files
+    const checkMemberUser = await User.findById(data.userId);
+    if (!checkMemberUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+
+    // update the document
+    let updateDoc = await UserDocument.findByIdAndUpdate(id, docExists, {
+      runValidators: true,
+      new: true,
+    });
+
+    if (!updateDoc) {
+      res.status(400);
+      throw new Error("Failed to update the user document!");
+    }
+
+    res.status(200).json({
+      success: true,
+      data: updateDoc,
+      message: "User document updated!",
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error : " + error);
+  }
+});
+
+// @desc    Delete a user document
+// @router  DELETE /api/user/docs/:id
+// @access  Admin
+const deleteUserDocs = asyncHandler(async (req, res) => {
+  try {
+    let id = req.params.id;
+    let userId = res.locals.userInfo;
+
+    // check if user exists and then add it
+    const checkUser = await User.findById(userId.id);
+    if (!checkUser) {
+      res.status(400);
+      throw new Error("Failed to find a user.");
+    }
+
+    // check if document exists
+    let docExists = await UserDocument.findById(id);
+    if (!docExists) {
+      res.status(400);
+      throw new Error("No document for provided id!");
+    }
+
+    // delete the document
+    let deleteDoc = await UserDocument.findByIdAndDelete(id);
+    if (!docExists) {
+      res.status(400);
+      throw new Error("Failed to delete the document for provided id!");
+    }
+
+    res.status(204).json({
+      success: true,
+      data: {},
+      message: "Document deleted!",
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error : " + error);
+  }
+});
+
 module.exports = {
   registerUserPhone,
   verifyUserPhone,
@@ -1189,4 +1366,8 @@ module.exports = {
   getRoleTasks,
   getRoleTaskById,
   updateRoleTask,
+  createUserDocs,
+  getUserDocs,
+  updateUserDocs,
+  deleteUserDocs,
 };

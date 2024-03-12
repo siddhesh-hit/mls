@@ -1,28 +1,26 @@
 const mongoose = require("mongoose");
 
+// Mantrimandal / council of minister
 const ministerSchema = new mongoose.Schema(
   {
     assembly_number: {
-      type: String,
-      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Assembly",
     },
-    ministry_type: {
+    year: {
       type: String,
-      required: true,
     },
     member_name: {
-      type: String,
-      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Member",
     },
     designation: {
-      // type: mongoose.Schema.Types.ObjectId,
-      // ref: "Designation",
-      type: String,
-      required: true,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Designation",
     },
-    ministry: {
-      type: String,
-      required: true,
+    ministry_type: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Ministry",
     },
     isDissolved: {
       type: Number,

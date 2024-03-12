@@ -4,52 +4,34 @@ const mongoose = require("mongoose");
 
 const constituencySchema = new mongoose.Schema(
   {
-    marathi: {
-      assembly: {
-        constituency_assembly: {
-          type: String,
-        },
-        assembly_number: {
-          type: String,
-        },
-        year: {
-          type: String,
-        },
+    council: {
+      constituency_name: {
+        type: String,
       },
-      council: {
-        constituency_type: {
-          type: String,
-        },
-        constituency_name: {
-          type: String,
-        },
-        year: {
-          type: String,
-        },
+      constituency_type: {
+        type: String,
+      },
+      constituency_subtype: {
+        type: String,
+      },
+      year: {
+        type: String,
       },
     },
-    english: {
-      assembly: {
-        constituency_assembly: {
-          type: String,
-        },
-        assembly_number: {
-          type: String,
-        },
-        year: {
-          type: String,
-        },
+    assembly: {
+      constituency_name: {
+        type: String,
       },
-      council: {
-        constituency_type: {
-          type: String,
-        },
-        constituency_name: {
-          type: String,
-        },
-        year: {
-          type: String,
-        },
+      assembly_number: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Assembly",
+        default: null,
+      },
+      year: {
+        type: String,
+      },
+      constituency_type: {
+        type: String,
       },
     },
     isHouse: {

@@ -9,7 +9,8 @@ const memberSchema = new mongoose.Schema(
         type: String,
       },
       assembly_number: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Assembly",
       },
       profile: ImageSchema,
       name: {
@@ -19,16 +20,20 @@ const memberSchema = new mongoose.Schema(
         type: String,
       },
       constituency: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Constituency",
       },
       party: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "PoliticalParty",
       },
       gender: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Gender",
       },
       district: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "District",
       },
       first_time_elected: {
         type: String,
@@ -75,6 +80,18 @@ const memberSchema = new mongoose.Schema(
         date: {
           type: String,
         },
+        presiding: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "PresidingOfficer",
+        },
+        legislative_position: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "LegislationPosition",
+        },
+        designation: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Designation",
+        },
         title: {
           type: String,
         },
@@ -82,7 +99,8 @@ const memberSchema = new mongoose.Schema(
     ],
     election_data: {
       constituency: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Constituency",
       },
       total_electorate: {
         type: String,
@@ -99,7 +117,8 @@ const memberSchema = new mongoose.Schema(
             type: String,
           },
           party: {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "PoliticalParty",
           },
         },
       ],

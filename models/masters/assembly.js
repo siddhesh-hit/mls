@@ -4,25 +4,13 @@ const mongoose = require("mongoose");
 
 const assemblySchema = new mongoose.Schema(
   {
-    marathi: {
-      assembly_number: {
-        type: String,
-        required: true,
-      },
-      assembly_name: {
-        type: String,
-        required: true,
-      },
+    assembly_number: {
+      type: String,
+      required: true,
     },
-    english: {
-      assembly_number: {
-        type: String,
-        required: true,
-      },
-      assembly_name: {
-        type: String,
-        required: true,
-      },
+    assembly_name: {
+      type: String,
+      required: true,
     },
     start_date: {
       type: String,

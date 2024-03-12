@@ -25,6 +25,10 @@ const {
   getRoleTasks,
   getRoleTaskById,
   updateRoleTask,
+  createUserDocs,
+  getUserDocs,
+  updateUserDocs,
+  deleteUserDocs,
 } = require("../../controllers/portals/user.controllers");
 
 const {
@@ -45,6 +49,22 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
+  limits: {
+    fileSize: 2000000, // 1000000 Bytes = 1 MB
+  },
+});
+
+const storage1 = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images/userDocs");
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-userDoc-${file.originalname}`);
+  },
+});
+
+const upload1 = multer({
+  storage: storage1,
   limits: {
     fileSize: 2000000, // 1000000 Bytes = 1 MB
   },
@@ -156,4 +176,35 @@ router.delete(
 router.post("/accessToken", regenerateAccessToken);
 router.post("/refreshToken", regenerateRefreshToken);
 
+router
+  .route("/docs")
+  .post(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin"]),
+    hasPermission("upload"),
+    upload1.single("userDoc"),
+    createUserDocs
+  );
+
+router
+  .route("/docs/:id")
+  .get(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin"]),
+    hasPermission("read"),
+    getUserDocs
+  )
+  .put(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin"]),
+    hasPermission("update"),
+    upload1.single("userDoc"),
+    updateUserDocs
+  )
+  .delete(
+    authMiddleware,
+    checkRoleMiddleware(["SuperAdmin"]),
+    hasPermission("delete"),
+    deleteUserDocs
+  );
 module.exports = router;
