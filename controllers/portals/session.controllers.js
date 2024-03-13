@@ -116,6 +116,7 @@ const getAllSession = asyncHandler(async (req, res) => {
     console.log(newCheck, "newCheck");
 
     const sessionCalendar = await SessionCalendar.find(newCheck)
+      .populate("session")
       .limit(pageOptions.limit)
       .skip(pageOptions.page * pageOptions.limit)
       .exec();

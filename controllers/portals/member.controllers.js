@@ -221,7 +221,6 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
 // @desc    Get all Member Options
 // @route   GET /api/member/option
 // @access  Public
-
 const getMemberFilterOption = asyncHandler(async (req, res) => {
   try {
     let query = req.query.id;

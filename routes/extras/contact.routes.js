@@ -17,12 +17,7 @@ const {
 // routes
 router
   .route("/")
-  .get(
-    authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "ContentCreator", "Reviewer"]),
-    hasPermission("read"),
-    getContacts
-  )
+  .get(getContacts)
   .post(
     authMiddleware,
     checkRoleMiddleware(["SuperAdmin", "ContentCreator"]),
@@ -32,12 +27,7 @@ router
 
 router
   .route("/:id")
-  .get(
-    authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "ContentCreator", "Reviewer"]),
-    hasPermission("read"),
-    getContact
-  )
+  .get(getContact)
   .put(
     authMiddleware,
     checkRoleMiddleware(["SuperAdmin", "ContentCreator"]),
