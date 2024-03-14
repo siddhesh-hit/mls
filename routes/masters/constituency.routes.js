@@ -2,6 +2,7 @@ const router = require("express").Router();
 const {
   createConstituency,
   getAllConstituency,
+  getAllOption,
   getConstituency,
   updateConstituency,
   deleteConstituency,
@@ -14,6 +15,8 @@ const {
 } = require("../../middlewares/authMiddleware");
 
 // routes
+router.get("/option", getAllOption);
+
 router
   .route("/")
   .get(
@@ -21,7 +24,7 @@ router
     // checkRoleMiddleware([
     //   "SuperAdmin",
     //   "Admin",
-    //   "Reviewer",
+    //   "Reviewer",a
     //   "ContentCreator",
     //   "User",
     // ]),

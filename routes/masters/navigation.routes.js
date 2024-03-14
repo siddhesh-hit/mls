@@ -5,6 +5,7 @@ const {
   createNavigation,
   getAllNavigation,
   getNavigation,
+  getAllOption,
   updateNavigation,
   deleteNavigation,
 } = require("../../controllers/masters/navigation.controllers");
@@ -16,6 +17,8 @@ const {
 } = require("../../middlewares/authMiddleware");
 
 // routes
+router.get("/option", getAllOption);
+
 router
   .route("/")
   .get(

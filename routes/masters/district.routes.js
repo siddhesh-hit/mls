@@ -3,6 +3,7 @@ const {
   createDistrict,
   getAllDistrict,
   getDistrict,
+  getAllOption,
   updateDistrict,
   deleteDistrict,
 } = require("../../controllers/masters/district.controllers");
@@ -14,6 +15,8 @@ const {
 } = require("../../middlewares/authMiddleware");
 
 // routes
+router.get("/option", getAllOption);
+
 router
   .route("/")
   .get(

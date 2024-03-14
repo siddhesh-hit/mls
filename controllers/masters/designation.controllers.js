@@ -78,6 +78,30 @@ const getDesignations = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get all master options
+// @route   GET /api/designation/option
+// @access  Public
+const getAllOption = asyncHandler(async (req, res) => {
+  try {
+    const options = await Designation.find({}).select([
+      "-isActive",
+      "-status",
+      "-createdBy",
+      "-updatedBy",
+      "-createdAt",
+      "-updatedAt",
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "All Department fetched!",
+      data: options,
+    });
+  } catch (error) {
+    throw new Error("Server error : " + error);
+  }
+});
+
 // @desc    Get a session
 // @path    GET /api/designation/:id
 // @access  Public
@@ -177,6 +201,7 @@ const deleteDesignation = asyncHandler(async (req, res) => {
 module.exports = {
   createDesignation,
   getDesignation,
+  getAllOption,
   getDesignations,
   updateDesignation,
   deleteDesignation,

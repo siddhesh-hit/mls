@@ -78,6 +78,30 @@ const getLegislationPositions = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get all master options
+// @route   GET /api/position/option
+// @access  Public
+const getAllOption = asyncHandler(async (req, res) => {
+  try {
+    const options = await LegislationPosition.find({}).select([
+      "-isActive",
+      "-status",
+      "-createdBy",
+      "-updatedBy",
+      "-createdAt",
+      "-updatedAt",
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "All Legislation Position fetched!",
+      data: options,
+    });
+  } catch (error) {
+    throw new Error("Server error : " + error);
+  }
+});
+
 // @desc    Get a session
 // @path    GET /api/position/:id
 // @access  Public
@@ -184,6 +208,7 @@ const deleteLegislationPosition = asyncHandler(async (req, res) => {
 module.exports = {
   createLegislationPosition,
   getLegislationPosition,
+  getAllOption,
   getLegislationPositions,
   updateLegislationPosition,
   deleteLegislationPosition,

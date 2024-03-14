@@ -91,6 +91,30 @@ const getDepartments = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get all master options
+// @route   GET /api/department/option
+// @access  Public
+const getAllOption = asyncHandler(async (req, res) => {
+  try {
+    const options = await Department.find({}).select([
+      "-isActive",
+      "-status",
+      "-createdBy",
+      "-updatedBy",
+      "-createdAt",
+      "-updatedAt",
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "All Department fetched!",
+      data: options,
+    });
+  } catch (error) {
+    throw new Error("Server error : " + error);
+  }
+});
+
 // @desc    Create a Department
 // @route   GET   /api/v1/department/:id
 // @access  Admin
@@ -190,6 +214,7 @@ const deleteDepartment = asyncHandler(async (req, res) => {
 module.exports = {
   createDepartment,
   getDepartments,
+  getAllOption,
   getDepartment,
   updateDepartment,
   deleteDepartment,

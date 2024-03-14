@@ -105,6 +105,30 @@ const getMinistries = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get all master options
+// @route   GET /api/ministry/option
+// @access  Public
+const getAllOption = asyncHandler(async (req, res) => {
+  try {
+    const options = await Ministry.find({}).select([
+      "-isActive",
+      "-status",
+      "-createdBy",
+      "-updatedBy",
+      "-createdAt",
+      "-updatedAt",
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "All Ministry fetched!",
+      data: options,
+    });
+  } catch (error) {
+    throw new Error("Server error : " + error);
+  }
+});
+
 // @desc    Create a Ministry
 // @route   GET   /api/v1/ministry/:id
 // @access  Admin
@@ -205,6 +229,7 @@ const deleteMinistry = asyncHandler(async (req, res) => {
 module.exports = {
   createMinistry,
   getMinistries,
+  getAllOption,
   getMinistry,
   updateMinistry,
   deleteMinistry,

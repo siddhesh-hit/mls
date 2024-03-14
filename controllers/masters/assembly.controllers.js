@@ -102,6 +102,30 @@ const getAllAssembly = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get all master options
+// @route   GET /api/assembly/option
+// @access  Public
+const getAllOption = asyncHandler(async (req, res) => {
+  try {
+    const options = await Assembly.find({}).select([
+      "-isActive",
+      "-status",
+      "-createdBy",
+      "-updatedBy",
+      "-createdAt",
+      "-updatedAt",
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "All Assembly fetched!",
+      data: options,
+    });
+  } catch (error) {
+    throw new Error("Server error : " + error);
+  }
+});
+
 // @desc    Get a assembly
 // @route   GET /api/assembly/:id
 // @access  Public
@@ -187,6 +211,7 @@ const deleteAssembly = asyncHandler(async (req, res) => {
 module.exports = {
   createAssembly,
   getAllAssembly,
+  getAllOption,
   getAssembly,
   updateAssembly,
   deleteAssembly,

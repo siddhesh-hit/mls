@@ -29,6 +29,10 @@ const createConstituency = asyncHandler(async (req, res) => {
     //   constituency.push(createdConstituency);
     // }
 
+    if (data.isHouse === "Constituency") {
+      data.assembly.assembly_number = null;
+    }
+
     const createdConstituency = await Constituency.create(data);
     if (!createConstituency) {
       res.status(403);
@@ -76,6 +80,7 @@ const getAllConstituency = asyncHandler(async (req, res) => {
       {
         $facet: {
           asse: [
+            { $sort: { createdAt: -1 } },
             { $skip: pageOptions.page * pageOptions.limit },
             { $limit: pageOptions.limit },
           ],
@@ -98,6 +103,30 @@ const getAllConstituency = asyncHandler(async (req, res) => {
   } catch (error) {
     res.status(500);
     throw new Error(error);
+  }
+});
+
+// @desc    Get all master options
+// @route   GET /api/constituency/option
+// @access  Public
+const getAllOption = asyncHandler(async (req, res) => {
+  try {
+    const options = await Constituency.find({}).select([
+      "-isActive",
+      "-status",
+      "-createdBy",
+      "-updatedBy",
+      "-createdAt",
+      "-updatedAt",
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "All constituency fetched!",
+      data: options,
+    });
+  } catch (error) {
+    throw new Error("Server error : " + error);
   }
 });
 
@@ -182,6 +211,7 @@ const deleteConstituency = asyncHandler(async (req, res) => {
 module.exports = {
   createConstituency,
   getAllConstituency,
+  getAllOption,
   getConstituency,
   updateConstituency,
   deleteConstituency,

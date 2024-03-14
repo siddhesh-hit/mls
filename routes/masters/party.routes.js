@@ -4,6 +4,7 @@ const multer = require("multer");
 const {
   createParty,
   getAllParty,
+  getAllOption,
   getParty,
   updateParty,
   deleteParty,
@@ -33,12 +34,11 @@ const upload = multer({
 });
 
 // routes
+router.get("/option", getAllOption);
+
 router
   .route("/")
-  .get(
-
-    getAllParty
-  )
+  .get(getAllParty)
   .post(
     authMiddleware,
     checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),

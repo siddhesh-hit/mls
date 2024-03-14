@@ -4,6 +4,7 @@ const {
   createLegislationPosition,
   getLegislationPosition,
   getLegislationPositions,
+  getAllOption,
   updateLegislationPosition,
   deleteLegislationPosition,
 } = require("../../controllers/masters/position.controllers");
@@ -15,6 +16,8 @@ const {
 } = require("../../middlewares/authMiddleware");
 
 // routes
+router.get("/option", getAllOption);
+
 router
   .route("/")
   .get(

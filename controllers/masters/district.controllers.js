@@ -115,6 +115,30 @@ const getDistrict = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get all master options
+// @route   GET /api/district/option
+// @access  Public
+const getAllOption = asyncHandler(async (req, res) => {
+  try {
+    const options = await District.find({}).select([
+      "-isActive",
+      "-status",
+      "-createdBy",
+      "-updatedBy",
+      "-createdAt",
+      "-updatedAt",
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "All District fetched!",
+      data: options,
+    });
+  } catch (error) {
+    throw new Error("Server error : " + error);
+  }
+});
+
 // @desc    Update a District
 // @route   PUT /api/district/:id
 // @access  Admin
@@ -176,6 +200,7 @@ const deleteDistrict = asyncHandler(async (req, res) => {
 module.exports = {
   createDistrict,
   getAllDistrict,
+  getAllOption,
   getDistrict,
   updateDistrict,
   deleteDistrict,

@@ -139,6 +139,30 @@ const getParty = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get all master options
+// @route   GET /api/party/option
+// @access  Public
+const getAllOption = asyncHandler(async (req, res) => {
+  try {
+    const options = await Party.find({}).select([
+      "-isActive",
+      "-status",
+      "-createdBy",
+      "-updatedBy",
+      "-createdAt",
+      "-updatedAt",
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "All Party fetched!",
+      data: options,
+    });
+  } catch (error) {
+    throw new Error("Server error : " + error);
+  }
+});
+
 // @desc    Update a Party
 // @route   PUT /api/party/:id
 // @access  Admin
@@ -213,6 +237,7 @@ const deleteParty = asyncHandler(async (req, res) => {
 module.exports = {
   createParty,
   getAllParty,
+  getAllOption,
   getParty,
   updateParty,
   deleteParty,

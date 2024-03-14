@@ -4,6 +4,7 @@ const {
   createSessionField,
   getSessionField,
   getSessionFields,
+  getAllOption,
   updateSessionField,
   deleteSessionField,
 } = require("../../controllers/masters/session.controllers");
@@ -15,6 +16,8 @@ const {
 } = require("../../middlewares/authMiddleware");
 
 // routes
+router.get("/option", getAllOption);
+
 router
   .route("/")
   .get(

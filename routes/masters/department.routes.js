@@ -3,6 +3,7 @@ const router = require("express").Router();
 const {
   createDepartment,
   getDepartments,
+  getAllOption,
   getDepartment,
   updateDepartment,
   deleteDepartment,
@@ -15,6 +16,8 @@ const {
 } = require("../../middlewares/authMiddleware");
 
 // routes
+router.get("/option", getAllOption);
+
 router
   .route("/")
   .get(

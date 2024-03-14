@@ -78,6 +78,30 @@ const getPresidingOfficers = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get all master options
+// @route   GET /api/officer/option
+// @access  Public
+const getAllOption = asyncHandler(async (req, res) => {
+  try {
+    const options = await PresidingOfficer.find({}).select([
+      "-isActive",
+      "-status",
+      "-createdBy",
+      "-updatedBy",
+      "-createdAt",
+      "-updatedAt",
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "All Presiding Officer fetched!",
+      data: options,
+    });
+  } catch (error) {
+    throw new Error("Server error : " + error);
+  }
+});
+
 // @desc    Get a session
 // @path    GET /api/officer/:id
 // @access  Public
@@ -182,6 +206,7 @@ const deletePresidingOfficer = asyncHandler(async (req, res) => {
 module.exports = {
   createPresidingOfficer,
   getPresidingOfficer,
+  getAllOption,
   getPresidingOfficers,
   updatePresidingOfficer,
   deletePresidingOfficer,
