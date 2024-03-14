@@ -42,11 +42,32 @@ const getAllResetHead = asyncHandler(async (req, res) => {
       limit: parseInt(perLimit, 10) || 10,
     };
 
-    let resetHead = await ResetHead.find(id)
-      .limit(pageOptions.limit)
-      .skip(pageOptions.page * pageOptions.limit)
-      .sort({ performed_on: -1 })
-      .exec();
+    // filter the query
+    let matchedQuery = {};
+
+    for (key in id) {
+      if (id[key] !== "") {
+        id[key] = id[key].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+        matchedQuery[key] = new RegExp(`.*${id[key]}.*`, "i");
+      }
+    }
+
+    let resetHead = await ResetHead.aggregate([
+      {
+        $match: matchedQuery,
+      },
+      {
+        $facet: {
+          reset: [
+            { $sort: { performed_on: -1 } },
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [{ $count: "count" }],
+        },
+      },
+    ]);
 
     if (!resetHead) {
       res.status(400);
@@ -54,9 +75,10 @@ const getAllResetHead = asyncHandler(async (req, res) => {
     }
 
     res.status(200).json({
-      success: true,
-      data: resetHead,
       message: "Resethead fetched successfully",
+      success: true,
+      data: resetHead[0]?.reset || [],
+      count: resetHead[0]?.totalCount[0]?.count || 0,
     });
   } catch (error) {
     res.status(500);

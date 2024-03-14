@@ -103,29 +103,43 @@ const getAllMember = asyncHandler(async (req, res) => {
   try {
     let { perPage, perLimit, ...id } = req.query;
 
-    console.log(id);
-
     const pageOptions = {
       page: parseInt(perPage, 10) || 0,
       limit: parseInt(perLimit, 10) || 10,
     };
 
-    const members = await Member.find(id)
-      .limit(pageOptions.limit)
-      .skip(pageOptions.page * pageOptions.limit)
-      .exec();
+    // filter the query
+    let matchedQuery = {};
 
-    // check if members exists
-    if (!members) {
-      res.status(400);
-      throw new Error("No members found");
+    for (key in id) {
+      if (id[key] !== "") {
+        id[key] = id[key].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+        matchedQuery[key] = new RegExp(`.*${id[key]}.*`, "i");
+      }
     }
+
+    let members = await Member.aggregate([
+      {
+        $match: matchedQuery,
+      },
+      {
+        $facet: {
+          member: [
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [{ $count: "count" }],
+        },
+      },
+    ]);
 
     // send response
     res.status(200).json({
-      success: true,
       message: "All the members fetched successfully",
-      data: members,
+      success: true,
+      data: members[0]?.member || [],
+      count: members[0]?.totalCount[0]?.count || 0,
     });
   } catch (error) {
     res.status(500);
