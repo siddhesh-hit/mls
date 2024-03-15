@@ -153,30 +153,35 @@ const getAllMember = asyncHandler(async (req, res) => {
 const getAllMemberDetails = asyncHandler(async (req, res) => {
   try {
     let { perPage, perLimit } = req.query;
-    let obj = {};
+
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+    let matchedQuery = {};
 
     if (req.query.name) {
-      obj["basic_info.name"] = req.query.name;
+      matchedQuery["basic_info.name"] = req.query.name;
     }
     if (req.query.party) {
-      obj["basic_info.party"] = req.query.party;
+      matchedQuery["basic_info.party"] = req.query.party;
     }
 
     if (req.query.constituency) {
-      obj["basic_info.constituency"] = req.query.constituency;
+      matchedQuery["basic_info.constituency"] = req.query.constituency;
     }
     if (req.query.surname) {
-      obj["basic_info.surname"] = req.query.surname;
+      matchedQuery["basic_info.surname"] = req.query.surname;
     }
     if (req.query.district) {
-      obj["basic_info.district"] = req.query.district;
+      matchedQuery["basic_info.district"] = req.query.district;
     }
     if (req.query.gender) {
-      obj["basic_info.gender"] = req.query.gender;
+      matchedQuery["basic_info.gender"] = req.query.gender;
     }
 
     if (req.query.house) {
-      obj["basic_info.house"] = req.query.house;
+      matchedQuery["basic_info.house"] = req.query.house;
     }
     if (req.query.fullname) {
       // Escape special characters in the search string
@@ -186,32 +191,32 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
       );
       // Create a regex pattern that allows any characters between the name parts
       const regexPattern = escapedSearch.split(/\s+/).join(".*");
-      console.log("regexPattern", regexPattern);
-      obj["$expr"] = {
-        " $regexMatch": {
+      // console.log("regexPattern", regexPattern);
+      matchedQuery["$expr"] = {
+        $regexMatch: {
           input: { $concat: ["$basic_info.name", " ", "$basic_info.surname"] },
           regex: regexPattern,
           options: "i",
         },
       };
     }
-    console.log("query", obj);
 
-    const pageOptions = {
-      page: parseInt(perPage, 10) || 0,
-      limit: parseInt(perLimit, 10) || 10,
-    };
-
-    const members = await Member.find(obj)
-      .populate([
-        "basic_info.constituency",
-        "basic_info.district",
-        "basic_info.party",
-        "basic_info.house",
-      ])
-      .limit(pageOptions.limit)
-      .skip(pageOptions.page * pageOptions.limit)
-      .exec();
+    // aggregate on the query
+    const members = await Member.aggregate([
+      {
+        $match: matchedQuery,
+      },
+      {
+        $facet: {
+          mem: [
+            // { $sort: { createdAt: -1 } },
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [{ $count: "count" }],
+        },
+      },
+    ]);
 
     // check if members exists
     if (!members) {
@@ -223,10 +228,11 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
     res.status(200).json({
       success: true,
       message: "All the members fetched successfully",
-      data: members,
+      data: members[0]?.mem || [],
+      count: members[0]?.totalCount[0]?.count || 0,
     });
   } catch (error) {
-    console.log("error", error);
+    // console.log("error", error);
     res.status(500);
     throw new Error(error);
   }
@@ -237,30 +243,21 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
 // @access  Public
 const getMemberFilterOption = asyncHandler(async (req, res) => {
   try {
-    let query = req.query.id;
+    let { id, ...query } = req.query;
 
-    const debates = await Member.find().distinct(query);
+    let matchedQuery = {};
+
+    for (key in query) {
+      if (query[key] !== "") {
+        matchedQuery[key] = query[key];
+      }
+    }
+    const debates = await Member.find(matchedQuery).distinct(id).sort();
     if (!debates) {
       res.status(400);
       throw new Error("No fields for query: " + query);
     }
     // let debateSet = new Set();
-
-    let newDebates = [];
-    debates.map((item) => {
-      // item = item.replace(/\s/g, "");
-      // debateSet.add(item);
-      // if (item && item !== null && item !== undefined) {
-      //   return item;
-      // }
-
-      if (item) {
-        newDebates.push(item);
-      }
-    });
-
-    // console.log(newDebates);
-    newDebates.sort();
 
     // console.log(newDebates);
 
@@ -268,7 +265,7 @@ const getMemberFilterOption = asyncHandler(async (req, res) => {
       success: true,
       message: "Debates fetched successfully",
       // data: Array.from(debateSet).sort(),
-      data: newDebates,
+      data: debates,
     });
   } catch (error) {
     res.status(500);
@@ -283,7 +280,7 @@ const getMemberHouse = asyncHandler(async (req, res) => {
   try {
     let query = req.query.id;
 
-    console.log(req.query);
+    // console.log(req.query);
 
     const members = await Member.find({
       "basic_info.house": query,
@@ -351,12 +348,17 @@ const getMemberSearch = asyncHandler(async (req, res) => {
 const getMember = asyncHandler(async (req, res) => {
   try {
     const member = await Member.findById(req.params.id).populate([
+      "basic_info.assembly_number",
       "basic_info.constituency",
       "basic_info.district",
       "basic_info.party",
+      "basic_info.gender",
       "basic_info.house",
       "election_data.member_election_result.party",
       "election_data.constituency",
+      "political_journey.presiding",
+      "political_journey.legislative_position",
+      "political_journey.designation",
     ]);
 
     member.political_journey.sort((a, b) => {

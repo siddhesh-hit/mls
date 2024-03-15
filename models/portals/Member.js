@@ -74,10 +74,19 @@ const memberSchema = new mongoose.Schema(
       address: {
         type: String,
       },
+      address1: {
+        type: String,
+      },
       mobile_number: {
         type: String,
       },
       email: {
+        type: String,
+      },
+      awards: {
+        type: String,
+      },
+      other_info: {
         type: String,
       },
     },

@@ -28,14 +28,14 @@ const createMemberValidation = (data) => {
           .string()
           .required()
           .label("Constituency is required."),
-        constituency_from: joi
-          .string()
-          .required()
-          .label("Constituency from is required."),
-        constituency_to: joi
-          .string()
-          .required()
-          .label("Constituency to is required."),
+        // constituency_from: joi
+        //   .string()
+        //   .required()
+        //   .label("Constituency from is required."),
+        // constituency_to: joi
+        //   .string()
+        //   .required()
+        //   .label("Constituency to is required."),
         party: joi.string().required().label("Party is required."),
         gender: joi.string().required().label("Gender is required."),
         district: joi.string().required().label("District is required."),
@@ -65,6 +65,7 @@ const createMemberValidation = (data) => {
           .required()
           .label("Foreign Migration is required."),
         address: joi.string().required().label("Address is required."),
+        address1: joi.string().required().label("Address 1 is required."),
         mobile_number: joi
           .string()
           .required()
@@ -127,14 +128,14 @@ const updateMemberValidation = (data) => {
           .string()
           .required()
           .label("Constituency is required."),
-        constituency_from: joi
-          .string()
-          .required()
-          .label("Constituency from is required."),
-        constituency_to: joi
-          .string()
-          .required()
-          .label("Constituency to is required."),
+        // constituency_from: joi
+        //   .string()
+        //   .required()
+        //   .label("Constituency from is required."),
+        // constituency_to: joi
+        //   .string()
+        //   .required()
+        //   .label("Constituency to is required."),
         party: joi.string().required().label("Party is required."),
         gender: joi.string().required().label("Gender is required."),
         district: joi.string().required().label("District is required."),
@@ -172,11 +173,14 @@ const updateMemberValidation = (data) => {
           .required()
           .label("Foreign Migration is required."),
         address: joi.string().required().label("Address is required."),
+        address1: joi.string().required().label("Address 1 is required."),
         mobile_number: joi
           .string()
           .required()
           .label("Mobile number is required."),
         email: joi.string().required().label("Email is required."),
+        awards: joi.string().required().label("Awards is required."),
+        other_info: joi.string().required().label("Other Info is required."),
       })
       .unknown(true),
 
