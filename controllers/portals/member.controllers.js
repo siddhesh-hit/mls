@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-
+const { ObjectId } = require("mongodb");
 const Member = require("../../models/portals/Member");
 const User = require("../../models/portals/userModel");
 const propertyNames = Object.keys(User.schema.obj);
@@ -177,11 +177,11 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
       matchedQuery["basic_info.name"] = req.query.name;
     }
     if (req.query.party) {
-      matchedQuery["basic_info.party"] = req.query.party;
+      matchedQuery["basic_info.party"] = new ObjectId(req.query.party);
     }
 
     if (req.query.constituency) {
-      matchedQuery["basic_info.constituency"] = req.query.constituency;
+      matchedQuery["basic_info.constituency"] = new ObjectId(req.query.constituency)
     }
     if (req.query.surname) {
       matchedQuery["basic_info.surname"] = req.query.surname;
