@@ -7,6 +7,7 @@ const {
   getParty,
   updateParty,
   deleteParty,
+  getAllOption,
 } = require("../../controllers/masters/party.controllers");
 
 const {
@@ -33,6 +34,8 @@ const upload = multer({
 });
 
 // routes
+router.get("/option", getAllOption);
+
 router
   .route("/")
   .get(getAllParty)
