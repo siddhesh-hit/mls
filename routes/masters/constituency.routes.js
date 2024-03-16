@@ -41,15 +41,15 @@ router
 router
   .route("/:id")
   .get(
-    authMiddleware,
-    checkRoleMiddleware([
-      "SuperAdmin",
-      "Admin",
-      "Reviewer",
-      "ContentCreator",
-      "User",
-    ]),
-    hasPermission("read"),
+    // authMiddleware,
+    // checkRoleMiddleware([
+    //   "SuperAdmin",
+    //   "Admin",
+    //   "Reviewer",
+    //   "ContentCreator",
+    //   "User",
+    // ]),
+    // hasPermission("read"),
     getConstituency
   )
   .put(

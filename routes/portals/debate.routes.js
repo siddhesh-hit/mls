@@ -8,10 +8,13 @@ const {
   getMemberDebateSearch,
   getpostDebateFullSearch,
   getpostAllDebates,
+  getnewPostAllDebates,
   getDebateFullSearch,
+  getDumpDebateFullSearch,
   updateDebateById,
   deleteDebateById,
   getDebateFilterOption,
+  getDumpDebateFilterOption,
   getDebateMethodFilterOption,
 } = require("../../controllers/portals/debate.controllers");
 
@@ -27,12 +30,16 @@ router.get("/houses", getHouseDebates);
 router.get("/search", getDebateSearch);
 router.get("/member", getMemberDebateSearch);
 router.get("/fields", getDebateFullSearch);
-router.get("/postgresFields", getpostDebateFullSearch);
 
+router.get("/postgresFields", getpostDebateFullSearch);
 router.get("/postgres", getpostAllDebates);
+
+router.get("/dump", getnewPostAllDebates);
+router.get("/dumpFields", getDumpDebateFullSearch);
 
 // options
 router.get("/option", getDebateFilterOption);
+router.get("/dumpOption", getDumpDebateFilterOption);
 
 // basic crud
 router

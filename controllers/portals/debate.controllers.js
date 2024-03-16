@@ -3,7 +3,7 @@ const asyncHandler = require("express-async-handler");
 const Debate = require("../../models/portals/Debate");
 const PostgresDebate = require("../../models/portals/PostgresDebate");
 const User = require("../../models/portals/userModel");
-
+const DumpDebate = require("../../models/portals/DumpDebate");
 const {
   createNotificationFormat,
 } = require("../../controllers/extras/notification.controllers");
@@ -218,6 +218,64 @@ const getpostAllDebates = asyncHandler(async (req, res) => {
     // send response
     res.status(200).json({
       message: "postgres Debates fetched successfully",
+      success: true,
+      data: debate[0]?.debate || [],
+      count: debate[0]?.totalCount[0]?.count || [],
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error(error);
+  }
+});
+
+// @desc    Get all Debates
+// @route   GET /api/debate/dump
+// @access  Public
+const getnewPostAllDebates = asyncHandler(async (req, res) => {
+  try {
+    let { perPage, perLimit, ...id } = req.query;
+
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    // search = search.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+    const matchConditions = {};
+    for (let key in id) {
+      if (id[key]) {
+        console.log(id[key], id, key);
+        id[key] = id[key].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        matchConditions[key] = new RegExp(`.*${id[key]}.*`, "i");
+      }
+    }
+
+    // to look for
+    console.log(matchConditions);
+
+    const debate = await DumpDebate.aggregate([
+      {
+        $match: matchConditions,
+      },
+      {
+        $facet: {
+          debate: [
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [
+            {
+              $count: "count",
+            },
+          ],
+        },
+      },
+    ]);
+
+    // send response
+    res.status(200).json({
+      message: "Dump Debates fetched successfully",
       success: true,
       data: debate[0]?.debate || [],
       count: debate[0]?.totalCount[0]?.count || [],
@@ -668,6 +726,117 @@ const getpostDebateFullSearch = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get Debate based on multiple query
+// @route   GET /api/debate/fields?id=""
+// @access  Public
+const getDumpDebateFullSearch = asyncHandler(async (req, res) => {
+  try {
+    let { perPage, perLimit, ...queries } = req.query;
+
+    if (!(Object.keys(queries).length > 0)) {
+      throw new Error("Fill query first");
+    }
+
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    // compute the queries in an array for using in and stage
+    let arrayOfQuery = Object.keys(queries);
+    let andMatchStage = [];
+
+    for (let i = 0; i < arrayOfQuery.length; i++) {
+      let key = arrayOfQuery[i];
+      let value = queries[arrayOfQuery[i]];
+
+      if (value && key !== "topic") {
+        value = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        let obj = {
+          [key]: new RegExp(`.*${value}.*`, "i"),
+        };
+
+        andMatchStage.push(obj);
+      }
+
+      if (key === "topic") {
+        value = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        let or = {
+          $or: [
+            { topic: new RegExp(`.*${value}.*`, "i") },
+            { speaker: new RegExp(`.*${value}.*`, "i") },
+            { keywords: new RegExp(`.*${value}.*`, "i") },
+            { members_name: new RegExp(`.*${value}.*`, "i") },
+            { date: new RegExp(`.*${value}.*`, "i") },
+          ],
+        };
+
+        andMatchStage.push(or);
+      }
+
+      if (key === "house") {
+        value = value.replace(/\s+/g, "\\s*");
+        let obj = {
+          [key]: new RegExp(`.*${value}.*`, "i"),
+        };
+        andMatchStage.push(obj);
+      }
+    }
+
+    console.log(andMatchStage);
+
+    let debates;
+    if (andMatchStage.length > 0) {
+      debates = await DumpDebate.aggregate([
+        {
+          $match: {
+            $and: andMatchStage,
+          },
+        },
+        {
+          $facet: {
+            debate: [
+              { $skip: pageOptions.page * pageOptions.limit },
+              { $limit: pageOptions.limit },
+            ],
+            totalCount: [
+              {
+                $count: "count",
+              },
+            ],
+          },
+        },
+      ]);
+    } else {
+      debates = await DumpDebate.aggregate([
+        {
+          $facet: {
+            debate: [
+              { $skip: pageOptions.page * pageOptions.limit },
+              { $limit: pageOptions.limit },
+            ],
+            totalCount: [
+              {
+                $count: "count",
+              },
+            ],
+          },
+        },
+      ]);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "dump Debates fetched successfully",
+      data: debates[0]?.debate || [],
+      count: debates[0]?.totalCount[0]?.count || 0,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error: " + error);
+  }
+});
+
 // @desc    Update a Debate by ID
 // @route   PUT /api/debate/:id
 // @access  Admin
@@ -827,6 +996,45 @@ const getDebateFilterOption = asyncHandler(async (req, res) => {
 // @desc    Get all distinct values for options
 // @route   GET /api/debate/option?id=
 // @access  Public
+const getDumpDebateFilterOption = asyncHandler(async (req, res) => {
+  try {
+    let query = req.query.id;
+
+    const debates = await DumpDebate.find().distinct(query);
+
+    if (!debates) {
+      res.status(400);
+      throw new Error("No fields for query: " + query);
+    }
+
+    // let debateSet = new Set();
+
+    let newDebates = [];
+    debates.map((item) => {
+      if (item) {
+        newDebates.push(item);
+      }
+    });
+
+    // console.log(newDebates);
+    newDebates.sort();
+
+    // console.log(newDebates);
+
+    res.status(200).json({
+      success: true,
+      message: "Debates fetched successfully",
+      data: newDebates,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Server error: " + error);
+  }
+});
+
+// @desc    Get all distinct values for options
+// @route   GET /api/debate/option?id=
+// @access  Public
 const getDebateMethodFilterOption = asyncHandler(async (req, res) => {
   try {
     let query = req.query.id;
@@ -866,10 +1074,13 @@ module.exports = {
   getDebateSearch,
   getMemberDebateSearch,
   getpostAllDebates,
+  getnewPostAllDebates,
   getpostDebateFullSearch,
+  getDumpDebateFullSearch,
   getDebateFullSearch,
   updateDebateById,
   deleteDebateById,
   getDebateFilterOption,
+  getDumpDebateFilterOption,
   getDebateMethodFilterOption,
 };
