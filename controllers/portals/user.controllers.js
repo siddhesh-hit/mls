@@ -299,6 +299,7 @@ const loginUserEmail = asyncHandler(async (req, res) => {
       designation: user.designation,
       phone_number: user.phone_number,
       gender: user.gender,
+      date_of_birth: user.date_of_birth,
       user_image: user.user_image,
       notificationId: user.notificationId,
       role_taskId: user.role_taskId,
@@ -706,7 +707,7 @@ const getUserById = asyncHandler(async (req, res) => {
     const user = await User.findById(req.params.id, {
       isBlocked: false,
     }).select(
-      "_id full_name houses department designation email phone_number gender date_of_birth user_image isBlocked"
+      "_id full_name houses department date_of_birth designation email phone_number gender date_of_birth user_image isBlocked"
     );
 
     if (!user) {

@@ -14,10 +14,12 @@ const ministerSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Member",
     },
-    designation: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Designation",
-    },
+    designation: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Designation",
+      },
+    ],
     ministry_type: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Ministry",

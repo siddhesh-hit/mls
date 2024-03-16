@@ -43,16 +43,49 @@ const createDistrict = asyncHandler(async (req, res) => {
 // @access  Public
 const getAllDistrict = asyncHandler(async (req, res) => {
   try {
-    // find district
-    const district = await District.find({}).select("marathi english _id");
+    let { perPage, perLimit, ...id } = req.query;
+
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    // filter the query
+    let matchedQuery = {};
+
+    for (key in id) {
+      if (id[key] !== "") {
+        id[key] = id[key].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+        matchedQuery[key] = new RegExp(`.*${id[key]}.*`, "i");
+      }
+    }
+
+    console.log(matchedQuery);
+    // aggregate on the query and send res
+    const district = await District.aggregate([
+      {
+        $match: matchedQuery,
+      },
+      {
+        $facet: {
+          dis: [
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [{ $count: "count" }],
+        },
+      },
+    ]);
     if (!district) {
       res.status(403);
       throw new Error("Couldn't find District.");
     }
     res.status(200).json({
       message: "District fetched successfully.",
-      data: district,
       success: true,
+      data: district[0]?.dis || [],
+      count: district[0]?.totalCount[0]?.count || 0,
     });
   } catch (error) {
     res.status(500);
@@ -79,6 +112,30 @@ const getDistrict = asyncHandler(async (req, res) => {
   } catch (error) {
     res.status(500);
     throw new Error(error);
+  }
+});
+
+// @desc    Get all master options
+// @route   GET /api/district/option
+// @access  Public
+const getAllOption = asyncHandler(async (req, res) => {
+  try {
+    const options = await District.find({}).select([
+      "-isActive",
+      "-status",
+      "-createdBy",
+      "-updatedBy",
+      "-createdAt",
+      "-updatedAt",
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "All District fetched!",
+      data: options,
+    });
+  } catch (error) {
+    throw new Error("Server error : " + error);
   }
 });
 
@@ -143,6 +200,7 @@ const deleteDistrict = asyncHandler(async (req, res) => {
 module.exports = {
   createDistrict,
   getAllDistrict,
+  getAllOption,
   getDistrict,
   updateDistrict,
   deleteDistrict,

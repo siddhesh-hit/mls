@@ -470,7 +470,22 @@ const getDebateFullSearch = asyncHandler(async (req, res) => {
 
         andMatchStage.push(or);
       }
+
+      if (key === "house") {
+        // value = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        // let obj = {
+        //   [key]: new RegExp(`.*${value}.*`, "i"),
+        // };
+        // andMatchStage.push(obj);
+        value = value.replace(/\s+/g, "\\s*");
+        let obj = {
+          [key]: new RegExp(`.*${value}.*`, "i"),
+        };
+        andMatchStage.push(obj);
+      }
     }
+
+    console.log(andMatchStage);
 
     let debates;
     if (andMatchStage.length > 0) {

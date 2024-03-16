@@ -86,6 +86,30 @@ const getAllNavigation = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get all master options
+// @route   GET /api/navigation/option
+// @access  Public
+const getAllOption = asyncHandler(async (req, res) => {
+  try {
+    const options = await Navigation.find({}).select([
+      "-isActive",
+      "-status",
+      "-createdBy",
+      "-updatedBy",
+      "-createdAt",
+      "-updatedAt",
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "All Navigation fetched!",
+      data: options,
+    });
+  } catch (error) {
+    throw new Error("Server error : " + error);
+  }
+});
+
 // @desc    Get a Navigation
 // @route   /api/v1/navigation/:id
 // @access  Public
@@ -177,6 +201,7 @@ const deleteNavigation = asyncHandler(async (req, res) => {
 module.exports = {
   createNavigation,
   getAllNavigation,
+  getAllOption,
   getNavigation,
   updateNavigation,
   deleteNavigation,

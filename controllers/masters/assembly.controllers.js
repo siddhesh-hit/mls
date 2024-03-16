@@ -49,22 +49,80 @@ const createAssembly = asyncHandler(async (req, res) => {
 // @access  Public
 const getAllAssembly = asyncHandler(async (req, res) => {
   try {
-    const assembly = await Assembly.find({});
+    let { perPage, perLimit, ...id } = req.query;
 
-    if (!assembly) {
+    const pageOptions = {
+      page: parseInt(perPage, 10) || 0,
+      limit: parseInt(perLimit, 10) || 10,
+    };
+
+    // filter the query
+    let matchedQuery = {};
+
+    for (key in id) {
+      if (id[key] !== "") {
+        id[key] = id[key].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+        matchedQuery[key] = new RegExp(`.*${id[key]}.*`, "i");
+      }
+    }
+
+    console.log(matchedQuery);
+
+    // aggregate on the query and send res
+    let assemblies = await Assembly.aggregate([
+      {
+        $match: matchedQuery,
+      },
+      {
+        $facet: {
+          asse: [
+            { $skip: pageOptions.page * pageOptions.limit },
+            { $limit: pageOptions.limit },
+          ],
+          totalCount: [{ $count: "count" }],
+        },
+      },
+    ]);
+
+    if (!assemblies) {
       res.status(400);
       throw new Error("No assembly found.");
     }
 
     res.status(200).json({
       message: "Assembly created successfully.",
-
       success: true,
-      data: assembly,
+      data: assemblies[0]?.asse || [],
+      count: assemblies[0]?.totalCount[0]?.count || 0,
     });
   } catch (error) {
     res.status(500);
     throw new Error(error);
+  }
+});
+
+// @desc    Get all master options
+// @route   GET /api/assembly/option
+// @access  Public
+const getAllOption = asyncHandler(async (req, res) => {
+  try {
+    const options = await Assembly.find({}).select([
+      "-isActive",
+      "-status",
+      "-createdBy",
+      "-updatedBy",
+      "-createdAt",
+      "-updatedAt",
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "All Assembly fetched!",
+      data: options,
+    });
+  } catch (error) {
+    throw new Error("Server error : " + error);
   }
 });
 
@@ -153,6 +211,7 @@ const deleteAssembly = asyncHandler(async (req, res) => {
 module.exports = {
   createAssembly,
   getAllAssembly,
+  getAllOption,
   getAssembly,
   updateAssembly,
   deleteAssembly,

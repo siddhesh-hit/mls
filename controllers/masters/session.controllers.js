@@ -78,6 +78,30 @@ const getSessionFields = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get all master options
+// @route   GET /api/sessionField/option
+// @access  Public
+const getAllOption = asyncHandler(async (req, res) => {
+  try {
+    const options = await SessionField.find({}).select([
+      "-isActive",
+      "-status",
+      "-createdBy",
+      "-updatedBy",
+      "-createdAt",
+      "-updatedAt",
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "All SessionField fetched!",
+      data: options,
+    });
+  } catch (error) {
+    throw new Error("Server error : " + error);
+  }
+});
+
 // @desc    Get a session
 // @path    GET /api/sessionField/:id
 // @access  Public
@@ -177,6 +201,7 @@ const deleteSessionField = asyncHandler(async (req, res) => {
 module.exports = {
   createSessionField,
   getSessionField,
+  getAllOption,
   getSessionFields,
   updateSessionField,
   deleteSessionField,

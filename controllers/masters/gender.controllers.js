@@ -84,6 +84,30 @@ const getGender = asyncHandler(async (req, res) => {
   }
 });
 
+// @desc    Get all master options
+// @route   GET /api/gender/option
+// @access  Public
+const getAllOption = asyncHandler(async (req, res) => {
+  try {
+    const options = await Gender.find({}).select([
+      "-isActive",
+      "-status",
+      "-createdBy",
+      "-updatedBy",
+      "-createdAt",
+      "-updatedAt",
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "All Gender fetched!",
+      data: options,
+    });
+  } catch (error) {
+    throw new Error("Server error : " + error);
+  }
+});
+
 // @desc    Update a Gender
 // @route   PUT /api/gender/:id
 // @access  Admin
@@ -144,6 +168,7 @@ const deleteGender = asyncHandler(async (req, res) => {
 module.exports = {
   createGender,
   getAllGender,
+  getAllOption,
   getGender,
   updateGender,
   deleteGender,

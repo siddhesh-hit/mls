@@ -26,9 +26,6 @@ const updateGenderValidation = (data) => {
       english: joi.object({
         gender: joi.string().required().label("English Gender is required."),
       }),
-      isActive: joi.boolean().required(),
-      isAccepted: joi.boolean().required(),
-      isUpdated: joi.boolean().required(),
     })
     .unknown(true);
 

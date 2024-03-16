@@ -12,6 +12,12 @@ const memberSchema = new mongoose.Schema(
         type: mongoose.Schema.Types.ObjectId,
         ref: "Assembly",
       },
+      constituency_from: {
+        type: String,
+      },
+      constituency_to: {
+        type: String,
+      },
       profile: ImageSchema,
       name: {
         type: String,
@@ -68,10 +74,19 @@ const memberSchema = new mongoose.Schema(
       address: {
         type: String,
       },
+      address1: {
+        type: String,
+      },
       mobile_number: {
         type: String,
       },
       email: {
+        type: String,
+      },
+      awards: {
+        type: String,
+      },
+      other_info: {
         type: String,
       },
     },

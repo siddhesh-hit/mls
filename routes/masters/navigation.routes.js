@@ -5,6 +5,7 @@ const {
   createNavigation,
   getAllNavigation,
   getNavigation,
+  getAllOption,
   updateNavigation,
   deleteNavigation,
 } = require("../../controllers/masters/navigation.controllers");
@@ -16,18 +17,20 @@ const {
 } = require("../../middlewares/authMiddleware");
 
 // routes
+router.get("/option", getAllOption);
+
 router
   .route("/")
   .get(
-    authMiddleware,
-    checkRoleMiddleware([
-      "SuperAdmin",
-      "Admin",
-      "Reviewer",
-      "ContentCreator",
-      "User",
-    ]),
-    hasPermission("read"),
+    // authMiddleware,
+    // checkRoleMiddleware([
+    //   "SuperAdmin",
+    //   "Admin",
+    //   "Reviewer",
+    //   "ContentCreator",
+    //   "User",
+    // ]),
+    // hasPermission("read"),
     getAllNavigation
   )
   .post(

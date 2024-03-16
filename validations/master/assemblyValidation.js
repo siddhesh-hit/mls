@@ -65,9 +65,6 @@ const updateAssemblyValidation = (data) => {
         .unknown(true),
       start_date: joi.date().required().label("Start date is required."),
       end_date: joi.date().required().label("End date is required."),
-      isActive: joi.boolean().required(),
-      isAccepted: joi.boolean().required(),
-      isUpdated: joi.boolean().required(),
     })
     .unknown(true);
 

@@ -2,6 +2,7 @@ const router = require("express").Router();
 const {
   createMinistry,
   getMinistries,
+  getAllOption,
   getMinistry,
   updateMinistry,
   deleteMinistry,
@@ -14,17 +15,14 @@ const {
 } = require("../../middlewares/authMiddleware");
 
 // routes
+router.get("/option", getAllOption);
+
 router
   .route("/")
   .get(
-    authMiddleware,
-    checkRoleMiddleware([
-      "SuperAdmin",
-      "Admin",
-      "Reviewer",
-      "ContentCreator",
-    ]),
-    hasPermission("read"),
+    // authMiddleware,
+    // checkRoleMiddleware(["SuperAdmin", "Admin", "Reviewer", "ContentCreator"]),
+    // hasPermission("read"),
     getMinistries
   )
   .post(
@@ -37,14 +35,9 @@ router
 router
   .route("/:id")
   .get(
-    authMiddleware,
-    checkRoleMiddleware([
-      "SuperAdmin",
-      "Admin",
-      "Reviewer",
-      "ContentCreator"
-    ]),
-    hasPermission("read"),
+    // authMiddleware,
+    // checkRoleMiddleware(["SuperAdmin", "Admin", "Reviewer", "ContentCreator"]),
+    // hasPermission("read"),
     getMinistry
   )
   .put(

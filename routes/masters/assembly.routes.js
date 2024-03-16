@@ -2,6 +2,7 @@ const router = require("express").Router();
 const {
   createAssembly,
   getAllAssembly,
+  getAllOption,
   getAssembly,
   updateAssembly,
   deleteAssembly,
@@ -14,6 +15,8 @@ const {
 } = require("../../middlewares/authMiddleware");
 
 // routes
+router.get("/option", getAllOption);
+
 router
   .route("/")
   .get(

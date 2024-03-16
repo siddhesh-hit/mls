@@ -17,36 +17,26 @@ const {
 // routes
 router
   .route("/")
-  .get(
-    authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "ContentCreator", "Reviewer"]),
-    hasPermission("read"),
-    getContacts
-  )
+  .get(getContacts)
   .post(
     authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "ContentCreator"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
     hasPermission("create"),
     createContact
   );
 
 router
   .route("/:id")
-  .get(
-    authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "ContentCreator", "Reviewer"]),
-    hasPermission("read"),
-    getContact
-  )
+  .get(getContact)
   .put(
     authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "ContentCreator"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
     hasPermission("update"),
     updateContact
   )
   .delete(
     authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "Reviewer"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "Reviewer"]),
     hasPermission("delete"),
     deleteContact
   );
