@@ -20,9 +20,9 @@ router.get("/option", getAllOption);
 router
   .route("/")
   .get(
-    authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "Admin", "Reviewer", "ContentCreator"]),
-    hasPermission("read"),
+    // authMiddleware,
+    // checkRoleMiddleware(["SuperAdmin", "Admin", "Reviewer", "ContentCreator"]),
+    // hasPermission("read"),
     getMinistries
   )
   .post(
@@ -35,9 +35,9 @@ router
 router
   .route("/:id")
   .get(
-    authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "Admin", "Reviewer", "ContentCreator"]),
-    hasPermission("read"),
+    // authMiddleware,
+    // checkRoleMiddleware(["SuperAdmin", "Admin", "Reviewer", "ContentCreator"]),
+    // hasPermission("read"),
     getMinistry
   )
   .put(

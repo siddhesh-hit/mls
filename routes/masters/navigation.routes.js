@@ -22,15 +22,15 @@ router.get("/option", getAllOption);
 router
   .route("/")
   .get(
-    authMiddleware,
-    checkRoleMiddleware([
-      "SuperAdmin",
-      "Admin",
-      "Reviewer",
-      "ContentCreator",
-      "User",
-    ]),
-    hasPermission("read"),
+    // authMiddleware,
+    // checkRoleMiddleware([
+    //   "SuperAdmin",
+    //   "Admin",
+    //   "Reviewer",
+    //   "ContentCreator",
+    //   "User",
+    // ]),
+    // hasPermission("read"),
     getAllNavigation
   )
   .post(

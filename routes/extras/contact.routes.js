@@ -20,7 +20,7 @@ router
   .get(getContacts)
   .post(
     authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "ContentCreator"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
     hasPermission("create"),
     createContact
   );
@@ -30,13 +30,13 @@ router
   .get(getContact)
   .put(
     authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "ContentCreator"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
     hasPermission("update"),
     updateContact
   )
   .delete(
     authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "Reviewer"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "Reviewer"]),
     hasPermission("delete"),
     deleteContact
   );

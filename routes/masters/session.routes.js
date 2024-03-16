@@ -21,14 +21,14 @@ router.get("/option", getAllOption);
 router
   .route("/")
   .get(
-    authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "ContentCreator", "Reviewer"]),
-    hasPermission("read"),
+    // authMiddleware,
+    // checkRoleMiddleware(["SuperAdmin","Admin", "ContentCreator", "Reviewer"]),
+    // hasPermission("read"),
     getSessionFields
   )
   .post(
     authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "ContentCreator"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
     hasPermission("create"),
     createSessionField
   );
@@ -36,20 +36,20 @@ router
 router
   .route("/:id")
   .get(
-    authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "ContentCreator", "Reviewer"]),
-    hasPermission("read"),
+    // authMiddleware,
+    // checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator", "Reviewer"]),
+    // hasPermission("read"),
     getSessionField
   )
   .put(
     authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "ContentCreator"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),
     hasPermission("update"),
     updateSessionField
   )
   .delete(
     authMiddleware,
-    checkRoleMiddleware(["SuperAdmin", "Reviewer"]),
+    checkRoleMiddleware(["SuperAdmin", "Admin", "Reviewer"]),
     hasPermission("delete"),
     deleteSessionField
   );

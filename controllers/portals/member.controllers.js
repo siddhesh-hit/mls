@@ -45,6 +45,19 @@ const createMember = asyncHandler(async (req, res) => {
     }
     data.createdBy = userId.id;
 
+    data.political_journey.map((item) => {
+      // if(item.presiding !== '' ||)
+      for (key in item) {
+        console.log(key, item[key]);
+        if (item[key] === "") {
+          // console.log(item, "ye hai ==>");
+          item[key] = null;
+        }
+      }
+    });
+
+    console.log(data.political_journey);
+
     // validate the data
     const { error } = createMemberValidation(data);
     if (error) {
@@ -434,6 +447,8 @@ const updateMember = asyncHandler(async (req, res) => {
     //   },
     // };
     // await createNotificationFormat(notificationData, res);
+
+    console.log(data.basic_info.profile);
 
     // create a pending req to accept
     let pendingData = {
