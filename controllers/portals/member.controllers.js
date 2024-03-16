@@ -237,11 +237,17 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
       throw new Error("No members found");
     }
 
+    const populateMember = await Member.populate(members[0]?.mem, [
+      { path: "basic_info.constituency" },
+      { path: "basic_info.party" },
+      { path: "basic_info.district" },
+    ]);
+
     // send response
     res.status(200).json({
       success: true,
       message: "All the members fetched successfully",
-      data: members[0]?.mem || [],
+      data: populateMember || [],
       count: members[0]?.totalCount[0]?.count || 0,
     });
   } catch (error) {
