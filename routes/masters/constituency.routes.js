@@ -1,8 +1,8 @@
-const asyncHandler = require("express-async-handler");
+const router = require("express").Router();	const asyncHandler = require("express-async-handler");
 
 const Constituency = require("../../models/masters/constituency");
 
-const {
+const {	const {
   createConstituencyValidation,
   updateConstituencyValidation,
 } = require("../../validations/master/constituencyValidation");
@@ -209,10 +209,67 @@ const deleteConstituency = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-  createConstituency,
-  getAllConstituency,
+  createConstituency,	  createConstituency,
+  getAllConstituency,	  getAllConstituency,
   getAllOption,
-  getConstituency,
-  updateConstituency,
-  deleteConstituency,
-};
+  getConstituency,	  getConstituency,
+  updateConstituency,	  updateConstituency,
+  deleteConstituency,	  deleteConstituency,
+} = require("../../controllers/masters/constituency.controllers");	};
+
+const {	
+  authMiddleware,	
+  checkRoleMiddleware,	
+  hasPermission,	
+} = require("../../middlewares/authMiddleware");	
+
+// routes	
+router	
+  .route("/")	
+  .get(	
+    // authMiddleware,	
+    // checkRoleMiddleware([	
+    //   "SuperAdmin",	
+    //   "Admin",	
+    //   "Reviewer",	
+    //   "ContentCreator",	
+    //   "User",	
+    // ]),	
+    // hasPermission("read"),	
+    getAllConstituency	
+  )	
+  .post(	
+    authMiddleware,	
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),	
+    hasPermission("create"),	
+    createConstituency	
+  );	
+
+router	
+  .route("/:id")	
+  .get(	
+    // authMiddleware,	
+    // checkRoleMiddleware([	
+    //   "SuperAdmin",	
+    //   "Admin",	
+    //   "Reviewer",	
+    //   "ContentCreator",	
+    //   "User",	
+    // ]),	
+    // hasPermission("read"),	
+    getConstituency	
+  )	
+  .put(	
+    authMiddleware,	
+    checkRoleMiddleware(["SuperAdmin", "Admin", "ContentCreator"]),	
+    hasPermission("update"),	
+    updateConstituency	
+  )	
+  .delete(	
+    authMiddleware,	
+    checkRoleMiddleware(["SuperAdmin", "Admin"]),	
+    hasPermission("delete"),	
+    deleteConstituency	
+  );	
+
+module.exports = router;	
