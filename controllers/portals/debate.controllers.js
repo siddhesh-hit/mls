@@ -727,7 +727,7 @@ const getpostDebateFullSearch = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get Debate based on multiple query
-// @route   GET /api/debate/fields?id=""
+// @route   GET /api/debate/dumpFields?id=""
 // @access  Public
 const getDumpDebateFullSearch = asyncHandler(async (req, res) => {
   try {
@@ -745,43 +745,50 @@ const getDumpDebateFullSearch = asyncHandler(async (req, res) => {
     // compute the queries in an array for using in and stage
     let arrayOfQuery = Object.keys(queries);
     let andMatchStage = [];
+    let processedKeys = {}; // Object to track processed keys
+
+    // console.log(arrayOfQuery, "array");
 
     for (let i = 0; i < arrayOfQuery.length; i++) {
       let key = arrayOfQuery[i];
       let value = queries[arrayOfQuery[i]];
 
-      if (value && key !== "topic") {
-        value = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      if (value && key !== "topic" && !processedKeys[key]) {
+        // value = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         let obj = {
-          [key]: new RegExp(`.*${value}.*`, "i"),
+          [key]: new RegExp(`.*${decodeURI(value)}.*`, "i"),
         };
 
         andMatchStage.push(obj);
+        processedKeys[key] = true; // Mark key as processed
       }
 
-      if (key === "topic") {
-        value = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      if (key === "topic" && !processedKeys[key]) {
+        // value = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         let or = {
           $or: [
-            { topic: new RegExp(`.*${value}.*`, "i") },
-            { speaker: new RegExp(`.*${value}.*`, "i") },
-            { keywords: new RegExp(`.*${value}.*`, "i") },
-            { members_name: new RegExp(`.*${value}.*`, "i") },
-            { date: new RegExp(`.*${value}.*`, "i") },
+            { topic: new RegExp(`.*${decodeURI(value)}.*`, "i") },
+            { speaker: new RegExp(`.*${decodeURI(value)}.*`, "i") },
+            { keywords: new RegExp(`.*${decodeURI(value)}.*`, "i") },
+            { members_name: new RegExp(`.*${decodeURI(value)}.*`, "i") },
+            { date: new RegExp(`.*${decodeURI(value)}.*`, "i") },
           ],
         };
 
         andMatchStage.push(or);
+        processedKeys[key] = true; // Mark key as processed
       }
 
-      if (key === "house") {
-        value = value.replace(/\s+/g, "\\s*");
+      if (key === "house" && !processedKeys[key]) {
+        // value = value.replace(/\s+/g, "\\s*");
         let obj = {
-          [key]: new RegExp(`.*${value}.*`, "i"),
+          [key]: new RegExp(`.*${decodeURI(value)}.*`, "i"),
         };
         andMatchStage.push(obj);
+        processedKeys[key] = true; // Mark key as processed
       }
     }
+    console.log(andMatchStage[0]);
 
     console.log(andMatchStage);
 
@@ -824,6 +831,8 @@ const getDumpDebateFullSearch = asyncHandler(async (req, res) => {
         },
       ]);
     }
+
+    console.log(debates);
 
     res.status(200).json({
       success: true,
