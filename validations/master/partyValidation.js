@@ -41,6 +41,7 @@ const createPartyValidation = (data) => {
             .label("English Short name is required."),
         })
         .unknown(true),
+      isHouse: joi.string().required().label("House name is required."),
       party_flag: imageValidation.required(),
       party_symbol: imageValidation.required(),
     })
@@ -73,6 +74,7 @@ const updatePartyValidation = (data) => {
           .required()
           .label("English Short name is required."),
       }),
+      isHouse: joi.string().required().label("House is required."),
       party_flag: imageValidation.required(),
       party_symbol: imageValidation.required(),
     })
