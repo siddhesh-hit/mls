@@ -107,14 +107,16 @@ const getAllAssembly = asyncHandler(async (req, res) => {
 // @access  Public
 const getAllOption = asyncHandler(async (req, res) => {
   try {
-    const options = await Assembly.find({}).select([
-      "-isActive",
-      "-status",
-      "-createdBy",
-      "-updatedBy",
-      "-createdAt",
-      "-updatedAt",
-    ]);
+    const options = await Assembly.find({})
+      .sort({ assembly_number: 1 })
+      .select([
+        "-isActive",
+        "-status",
+        "-createdBy",
+        "-updatedBy",
+        "-createdAt",
+        "-updatedAt",
+      ]);
 
     res.status(200).json({
       success: true,

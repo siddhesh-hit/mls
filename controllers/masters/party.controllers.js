@@ -144,7 +144,17 @@ const getParty = asyncHandler(async (req, res) => {
 // @access  Public
 const getAllOption = asyncHandler(async (req, res) => {
   try {
-    const options = await Party.find({}).select([
+    let { id, ...queries } = req.query;
+
+    let matchedQuery = {};
+
+    for (let key in queries) {
+      if (queries[key]) {
+        matchedQuery[key] = new RegExp(`.*${queries[key]}.*`, "i");
+      }
+    }
+
+    const options = await Party.find(matchedQuery).select([
       "-isActive",
       "-status",
       "-createdBy",

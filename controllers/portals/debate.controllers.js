@@ -1130,7 +1130,7 @@ const getDumpDebateFilterOption = asyncHandler(async (req, res) => {
     if (id === "kramank" || id === "volume") {
       newFilter = convertMarToEng(newDebates);
     } else {
-      newFilter = newFilter;
+      newFilter = newDebates;
     }
     res.status(200).json({
       success: true,

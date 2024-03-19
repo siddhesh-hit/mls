@@ -189,10 +189,10 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
       matchedQuery["basic_info.surname"] = req.query.surname;
     }
     if (req.query.district) {
-      matchedQuery["basic_info.district"] = req.query.district;
+      matchedQuery["basic_info.district"] = new ObjectId(req.query.district);
     }
     if (req.query.gender) {
-      matchedQuery["basic_info.gender"] = req.query.gender;
+      matchedQuery["basic_info.gender"] = new ObjectId(req.query.gender);
     }
 
     if (req.query.house) {
@@ -214,6 +214,9 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
           options: "i",
         },
       };
+    }
+
+    if (req.query.fromdate) {
     }
 
     // aggregate on the query
@@ -456,7 +459,7 @@ const updateMember = asyncHandler(async (req, res) => {
     // };
     // await createNotificationFormat(notificationData, res);
 
-    console.log(data.basic_info.profile);
+    console.log(data);
 
     // create a pending req to accept
     let pendingData = {
