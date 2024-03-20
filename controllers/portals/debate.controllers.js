@@ -831,19 +831,19 @@ const getDumpDebateFullSearch = asyncHandler(async (req, res) => {
     // compute the queries in an array for using in and stage
     let arrayOfQuery = Object.keys(queries);
     let andMatchStage = [];
-    let processedKeys = {}; // Object to track processed keys
 
     // console.log(arrayOfQuery, "array");
 
     for (let i = 0; i < arrayOfQuery.length; i++) {
       let key = arrayOfQuery[i];
       let value = queries[arrayOfQuery[i]];
-
       if (
         value &&
         key !== "topic" &&
         key !== "ministry" &&
-        !processedKeys[key]
+        key !== "fromdate" &&
+        key !== "house" &&
+        key !== "todate"
       ) {
         // value = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         let obj = {
@@ -851,10 +851,9 @@ const getDumpDebateFullSearch = asyncHandler(async (req, res) => {
         };
 
         andMatchStage.push(obj);
-        processedKeys[key] = true; // Mark key as processed
       }
 
-      if (key === "topic" && !processedKeys[key]) {
+      if (key === "topic" && queries[key]) {
         // value = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         let or = {
           $or: [
@@ -868,29 +867,44 @@ const getDumpDebateFullSearch = asyncHandler(async (req, res) => {
         };
 
         andMatchStage.push(or);
-        processedKeys[key] = true; // Mark key as processed
       }
 
-      if (key === "house" && !processedKeys[key]) {
+      if (key === "house" && queries[key]) {
         // value = value.replace(/\s+/g, "\\s*");
         let obj = {
           [key]: new RegExp(`.*${decodeURI(value)}.*`, "i"),
         };
         andMatchStage.push(obj);
-        processedKeys[key] = true; // Mark key as processed
       }
 
-      if (key === "ministry") {
+      if (key === "ministry" && queries[key]) {
         let obj = {
           [key]: new RegExp(`.*${decodeURI(value)}.*`, "i"),
         };
         andMatchStage.push(obj);
-        processedKeys[key] = true;
+      }
+
+      if (key === "fromdate" && queries["fromdate"]) {
+        let fromDateSplit = queries["fromdate"].split("-");
+        let fromDate = `${fromDateSplit[2]}-${fromDateSplit[1]}-${fromDateSplit[0]}`;
+
+        let toDateSplit = queries["todate"].split("-");
+        let toDate = `${toDateSplit[2]}-${toDateSplit[1]}-${toDateSplit[0]}`;
+
+        console.log(fromDate, toDate);
+
+        let obj = {
+          newDate: {
+            $gte: new Date(fromDate),
+            $lt: new Date(toDate) ? new Date(toDate) : new Date(),
+          },
+        };
+        andMatchStage.push(obj);
       }
     }
     // console.log(andMatchStage[0]);
 
-    // console.log(andMatchStage);
+    console.log(andMatchStage);
 
     let debates;
     if (andMatchStage.length > 0) {
@@ -1112,8 +1126,23 @@ const getDumpDebateFilterOption = asyncHandler(async (req, res) => {
     let matchedQuery = {};
 
     for (let key in queries) {
-      if (queries[key]) {
+      if (queries[key] && key !== "fromdate" && key !== "todate") {
         matchedQuery[key] = new RegExp(`.*${queries[key]}.*`, "i");
+      }
+      if (key !== "fromdate" && queries["fromdate"]) {
+        let fromDateSplit = queries["fromdate"].split("-");
+        let fromDate = `${fromDateSplit[2]}-${fromDateSplit[1]}-${fromDateSplit[0]}`;
+
+        let toDateSplit = queries["todate"].split("-");
+        let toDate = `${toDateSplit[2]}-${toDateSplit[1]}-${toDateSplit[0]}`;
+
+        let obj = {
+          newDate: {
+            $gte: new Date(fromDate),
+            $lt: new Date(toDate),
+          },
+        };
+        matchedQuery["newDate"] = obj.newDate;
       }
     }
 
