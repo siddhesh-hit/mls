@@ -839,7 +839,12 @@ const getDumpDebateFullSearch = asyncHandler(async (req, res) => {
       let key = arrayOfQuery[i];
       let value = queries[arrayOfQuery[i]];
 
-      if (value && key !== "topic" && !processedKeys[key]) {
+      if (
+        value &&
+        key !== "topic" &&
+        key !== "ministry" &&
+        !processedKeys[key]
+      ) {
         // value = value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
         let obj = {
           [key]: new RegExp(`.*${decodeURI(value)}.*`, "i"),
@@ -873,6 +878,14 @@ const getDumpDebateFullSearch = asyncHandler(async (req, res) => {
         };
         andMatchStage.push(obj);
         processedKeys[key] = true; // Mark key as processed
+      }
+
+      if (key === "ministry") {
+        let obj = {
+          [key]: new RegExp(`.*${decodeURI(value)}.*`, "i"),
+        };
+        andMatchStage.push(obj);
+        processedKeys[key] = true;
       }
     }
     // console.log(andMatchStage[0]);
