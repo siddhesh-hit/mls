@@ -886,17 +886,17 @@ const getDumpDebateFullSearch = asyncHandler(async (req, res) => {
 
       if (key === "fromdate" && queries["fromdate"]) {
         let fromDateSplit = queries["fromdate"].split("-");
-        let fromDate = `${fromDateSplit[2]}-${fromDateSplit[1]}-${fromDateSplit[0]}`;
+        let newFromDate = `${fromDateSplit[2]}-${fromDateSplit[1]}-${fromDateSplit[0]}`;
 
         let toDateSplit = queries["todate"].split("-");
-        let toDate = `${toDateSplit[2]}-${toDateSplit[1]}-${toDateSplit[0]}`;
+        let newToDate = `${toDateSplit[2]}-${toDateSplit[1]}-${toDateSplit[0]}`;
 
-        console.log(fromDate, toDate);
+        console.log(newFromDate, newToDate);
 
         let obj = {
           newDate: {
-            $gte: new Date(fromDate),
-            $lt: new Date(toDate) ? new Date(toDate) : new Date(),
+            $gte: new Date(newFromDate),
+            $lt: new Date(queries["todate"]) || new Date(newToDate),
           },
         };
         andMatchStage.push(obj);
