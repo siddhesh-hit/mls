@@ -26,6 +26,11 @@ const politicalPartySchema = new mongoose.Schema(
         required: true,
       },
     },
+    isHouse: {
+      type: String,
+      enum: ["Assembly", "Constituency"],
+      required: true,
+    },
     party_flag: imageSchema,
     party_symbol: imageSchema,
     isActive: {

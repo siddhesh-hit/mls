@@ -37,7 +37,7 @@ const constituencySchema = new mongoose.Schema(
     isHouse: {
       type: String,
       enum: ["Assembly", "Constituency"],
-      requried: true,
+      required: true,
     },
     isActive: {
       type: Boolean,

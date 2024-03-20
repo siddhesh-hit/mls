@@ -11,7 +11,7 @@ const {
 
 const {
   createNotificationFormat,
-} = require("../../controllers/extras/notification.controllers");
+} = require("../extras/notification.controllers");
 const { createPending } = require("../reports/pending.controllers");
 
 // @desc    Create new Member
@@ -181,16 +181,18 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
     }
 
     if (req.query.constituency) {
-      matchedQuery["basic_info.constituency"] = new ObjectId(req.query.constituency)
+      matchedQuery["basic_info.constituency"] = new ObjectId(
+        req.query.constituency
+      );
     }
     if (req.query.surname) {
       matchedQuery["basic_info.surname"] = req.query.surname;
     }
     if (req.query.district) {
-      matchedQuery["basic_info.district"] = req.query.district;
+      matchedQuery["basic_info.district"] = new ObjectId(req.query.district);
     }
     if (req.query.gender) {
-      matchedQuery["basic_info.gender"] = req.query.gender;
+      matchedQuery["basic_info.gender"] = new ObjectId(req.query.gender);
     }
 
     if (req.query.house) {
@@ -214,6 +216,9 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
       };
     }
 
+    if (req.query.fromdate) {
+    }
+
     // aggregate on the query
     const members = await Member.aggregate([
       {
@@ -222,7 +227,7 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
       {
         $facet: {
           mem: [
-            // { $sort: { createdAt: -1 } },
+            { $sort: { "basic_info.surname": 1 } },
             { $skip: pageOptions.page * pageOptions.limit },
             { $limit: pageOptions.limit },
           ],
@@ -454,7 +459,7 @@ const updateMember = asyncHandler(async (req, res) => {
     // };
     // await createNotificationFormat(notificationData, res);
 
-    console.log(data.basic_info.profile);
+    console.log(data);
 
     // create a pending req to accept
     let pendingData = {

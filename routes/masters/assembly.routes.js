@@ -20,15 +20,15 @@ router.get("/option", getAllOption);
 router
   .route("/")
   .get(
-    authMiddleware,
-    checkRoleMiddleware([
-      "SuperAdmin",
-      "Admin",
-      "Reviewer",
-      "ContentCreator",
-      "User",
-    ]),
-    hasPermission("read"),
+    // authMiddleware,
+    // checkRoleMiddleware([
+    //   "SuperAdmin",
+    //   "Admin",
+    //   "Reviewer",
+    //   "ContentCreator",
+    //   "User",
+    // ]),
+    // hasPermission("read"),
     getAllAssembly
   )
   .post(
@@ -41,15 +41,15 @@ router
 router
   .route("/:id")
   .get(
-    authMiddleware,
-    checkRoleMiddleware([
-      "SuperAdmin",
-      "Admin",
-      "Reviewer",
-      "ContentCreator",
-      "User",
-    ]),
-    hasPermission("read"),
+    // authMiddleware,
+    // checkRoleMiddleware([
+    //   "SuperAdmin",
+    //   "Admin",
+    //   "Reviewer",
+    //   "ContentCreator",
+    //   "User",
+    // ]),
+    // hasPermission("read"),
     getAssembly
   )
   .put(

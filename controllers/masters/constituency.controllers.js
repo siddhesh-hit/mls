@@ -159,11 +159,18 @@ const updateConstituency = asyncHandler(async (req, res) => {
     let data = req.body;
     console.log(data);
     // validate the data
-    const { error } = updateConstituencyValidation(data);
-    if (error) {
-      res.status(400);
-      throw new Error(error.details[0].message);
+    // const { error } = updateConstituencyValidation(data);
+    // if (error) {
+    //   res.status(400);
+    //   throw new Error(error.details[0].message);
+    // }
+
+
+
+    if (data.isHouse === "Constituency") {
+      data.assembly.assembly_number = null;
     }
+
 
     // update constituency
     const constituency = await Constituency.findByIdAndUpdate(

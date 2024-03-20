@@ -4,12 +4,14 @@ const {
   getAllDebates,
   getDebateSearch,
   getDebateById,
+  getDumpDebateById,
   getHouseDebates,
   getMemberDebateSearch,
   getpostDebateFullSearch,
   getpostAllDebates,
   getnewPostAllDebates,
   getDebateFullSearch,
+  getDumpDebateSearch,
   getDumpDebateFullSearch,
   updateDebateById,
   deleteDebateById,
@@ -36,6 +38,9 @@ router.get("/postgres", getpostAllDebates);
 
 router.get("/dump", getnewPostAllDebates);
 router.get("/dumpFields", getDumpDebateFullSearch);
+router.get("/dumpSearch", getDumpDebateSearch)
+router.get("/dump/:id", getDumpDebateById)
+
 
 // options
 router.get("/option", getDebateFilterOption);
