@@ -194,6 +194,9 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
     if (req.query.gender) {
       matchedQuery["basic_info.gender"] = new ObjectId(req.query.gender);
     }
+    if (req.query.assembly_number) {
+      matchedQuery["basic_info.assembly_number"] = new ObjectId(req.query.assembly_number);
+    }
 
     if (req.query.house) {
       matchedQuery["basic_info.house"] = req.query.house;
