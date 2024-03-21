@@ -14,7 +14,7 @@ const createConstituencyValidation = (data) => {
             .string()
             .required()
             .label("Marathi Assembly Number is required."),
-          year: joi.string().required().label("Marathi Year is required."),
+          year: joi.date().required().label("Marathi Year is required."),
         })
         .optional(),
       council: joi
@@ -27,7 +27,7 @@ const createConstituencyValidation = (data) => {
             .string()
             .required()
             .label("Marathi Constituency name is required."),
-          year: joi.string().required().label("Marathi Year is required."),
+          year: joi.date().required().label("Marathi Year is required."),
         })
         .optional(),
     }),
@@ -41,7 +41,7 @@ const createConstituencyValidation = (data) => {
           .string()
           .required()
           .label("English Assembly Number is required."),
-        year: joi.string().required().label("English Year is required."),
+        year: joi.date().required().label("English Year is required."),
       }),
       council: joi.object({
         constituency_type: joi
@@ -52,7 +52,7 @@ const createConstituencyValidation = (data) => {
           .string()
           .required()
           .label("English Constituency name is required."),
-        year: joi.string().required().label("English Year is required."),
+        year: joi.date().required().label("English Year is required."),
       }),
     }),
     // isActive: joi.boolean().required(),
@@ -76,7 +76,7 @@ const updateConstituencyValidation = (data) => {
             .string()
             .required()
             .label("Marathi Assembly Number is required."),
-          year: joi.string().required().label("Marathi Year is required."),
+          year: joi.date().required().label("Marathi Year is required."),
         })
         .optional(),
       council: joi
@@ -89,7 +89,7 @@ const updateConstituencyValidation = (data) => {
             .string()
             .required()
             .label("Marathi Constituency name is required."),
-          year: joi.string().required().label("Marathi Year is required."),
+          year: joi.date().required().label("Marathi Year is required."),
         })
         .optional(),
     })
