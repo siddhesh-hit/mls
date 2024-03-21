@@ -3,18 +3,40 @@ const joi = require("joi");
 // Create a new Minister validation
 const createMinisterValidation = (data) => {
   const schema = joi.object({
-    ministry_type: joi.string().required().label("Ministry type is required"),
     assembly_number: joi
       .string()
       .required()
       .label("Assembly number is required"),
     member_name: joi.string().required().label("Member name is required"),
+    ministry_type: joi
+      .array()
+      .items()
+      .required()
+      .label("Ministry type is required"),
     designation: joi
       .array()
       .items()
       .required()
       .label("Designation is required"),
-    year: joi.string().required().label("Year is required"),
+    des_from: joi.date().required().label("Designation from is required"),
+    des_to: joi.date().required().label("Designation to is required"),
+    presiding: joi
+      .array()
+      .items()
+      .required()
+      .label("Presiding type is required"),
+    pres_from: joi.date().required().label("Presiding from is required"),
+    pres_to: joi.date().required().label("Presiding to is required"),
+    legislative_position: joi
+      .array()
+      .items()
+      .required()
+      .label("Legislative Position is required"),
+    lp_from: joi
+      .date()
+      .required()
+      .label("Legislation Positon fron is required"),
+    lp_to: joi.date().required().label("Legislation Positon to is required"),
     createdBy: joi.string().required().label("Created by is required"),
   });
   return schema.validate(data);
@@ -28,14 +50,36 @@ const updateMinisterValidation = (data) => {
         .string()
         .required()
         .label("Assembly number is required"),
-      ministry_type: joi.string().required().label("Ministry type is required"),
       member_name: joi.string().required().label("Member name is required"),
+      ministry_type: joi
+        .array()
+        .items()
+        .required()
+        .label("Ministry type is required"),
       designation: joi
         .array()
         .items()
         .required()
         .label("Designation is required"),
-      year: joi.string().required().label("Year is required"),
+      des_from: joi.date().required().label("Designation from is required"),
+      des_to: joi.date().required().label("Designation to is required"),
+      presiding: joi
+        .array()
+        .items()
+        .required()
+        .label("Presiding type is required"),
+      pres_from: joi.date().required().label("Presiding from is required"),
+      pres_to: joi.date().required().label("Presiding to is required"),
+      legislative_position: joi
+        .array()
+        .items()
+        .required()
+        .label("Legislative Position is required"),
+      lp_from: joi
+        .date()
+        .required()
+        .label("Legislation Positon fron is required"),
+      lp_to: joi.date().required().label("Legislation Positon to is required"),
       _id: joi.any().optional(),
       isActive: joi.boolean().required(),
       createdBy: joi.string().optional().label("Created by is required"),

@@ -160,7 +160,42 @@ const getAllMember = asyncHandler(async (req, res) => {
   }
 });
 
-// @debsc get all members details According to Options With search And Advaned filter
+// @desc    Get all Member
+// @route   GET /api/member/all
+// @access  Public
+const getAllMemberOption = asyncHandler(async (req, res) => {
+  try {
+    let { ...id } = req.query;
+    // filter the query
+    let matchedQuery = {};
+
+    for (key in id) {
+      if (id[key] !== "" && key !== "basic_info.assembly_number") {
+        id[key] = id[key].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+        matchedQuery[key] = new RegExp(`.*${id[key]}.*`, "i");
+      }
+
+      if (key === "basic_info.assembly_number" && id[key] !== "") {
+        matchedQuery["basic_info.assembly_number"] = new ObjectId(id[key]);
+      }
+    }
+
+    let members = await Member.find(matchedQuery);
+
+    // send response
+    res.status(200).json({
+      message: "All the members fetched successfully",
+      success: true,
+      data: members || [],
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error(error);
+  }
+});
+
+// @desc get all members details According to Options With search And Advaned filter
 // @route GET /api/member/memberdetails
 // @access Public
 const getAllMemberDetails = asyncHandler(async (req, res) => {
@@ -559,6 +594,7 @@ const deleteMember = asyncHandler(async (req, res) => {
 module.exports = {
   createMember,
   getAllMember,
+  getAllMemberOption,
   getAllMemberDetails,
   getMemberFilterOption,
   getMemberHouse,

@@ -4,6 +4,7 @@ const multer = require("multer");
 const {
   createMember,
   getAllMember,
+  getAllMemberOption,
   getMemberHouse,
   getMemberSearch,
   getMember,
@@ -39,6 +40,8 @@ const upload = multer({
 router.get("/house", getMemberHouse);
 router.get("/search", getMemberSearch);
 router.get("/option", getMemberFilterOption);
+
+router.get("/all", getAllMemberOption);
 
 router
   .route("/")

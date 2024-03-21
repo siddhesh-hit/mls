@@ -108,7 +108,7 @@ const getAllAssembly = asyncHandler(async (req, res) => {
 const getAllOption = asyncHandler(async (req, res) => {
   try {
     const options = await Assembly.find({})
-      .sort({ assembly_number: 1 })
+      .sort({ assembly_number: -1 })
       .select([
         "-isActive",
         "-status",
