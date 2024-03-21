@@ -44,6 +44,8 @@ const archiveRoutes = require("./routes/reports/archive.routes");
 const resetRoutes = require("./routes/reports/resethead.routes");
 const exportRoutes = require("./routes/reports/export.routes");
 
+const masterRoutes = require("./routes/postgres_master/method.routes");
+
 // defining the routes
 router.use("/user", userRoutes);
 router.use("/sabha", sabhaRoutes);
@@ -86,5 +88,7 @@ router.use("/audit", auditRoutes);
 router.use("/archive", archiveRoutes);
 router.use("/reset", resetRoutes);
 router.use("/export", exportRoutes);
+
+router.use("/master", masterRoutes);
 
 module.exports = router;

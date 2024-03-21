@@ -144,6 +144,8 @@ const getAMinister = asyncHandler(async (req, res) => {
       "member_name",
       "designation",
       "ministry_type",
+      "presiding",
+      "legislative_position",
     ]);
     if (!minister) {
       res.status(400);

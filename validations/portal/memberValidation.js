@@ -71,6 +71,8 @@ const createMemberValidation = (data) => {
           .required()
           .label("Mobile number is required."),
         email: joi.string().required().label("Email is required."),
+        awards: joi.string().required().label("Awards is required."),
+        other_info: joi.string().required().label("Other Info is required."),
       })
       .unknown(true),
     political_journey: joi.array().items(

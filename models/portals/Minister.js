@@ -7,22 +7,51 @@ const ministerSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Assembly",
     },
-    year: {
-      type: String,
-    },
     member_name: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Member",
     },
+    ministry_type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Ministry",
+      },
+    ],
     designation: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Designation",
       },
     ],
-    ministry_type: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Ministry",
+    des_from: {
+      type: Date,
+    },
+    des_to: {
+      type: Date,
+    },
+    presiding: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "PresidingOfficer",
+      },
+    ],
+    pres_from: {
+      type: Date,
+    },
+    pres_to: {
+      type: Date,
+    },
+    legislative_position: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "LegislationPosition",
+      },
+    ],
+    lp_from: {
+      type: Date,
+    },
+    lp_to: {
+      type: Date,
     },
     isDissolved: {
       type: Number,

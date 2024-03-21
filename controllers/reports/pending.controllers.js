@@ -351,6 +351,14 @@ const updatePendingUpdate = asyncHandler(async (req, res) => {
     // Retrieve the Mongoose model dynamically
     const Model = mongoose.model(modelName);
 
+    if (modelName === "Member") {
+      if (data.data_object.basic_info.assembly_number === "") {
+        data.data_object.basic_info.assembly_number = null;
+      }
+    }
+
+    console.log(data);
+
     // check if model with model id exists
     const checkModelExists = await Model.findById(modelId);
     if (!checkModelExists) {

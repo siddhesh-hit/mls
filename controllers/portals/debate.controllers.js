@@ -432,7 +432,7 @@ const getDebateSearch = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get Debate based on single query for multiple fields
-// @route   GET /api/dumpSearch?id=""
+// @route   GET /api/debate/dumpSearch?id=""
 // @access  Public
 const getDumpDebateSearch = asyncHandler(async (req, res) => {
   try {
