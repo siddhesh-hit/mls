@@ -170,6 +170,7 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
     const pageOptions = {
       page: parseInt(perPage, 10) || 0,
       limit: parseInt(perLimit, 10) || 10,
+      // limit: 1,
     };
     let matchedQuery = {};
 
@@ -200,24 +201,19 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
 
     if (req.query.house) {
       matchedQuery["basic_info.house"] = req.query.house;
-      if (req.query.fromdate && req.query.todate && req.query.house == "Council") {
+      if (req.query.fromdate && req.query.todate && req.query.house === "Council") {
         matchedQuery["$or"] = [
           { "basic_info.constituency_from": { $regex: req.query.fromdate, $options: 'i' } },
           { "basic_info.constituency_to": { $regex: req.query.todate, $options: 'i' } }
         ]
-      } else if (req.query.fromdate && req.query.todate && req.query.house == "Assembly") {
-        matchedQuery[
-          {
-            $expr: {
-              $and: [
-                { $eq: ["$basic_info.assembly_number.start_date", req.query.fromdate] },
-                { $eq: ["$basic_info.assembly_number.end_date", req.query.todate] }
-              ]
-            }
-          }
-        ];
       }
-
+      //  else {
+      //   console.log("fromdate", req.query.fromdate, "======================================>");
+      //   if (req.query.fromdate && req.query.todate && req.query.house === "Assembly") {
+      //     matchedQuery["assemblies.start_date"] = { $regex: req.query.fromdate, $options: 'i' }
+      //     matchedQuery["assemblies.end_date"] = { $regex: req.query.todate, $options: 'i' }
+      //   }
+      // }
     }
 
     if (req.query.house) {
@@ -244,6 +240,15 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
     console.log("matchedQuery", matchedQuery);
     // aggregate on the query
     const members = await Member.aggregate([
+      // {
+      //   $lookup: {
+      //     from: 'assemblies', // Name of the referenced model (collection)
+      //     localField: 'basic_info.assembly_number', // Field in the current model
+      //     foreignField: '_id', // Field in the referenced model
+      //     as: 'assemblies' // Alias for the joined documents
+      //   }
+      // },
+      // { $unwind: '$assemblies' },
       {
         $match: matchedQuery,
       },
@@ -269,7 +274,7 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
       { path: "basic_info.constituency" },
       { path: "basic_info.party" },
       { path: "basic_info.district" },
-      { path: "basic_info.assembly_number" },
+      // { path: "basic_info.assembly_number" },
     ]);
 
     // send response

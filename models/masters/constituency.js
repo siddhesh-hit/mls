@@ -28,7 +28,7 @@ const constituencySchema = new mongoose.Schema(
         default: null,
       },
       year: {
-        type: String,
+        type: Date,
       },
       constituency_type: {
         type: String,
