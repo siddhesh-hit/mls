@@ -200,6 +200,28 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
 
     if (req.query.house) {
       matchedQuery["basic_info.house"] = req.query.house;
+      if (req.query.fromdate && req.query.todate && req.query.house == "Council") {
+        matchedQuery["$or"] = [
+          { "basic_info.constituency_from": { $regex: req.query.fromdate, $options: 'i' } },
+          { "basic_info.constituency_to": { $regex: req.query.todate, $options: 'i' } }
+        ]
+      } else if (req.query.fromdate && req.query.todate && req.query.house == "Assembly") {
+        matchedQuery[
+          {
+            $expr: {
+              $and: [
+                { $eq: ["$basic_info.assembly_number.start_date", req.query.fromdate] },
+                { $eq: ["$basic_info.assembly_number.end_date", req.query.todate] }
+              ]
+            }
+          }
+        ];
+      }
+
+    }
+
+    if (req.query.house) {
+      matchedQuery["basic_info.house"] = req.query.house;
     }
     if (req.query.fullname) {
       // Escape special characters in the search string
@@ -219,9 +241,7 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
       };
     }
 
-    if (req.query.fromdate) {
-    }
-
+    console.log("matchedQuery", matchedQuery);
     // aggregate on the query
     const members = await Member.aggregate([
       {
@@ -249,6 +269,7 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
       { path: "basic_info.constituency" },
       { path: "basic_info.party" },
       { path: "basic_info.district" },
+      { path: "basic_info.assembly_number" },
     ]);
 
     // send response
