@@ -35,7 +35,7 @@ const createMinisterValidation = (data) => {
     lp_from: joi
       .date()
       .required()
-      .label("Legislation Positon fron is required"),
+      .label("Legislation Positon from is required"),
     lp_to: joi.date().required().label("Legislation Positon to is required"),
     createdBy: joi.string().required().label("Created by is required"),
   });

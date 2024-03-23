@@ -45,7 +45,7 @@ const memberSchema = new mongoose.Schema(
         type: String,
       },
       date_of_birth: {
-        type: String,
+        type: Date,
       },
       place_of_birth: {
         type: String,
@@ -93,7 +93,7 @@ const memberSchema = new mongoose.Schema(
     political_journey: [
       {
         date: {
-          type: String,
+          type: Date,
         },
         presiding: {
           type: mongoose.Schema.Types.ObjectId,
