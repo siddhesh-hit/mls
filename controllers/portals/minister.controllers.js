@@ -25,12 +25,12 @@ const createMinister = asyncHandler(async (req, res) => {
     }
     data.createdBy = userId.id;
 
-    // validate the data
-    const { error } = createMinisterValidation(data);
-    if (error) {
-      res.status(400);
-      throw new Error(error);
-    }
+    // // validate the data
+    // const { error } = createMinisterValidation(data);
+    // if (error) {
+    //   res.status(400);
+    //   throw new Error(error);
+    // }
 
     // check if chief minister exists
     // if (data.ministry_type === "Chief Minister") {
@@ -186,12 +186,12 @@ const updateMinister = asyncHandler(async (req, res) => {
     }
     data.updatedBy = userId.id;
 
-    // validate the data
-    const { error } = updateMinisterValidation(data);
-    if (error) {
-      res.status(400);
-      throw new Error(error.details[0].message, error);
-    }
+    // // validate the data
+    // const { error } = updateMinisterValidation(data);
+    // if (error) {
+    //   res.status(400);
+    //   throw new Error(error.details[0].message, error);
+    // }
 
     // // check if chief minister exists
     // if (data.ministry_type === "Chief Minister") {

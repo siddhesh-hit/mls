@@ -5,7 +5,7 @@ const createMinistryValidation = (data) => {
   const schema = joi.object({
     ministry_name: joi.string().required().label("Ministry name is required!"),
     minister: joi.string().required().label("Minister is required!"),
-    year: joi.string().required().label("Year is required!"),
+    year: joi.date().required().label("Year is required!"),
     sub_ministry: joi.array().items(
       joi.object({
         name: joi.string().required().label("Name is required!"),
@@ -29,7 +29,7 @@ const updateMinistryValidation = (data) => {
         .required()
         .label("Ministry name is required!"),
       minister: joi.string().required().label("Minister is required!"),
-      year: joi.string().required().label("Year is required!"),
+      year: joi.date().required().label("Year is required!"),
       sub_ministry: joi.array().items(
         joi
           .object({

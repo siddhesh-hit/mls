@@ -10,7 +10,7 @@ const rajyapalMemberSchema = new mongoose.Schema(
         required: true,
       },
       elected_date: {
-        type: String,
+        type: Date,
         required: true,
       },
       gender: {
@@ -18,7 +18,7 @@ const rajyapalMemberSchema = new mongoose.Schema(
         required: true,
       },
       place_of_birth: {
-        type: String,
+        type: Date,
         required: true,
       },
       political_career: {
@@ -32,7 +32,7 @@ const rajyapalMemberSchema = new mongoose.Schema(
         required: true,
       },
       elected_date: {
-        type: String,
+        type: Date,
         required: true,
       },
       gender: {
@@ -40,7 +40,7 @@ const rajyapalMemberSchema = new mongoose.Schema(
         required: true,
       },
       place_of_birth: {
-        type: String,
+        type: Date,
         required: true,
       },
       political_career: {
@@ -49,7 +49,7 @@ const rajyapalMemberSchema = new mongoose.Schema(
       },
     },
     date_of_birth: {
-      type: String,
+      type: Date,
       required: true,
     },
     image: imageSchema,
@@ -60,7 +60,7 @@ const rajyapalMemberSchema = new mongoose.Schema(
     speeches: [
       {
         year: {
-          type: String,
+          type: Date,
           required: true,
         },
         values: [

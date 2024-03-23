@@ -23,12 +23,12 @@ const createSessionCalendarValidation = (data) => {
       session: joi.string().optional().label("Marathi session is required"),
       topic_name: joi.string().required().label("Topic name is required"),
       houses: joi.string().required().label("Houses is required"),
-      year: joi.string().required().label("Year is required"),
-      date: joi.string().required().label("Date is required"),
+      year: joi.date().required().label("Year is required"),
+      date: joi.date().required().label("Date is required"),
       documents: joi.array().items(
         joi.object({
           title: joi.string().optional().label("Title is required"),
-          date: joi.string().optional().label("Date is required"),
+          date: joi.date().optional().label("Date is required"),
           document: imageValidation.required().label("Document is required"),
         })
       ),
@@ -47,13 +47,13 @@ const updateSessionCalendarValidation = (data) => {
       _id: joi.any().optional(),
       topic_name: joi.string().required().label("Topic name is required"),
       houses: joi.string().required().label("Houses is required"),
-      year: joi.string().required().label("Year is required"),
-      date: joi.string().required().label("Date is required"),
+      year: joi.date().required().label("Year is required"),
+      date: joi.date().required().label("Date is required"),
       documents: joi.array().items(
         joi
           .object({
             title: joi.string().optional().label("Title is required"),
-            date: joi.string().optional().label("Date is required"),
+            date: joi.date().optional().label("Date is required"),
             document: imageValidation.required().label("Document is required"),
             _id: joi.any().optional(),
           })

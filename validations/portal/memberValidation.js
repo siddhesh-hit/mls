@@ -44,11 +44,11 @@ const createMemberValidation = (data) => {
           .required()
           .label("First time elected is required."),
         date_of_birth: joi
-          .string()
+          .date()
           .required()
           .label("Date of birth is required."),
         place_of_birth: joi
-          .string()
+          .date()
           .required()
           .label("Place of birth is required."),
         education: joi.string().required().label("Education is required."),
@@ -174,11 +174,11 @@ const updateMemberValidation = (data) => {
           .required()
           .label("First time elected is required."),
         date_of_birth: joi
-          .string()
+          .date()
           .required()
           .label("Date of birth is required."),
         place_of_birth: joi
-          .string()
+          .date()
           .required()
           .label("Place of birth is required."),
         education: joi.string().required().label("Education is required."),

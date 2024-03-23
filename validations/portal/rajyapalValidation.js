@@ -25,7 +25,7 @@ const createRajyapalMemberValidation = (data) => {
         .label("Marathi Elected date name is required"),
       gender: joi.string().required().label("Marathi Gender name is required"),
       place_of_birth: joi
-        .string()
+        .date()
         .required()
         .label("Marathi Place of birth name is required"),
       political_career: joi
@@ -41,7 +41,7 @@ const createRajyapalMemberValidation = (data) => {
         .label("English Elected date name is required"),
       gender: joi.string().required().label("English Gender name is required"),
       place_of_birth: joi
-        .string()
+        .date()
         .required()
         .label("English Place of birth name is required"),
       political_career: joi
@@ -49,7 +49,7 @@ const createRajyapalMemberValidation = (data) => {
         .required()
         .label("English Political  name is required"),
     }),
-    date_of_birth: joi.string().required().label("Date of birth is required"),
+    date_of_birth: joi.date().required().label("Date of birth is required"),
     image: imageValidation.required().label("Image is required"),
     url: joi.string().required().label("URL is required"),
     speeches: joi.array().items(

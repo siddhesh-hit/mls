@@ -11,7 +11,7 @@ const ministrySchema = new mongoose.Schema(
       required: true,
     },
     year: {
-      type: String,
+      type: Date,
       required: true,
     },
     sub_ministry: [

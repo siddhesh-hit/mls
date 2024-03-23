@@ -17,11 +17,11 @@ const sessionCalendarSchema = new mongoose.Schema(
       required: true,
     },
     year: {
-      type: String,
+      type: Date,
       required: true,
     },
     date: {
-      type: String,
+      type: Date,
       required: true,
     },
     documents: [
@@ -31,7 +31,7 @@ const sessionCalendarSchema = new mongoose.Schema(
           required: true,
         },
         date: {
-          type: String,
+          type: Date,
           required: true,
         },
         document: ImageSchema,
