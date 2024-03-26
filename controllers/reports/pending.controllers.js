@@ -352,12 +352,79 @@ const updatePendingUpdate = asyncHandler(async (req, res) => {
     const Model = mongoose.model(modelName);
 
     if (modelName === "Member") {
-      if (data.data_object.basic_info.assembly_number === "") {
-        data.data_object.basic_info.assembly_number = null;
+      if (data.data_object.basic_info) {
+        if (data.data_object.basic_info.assembly_number === "") {
+          data.data_object.basic_info.assembly_number = null;
+        } else {
+          Object.keys(data.data_object.basic_info.assembly_number).length > 0
+            ? data.data_object.basic_info.assembly_number._id
+            : data.data_object.basic_info.assembly_number;
+        }
+
+        Object.keys(data.data_object.basic_info.constituency).length > 0
+          ? data.data_object.basic_info.constituency._id
+          : data.data_object.basic_info.constituency;
+
+        Object.keys(data.data_object.basic_info.gender).length > 0
+          ? data.data_object.basic_info.gender._id
+          : data.data_object.basic_info.gender;
+
+        Object.keys(data.data_object.basic_info.party).length > 0
+          ? data.data_object.basic_info.party._id
+          : data.data_object.basic_info.party;
+
+        Object.keys(data.data_object.basic_info.district).length > 0
+          ? data.data_object.basic_info.district._id
+          : data.data_object.basic_info.district;
+      }
+
+      if (data.data_object.political_journey.length > 0) {
+        data.data_object.political_journey.map((item) => {
+          if (item.presiding && typeof item.presiding === "object") {
+            Object.keys(item.presiding).length > 0
+              ? item.presiding._id
+              : item.presiding;
+          }
+
+          if (item.presiding && typeof item.presiding === "object") {
+            Object.keys(item.legislative_position).length > 0
+              ? item.legislative_position._id
+              : item.legislative_position;
+          }
+
+          if (item.presiding && typeof item.presiding === "object") {
+            Object.keys(item.designation).length > 0
+              ? item.designation._id
+              : item.designation;
+          }
+
+          // item.presiding = item.presiding._id;
+          // item.legislative_position = item.legislative_position._id;
+          // item.designation = item.designation._id;
+
+          return item;
+        });
+      }
+
+      if (data.data_object.election_data) {
+        Object.keys(data.data_object.election_data.constituency).length > 0
+          ? data.data_object.election_data.constituency._id
+          : data.data_object.election_data.constituency;
+
+        // data.data_object.election_data.constituency =
+        //   data.data_object.election_data.constituency._id;
+
+        if (data.data_object.election_data.member_election_result.length > 0) {
+          data.data_object.election_data.member_election_result.map((item) => {
+            Object.keys(item.party).length > 0 ? item.party._id : item.party;
+            // item.party = item.party._id;
+            return item;
+          });
+        }
       }
     }
 
-    console.log(data);
+    // console.log(data);
 
     // check if model with model id exists
     const checkModelExists = await Model.findById(modelId);
@@ -380,6 +447,8 @@ const updatePendingUpdate = asyncHandler(async (req, res) => {
     if (data.status === "Accepted") {
       // update the request
       data.isPending = false;
+
+      console.log(data);
       updatedPending = await Pending.findByIdAndUpdate(req.params.id, data, {
         runValidators: true,
         new: true,
