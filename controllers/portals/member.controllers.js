@@ -201,7 +201,10 @@ const getAllMemberOption = asyncHandler(async (req, res) => {
 const getAllMemberDetails = asyncHandler(async (req, res) => {
   try {
     let { perPage, perLimit } = req.query;
-
+   
+      
+    // Define  Pipepliene
+    const pipeline = []
     const pageOptions = {
       page: parseInt(perPage, 10) || 0,
       limit: parseInt(perLimit, 10) || 10,
@@ -211,6 +214,11 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
 
     if (req.query.name) {
       matchedQuery["basic_info.name"] = req.query.name;
+    }
+    if(req.query.constituency_types ) {
+      if(req.query.constituency_types) {
+        matchedQuery["basic_info.constituency"] =new ObjectId(req.query.constituency_types);
+      }
     }
     if (req.query.party) {
       matchedQuery["basic_info.party"] = new ObjectId(req.query.party);
@@ -236,23 +244,68 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
 
     if (req.query.house) {
       matchedQuery["basic_info.house"] = req.query.house;
+       let fromDate ,toDate;
+      if(req.query.fromdate && req.query.todate) {
+         fromDate = new Date(req.query.fromdate).getFullYear();
+        toDate = new Date(req.query.todate).getFullYear();
+        fromDate = new Date(fromDate, 0, 1);
+        toDate = new Date(toDate, 11, 31);
+      }
+      // designation
+      if (req.query.designation) {
+         matchedQuery["political_journey"] = {$elemMatch:{
+          designation: new ObjectId(req.query.designation) ,
+         }}
+      }
+      // presiding
+      if (req.query.presiding) {
+        matchedQuery["political_journey"] = {$elemMatch:{
+          presiding: new ObjectId(req.query.presiding) ,
+          }}
+      }
+      // legislative_position
+      if (req.query.legislative_position) {
+        matchedQuery["political_journey"] = {$elemMatch:{
+          legislative_position: new ObjectId(req.query.legislative_position) ,
+        }}
+      }
+      // From Date and To Date
       if (req.query.fromdate && req.query.todate && req.query.house === "Council") {
-        matchedQuery["$or"] = [
-          { "basic_info.constituency_from": { $regex: req.query.fromdate, $options: 'i' } },
-          { "basic_info.constituency_to": { $regex: req.query.todate, $options: 'i' } }
+        matchedQuery["$and"] = [
+          { "basic_info.constituency_from": { $gte:fromDate} },
+          { "basic_info.constituency_to": { $lte : toDate} }
         ]
       }
-      //  else {
-      //   console.log("fromdate", req.query.fromdate, "======================================>");
-      //   if (req.query.fromdate && req.query.todate && req.query.house === "Assembly") {
-      //     matchedQuery["assemblies.start_date"] = { $regex: req.query.fromdate, $options: 'i' }
-      //     matchedQuery["assemblies.end_date"] = { $regex: req.query.todate, $options: 'i' }
-      //   }
-      // }
-    }
+      else if (req.query.fromdate && req.query.todate && req.query.house === "Assembly") {
+        // Convert the date strings to actual Date objects
 
-    if (req.query.house) {
-      matchedQuery["basic_info.house"] = req.query.house;
+        pipeline.push({
+          $lookup: {
+            from: "assemblies",
+            localField: "basic_info.assembly_number",
+            foreignField: "_id",
+            as: "assemblies",
+          },
+        });
+        pipeline.push({
+          $unwind: "$assemblies",
+        });
+        // // Add the $match stage after $unwind to filter based on start_date and end_date
+        matchedQuery["$and"] = [
+          {
+            'assemblies.start_date': {
+               $gte:fromDate 
+            }
+          }, {
+            'assemblies.end_date': {
+              $lte : toDate
+            }
+          }
+        ]
+
+        
+      }
+
     }
     if (req.query.fullname) {
       // Escape special characters in the search string
@@ -271,33 +324,24 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
         },
       };
     }
+    pipeline.push({
+      $match: matchedQuery,
+    })
+    pipeline.push({
+      $facet: {
+        mem: [
 
-    console.log("matchedQuery", matchedQuery);
+          { $sort: { "basic_info.surname": 1 } },
+          { $skip: pageOptions.page * pageOptions.limit },
+          { $limit: pageOptions.limit },
+        ],
+        totalCount: [{ $count: "count" }],
+      },
+    })
     // aggregate on the query
-    const members = await Member.aggregate([
-      // {
-      //   $lookup: {
-      //     from: 'assemblies', // Name of the referenced model (collection)
-      //     localField: 'basic_info.assembly_number', // Field in the current model
-      //     foreignField: '_id', // Field in the referenced model
-      //     as: 'assemblies' // Alias for the joined documents
-      //   }
-      // },
-      // { $unwind: '$assemblies' },
-      {
-        $match: matchedQuery,
-      },
-      {
-        $facet: {
-          mem: [
-            { $sort: { "basic_info.surname": 1 } },
-            { $skip: pageOptions.page * pageOptions.limit },
-            { $limit: pageOptions.limit },
-          ],
-          totalCount: [{ $count: "count" }],
-        },
-      },
-    ]);
+    const members = await Member.aggregate(pipeline);
+
+    // console.log(members[0]?.mem?.map((item) => item.assemblies))
 
     // check if members exists
     if (!members) {
@@ -309,7 +353,7 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
       { path: "basic_info.constituency" },
       { path: "basic_info.party" },
       { path: "basic_info.district" },
-      // { path: "basic_info.assembly_number" },
+      { path: "basic_info.assembly_number" },
     ]);
 
     // send response
@@ -320,7 +364,7 @@ const getAllMemberDetails = asyncHandler(async (req, res) => {
       count: members[0]?.totalCount[0]?.count || 0,
     });
   } catch (error) {
-    // console.log("error", error);
+    console.log("error", error);
     res.status(500);
     throw new Error(error);
   }
